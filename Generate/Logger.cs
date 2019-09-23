@@ -7,10 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace WindowsFormsApp1 {
-    class Util {
+    public class Logger {
 
         #region LogVariables
-        public static string LocalLogPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\DIP1\";
+        public static string LocalLogPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\DIP1\Logs\";
         public static string LogName = "Diploma-" + DateTime.Today.ToString("yyyy.MM.dd") + ".log";
         private static StreamWriter file;
         private static Thread FileMonitorThread = null;     //thread that starts when we wrote to file, and releases the file after 1 second
@@ -56,7 +56,7 @@ namespace WindowsFormsApp1 {
             }
 
             if (FileMonitorThread == null || !FileMonitorThread.IsAlive) {
-                ThreadStart threadDelegate = new ThreadStart(Util.CloseLogAndThread);
+                ThreadStart threadDelegate = new ThreadStart(Logger.CloseLogAndThread);
                 FileMonitorThread = new Thread(threadDelegate);
                 FileMonitorThread.Start();
             }
@@ -109,7 +109,5 @@ namespace WindowsFormsApp1 {
             }
             catch (Exception) { }
         }
-
-
     }
 }

@@ -16,7 +16,7 @@ namespace WindowsFormsApp1 {
         }
 
         protected override void OnPaint(PaintEventArgs e) {
-            Trace.WriteLine("Onpaint started");
+            Logger.WriteLog("Onpaint started");
             //e.Graphics.DrawString("Hello World", this.Font, new SolidBrush(Color.Black), 10, 10);
             foreach (Line line in model.modelLines) {
                 e.Graphics.DrawLine(Pens.Blue, ConvertToFormCoordinate(line.startPoint), ConvertToFormCoordinate(line.endPoint));
@@ -32,15 +32,16 @@ namespace WindowsFormsApp1 {
                 }
             }
             drawModelRooms(e);
+            ImageSaver.SaveControlImage(this);
         }
-
+       
         private void drawModelRooms(PaintEventArgs e) {
-            Trace.WriteLine("draw model rooms");
+            Logger.WriteLog("draw model rooms");
             foreach (Room modelRoom in model.modelRooms) {
                 List<PointF> points = new List<PointF>();
                 for (var index = 0; index < modelRoom.boundaryPoints.AsReadOnly().Count; index++) {
                     Point point = modelRoom.boundaryPoints.AsReadOnly()[index];
-                    Trace.WriteLine($"Point at index {index} is {point}");
+                    Logger.WriteLog($"Point at index {index} is {point}");
                     points.Add(ConvertToFormCoordinate(point));
                 }
 
@@ -48,21 +49,17 @@ namespace WindowsFormsApp1 {
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
+        private void Form1_Load(object sender, EventArgs e) {
             ReBindGrid();
         }
 
-        private void ReBindGrid()
-        {
-            if (model.modelLines != null)
-            {
+        private void ReBindGrid() {
+            if (model.modelLines != null) {
                 lineGrid.DataSource = null;
                 lineGrid.DataSource = model.modelLines;
             }
 
-            if (model.modelRooms != null)
-            {
+            if (model.modelRooms != null) {
                 roomGrid.DataSource = null;
                 roomGrid.DataSource = model.modelRooms;
             }
@@ -97,7 +94,7 @@ namespace WindowsFormsApp1 {
 
             int x = Convert.ToInt32(P.X);
             int y = Convert.ToInt32(-P.Y + 600);
-            //Trace.WriteLine($"Convert from {P} to {x},{y}");
+            //Logger.WriteLog($"Convert from {P} to {x},{y}");
             PointF point = new PointF(x, y);
             return point;
         }

@@ -44,7 +44,7 @@ namespace WindowsFormsApp1 {
                 modelLine.relatedRooms.Add(first);
             }
             CalculateRooms();
-            Trace.WriteLine("InitModel() finished");
+            Logger.WriteLog("InitModel() finished");
         }
         public Line GetRandomLine() {
             int randint = rand.Next(0, modelLines.Count);
@@ -220,7 +220,7 @@ namespace WindowsFormsApp1 {
                 #endregion
             }
             catch (Exception e) {
-                Trace.Write("Not legal move " + e.Message);
+                Logger.WriteLog("Not legal move " + e.Message);
                 //MessageBox.Show();
             }
 
@@ -262,19 +262,19 @@ namespace WindowsFormsApp1 {
                 foreach (Room room in line.relatedRooms) {
                     if (!room.bundaryLines.Contains(line)) {
                         room.bundaryLines.Add(line);
-                        Trace.WriteLine($"CalculateRooms for line {line} {room.Name} ");
+                        Logger.WriteLog($"CalculateRooms for line {line} {room.Name} ");
                     }
                 }
                 modelRooms.AddRange(line.relatedRooms);
             }
 
             modelRooms = modelRooms.Distinct().ToList();
-            Trace.WriteLine(modelRooms.ToString());
+            Logger.WriteLog(modelRooms.ToString());
             TraceValues();
         }
         void TraceValues() {
             foreach (Room room in modelRooms)
-                Trace.WriteLine(room.Name);
+                Logger.WriteLog(room.Name);
         }
         private void RunRedundancyCheck(Point p1, Point p2) {
             #region test
