@@ -46,21 +46,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IGeometry.cs" />
-    <Compile Include="ImageSaver.cs" />
+    <Compile Include="GeometryModel\IGeometry.cs" />
+    <Compile Include="Utilities\ImageSaver.cs" />
+    <Compile Include="GeometryModel\RoomType.cs" />
     <Compile Include="SimulationForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SimulationForm.Designer.cs">
       <DependentUpon>SimulationForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Line.cs" />
-    <Compile Include="Model.cs" />
-    <Compile Include="Point.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="GeometryModel\Line.cs" />
+    <Compile Include="Simulation\Model.cs" />
+    <Compile Include="GeometryModel\Point.cs" />
+    <Compile Include="Simulation\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Room.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="GeometryModel\Room.cs" />
+    <Compile Include="Utilities\Logger.cs" />
     <EmbeddedResource Include="SimulationForm.resx">
       <DependentUpon>SimulationForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -87,5 +88,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

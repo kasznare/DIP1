@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using ONLAB2;
 
@@ -84,7 +85,35 @@ namespace WindowsFormsApp1 {
 
         private void moveButton_Click(object sender, EventArgs e) {
             int moveDistance = int.Parse(this.textBox2.Text);
-            model.MoveLine(moveDistance, model.GetRandomLine());
+
+            Dictionary<Line,int> Costs = new Dictionary<Line,int>();
+            int mincost = 100000;
+            Line minline = null;
+
+            //make threadpool like - room pool
+            //fix number of modells, (number of threads) move elemnet, calculate cost
+
+            //todo: make parallel
+            //https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-write-a-simple-parallel-foreach-loop
+            foreach (Line line in model.modelLines)
+            {
+                Model tempModel = model.Copy();
+                tempModel.MoveLine(moveDistance, line);
+
+                int cost = tempModel.CalculateCost();
+                Costs.Add(line, cost);
+
+                if (mincost > cost)
+                {
+                    mincost = cost;
+                    minline = line;
+                }
+            }
+
+            //model.MoveLine(moveDistance, model.GetRandomLine());
+            model.MoveLine(moveDistance, minline);
+
+
             Invalidate();
 
         }
