@@ -5,6 +5,7 @@ namespace WindowsFormsApp1 {
     public class Line :IGeometry {
         public Point startPoint { get; set; }
         public Point endPoint { get; set; }
+        public bool HasOpening { get; set; }
         //public double length;
         public List<Room> relatedRooms { get; set; }
         public List<Point> relatedPoints { get; set; }

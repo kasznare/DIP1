@@ -35,19 +35,44 @@ namespace WindowsFormsApp1 {
         /// </summary>
         /// <returns></returns>
         public void InitModel() {
-            Point a = new Point(100, 100);
-            Point b = new Point(500, 100);
-            Point c = new Point(500, 500);
-            Point d = new Point(100, 500);
 
-            modelLines.Add(new Line(a, b));
-            modelLines.Add(new Line(b, c));
-            modelLines.Add(new Line(c, d));
-            modelLines.Add(new Line(d, a));
-            Room first = new Room("FirstName", "1");
-            foreach (Line modelLine in modelLines) {
+            Point q1 = new Point(100,0);
+            Point q2 = new Point(500,0);
+
+            Point p1 = new Point(100, 100);
+            Point p2 = new Point(500, 100);
+            Point p3 = new Point(500, 500);
+            Point p4 = new Point(100, 500);
+
+            Line line1 = new Line(p1, p2);
+            modelLines.Add(line1);
+            Line line2 = new Line(p2, p3);
+            modelLines.Add(line2);
+            Line line3 = new Line(p3, p4);
+            modelLines.Add(line3);
+            Line line4 = new Line(p4, p1);
+            modelLines.Add(line4);
+
+            Line l1 = new Line(q1, p1);
+            Line l2 = new Line(q2, p2);
+            Line l3 = new Line(q1, q2);
+
+            modelLines.Add(l1);
+            modelLines.Add(l2);
+            modelLines.Add(l3);
+
+
+            Room first = new Room("FirstRoom", "1");
+            Room second = new Room("SecondRoom", "2");
+
+            foreach (Line modelLine in new List<Line>(){line1, line2, line3, line4}) {
                 modelLine.relatedRooms.Add(first);
             }
+
+            foreach (Line modelLine in new List<Line>() { l1, l2, l3, line1 }) {
+                modelLine.relatedRooms.Add(second);
+            }
+
             CalculateRooms();
             Logger.WriteLog("InitModel() finished");
         }
