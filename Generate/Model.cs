@@ -13,9 +13,6 @@ using ONLAB2;
 //TODO: hogyan változik a loss
 namespace WindowsFormsApp1 {
     public class Model {
-        public List<Line> modelLines = new List<Line>();
-        public List<Room> modelRooms = new List<Room>();
-        Random rand = new Random(10);
         public Model(List<Line> lines = null, List<Room> rooms = null) {
             if (lines != null) {
                 this.modelLines = lines;
@@ -25,6 +22,14 @@ namespace WindowsFormsApp1 {
                 modelRooms = rooms;
             }
         }
+
+
+        public List<Line> modelLines = new List<Line>();
+        public List<Room> modelRooms = new List<Room>();
+        Random rand = new Random(10);
+
+        public List<Point> ModelPoints => modelLines.Select(i=>i.startPoint).ToList();
+
         /// <summary>
         /// create new model
         /// </summary>

@@ -110,9 +110,9 @@
             // lineGrid
             // 
             this.lineGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.lineGrid.Location = new System.Drawing.Point(909, 229);
+            this.lineGrid.Location = new System.Drawing.Point(909, 276);
             this.lineGrid.Name = "lineGrid";
-            this.lineGrid.Size = new System.Drawing.Size(240, 150);
+            this.lineGrid.Size = new System.Drawing.Size(240, 209);
             this.lineGrid.TabIndex = 6;
             // 
             // pointGrid
@@ -120,13 +120,13 @@
             this.pointGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.pointGrid.Location = new System.Drawing.Point(909, 38);
             this.pointGrid.Name = "pointGrid";
-            this.pointGrid.Size = new System.Drawing.Size(240, 150);
+            this.pointGrid.Size = new System.Drawing.Size(240, 202);
             this.pointGrid.TabIndex = 7;
             // 
             // roomGrid
             // 
             this.roomGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.roomGrid.Location = new System.Drawing.Point(909, 418);
+            this.roomGrid.Location = new System.Drawing.Point(909, 527);
             this.roomGrid.Name = "roomGrid";
             this.roomGrid.Size = new System.Drawing.Size(240, 150);
             this.roomGrid.TabIndex = 8;
@@ -143,7 +143,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(906, 210);
+            this.label2.Location = new System.Drawing.Point(906, 257);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(32, 13);
             this.label2.TabIndex = 10;
@@ -152,7 +152,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(906, 402);
+            this.label3.Location = new System.Drawing.Point(906, 511);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(40, 13);
             this.label3.TabIndex = 11;

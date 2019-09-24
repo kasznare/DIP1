@@ -32,9 +32,10 @@ namespace WindowsFormsApp1 {
                 }
             }
             drawModelRooms(e);
+            ReBindGrid();
             ImageSaver.SaveControlImage(this);
         }
-       
+
         private void drawModelRooms(PaintEventArgs e) {
             Logger.WriteLog("draw model rooms");
             foreach (Room modelRoom in model.modelRooms) {
@@ -54,19 +55,25 @@ namespace WindowsFormsApp1 {
         }
 
         private void ReBindGrid() {
+            lineGrid.DataSource = null;
             if (model.modelLines != null) {
-                lineGrid.DataSource = null;
                 lineGrid.DataSource = model.modelLines;
             }
 
+            roomGrid.DataSource = null;
             if (model.modelRooms != null) {
-                roomGrid.DataSource = null;
                 roomGrid.DataSource = model.modelRooms;
+            }
+
+            pointGrid.DataSource = null;
+            if (model.ModelPoints != null) {
+                pointGrid.DataSource = model.ModelPoints;
             }
         }
 
         private void timer1_Tick(object sender, EventArgs e) {
             this.Invalidate();
+
         }
 
         private void splitButton_Click(object sender, EventArgs e) {

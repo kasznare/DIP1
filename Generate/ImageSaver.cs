@@ -21,7 +21,6 @@ namespace WindowsFormsApp1
 
                 bmp.Save(imagePath);
                 //Process.Start(imagePath);
-
             }
             catch (Exception w) {
                 Logger.WriteLog("Onpaint exception: " + w);
