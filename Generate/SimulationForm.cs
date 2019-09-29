@@ -44,8 +44,8 @@ namespace WindowsFormsApp1 {
             Logger.WriteLog("draw model rooms");
             foreach (Room modelRoom in model.modelRooms) {
                 List<PointF> points = new List<PointF>();
-                for (var index = 0; index < modelRoom.boundaryPoints.AsReadOnly().Count; index++) {
-                    Point point = modelRoom.boundaryPoints.AsReadOnly()[index];
+                for (var index = 0; index < modelRoom.BoundaryPoints.AsReadOnly().Count; index++) {
+                    Point point = modelRoom.BoundaryPoints.AsReadOnly()[index];
                     Logger.WriteLog($"Point at index {index} is {point}");
                     points.Add(ConvertToFormCoordinate(point));
                 }
@@ -133,7 +133,7 @@ namespace WindowsFormsApp1 {
         }
 
         private void initButton_Click(object sender, EventArgs e) {
-            //model = new Model();
+            model = new Model();
             model.InitModel();
             Invalidate();
         }

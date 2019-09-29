@@ -6,11 +6,11 @@ using System.Linq;
 using ONLAB2;
 
 namespace WindowsFormsApp1 {
-    public class Room :IGeometry{
+    public class Room : IGeometry {
         public Room(string name, string number) {
             Name = name;
             Number = number;
-            boundaryPoints = new List<Point>();
+            BoundaryPoints = new List<Point>();
             bundaryLines = new List<Line>();
             boundaryLineOrderIndex = new List<int>();
             //observableBoundaryLines.CollectionChanged += ObservableBoundaryLinesOnCollectionChanged;
@@ -24,20 +24,30 @@ namespace WindowsFormsApp1 {
         public int Degree { get; set; }
         public bool isStartRoom { get; set; }
         public RoomType type { get; set; }
-        public List<Line> bundaryLines {
+
+        public List<Line> BoundaryLines {
             //to return the lines only in ordered form
             get {
-                CalculateBoundaryLineOrderIndex();
-                if (_boundaryLines.Count > boundaryLineOrderIndex.Count) {
-                    throw new Exception("Failed to order");
+                if (boundaryLineOrderIndex != null) {
+                    try
+                    {
+                        BoundaryLines = BoundaryLines.OrderBy(i => boundaryLineOrderIndex.ElementAt(BoundaryLines.IndexOf(i))).ToList();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.WriteLog(e);
+                    }
                 }
-                _boundaryLines = _boundaryLines.OrderBy(i => boundaryLineOrderIndex.ElementAt(_boundaryLines.IndexOf(i))).ToList();
-                return _boundaryLines;
+                return BoundaryLines;
             }
             set {
-                _boundaryLines = value;
+                BoundaryLines = value;
                 if (boundaryLineOrderIndex == null || !boundaryLineOrderIndex.Any()) {
                     InitializeBoundaryOrderIndex();
+                }
+                CalculateBoundaryLineOrderIndex();
+                if (BoundaryLines.Count > boundaryLineOrderIndex.Count) {
+                    throw new Exception("Failed to order");
                 }
             }
         }
@@ -50,13 +60,13 @@ namespace WindowsFormsApp1 {
         }
 
         private void CalculateBoundaryLineOrderIndex() {
-            if (!_boundaryLines.Any()) return;
+            if (!BoundaryLines.Any()) return;
             //if (boundaryLineOrderIndex == null || !boundaryLineOrderIndex.Any())
             {
                 InitializeBoundaryOrderIndex();
             }
 
-            Line actualLine = _boundaryLines.First();
+            Line actualLine = BoundaryLines.First();
             int orderIndex = 0;
             boundaryLineOrderIndex[0] = orderIndex;
             bool allFound = false;
@@ -64,10 +74,10 @@ namespace WindowsFormsApp1 {
             st.Start();
             while (!allFound) {
                 bool nextFound = false;
-                foreach (Line segment in _boundaryLines) {
+                foreach (Line segment in BoundaryLines) {
                     if (segment.startPoint == actualLine.startPoint && segment.endPoint != actualLine.endPoint) {
                         actualLine = segment;
-                        int indexInList = _boundaryLines.IndexOf(segment);
+                        int indexInList = BoundaryLines.IndexOf(segment);
                         orderIndex++;
                         boundaryLineOrderIndex[indexInList] = orderIndex;
                         nextFound = true;
@@ -75,7 +85,7 @@ namespace WindowsFormsApp1 {
                     }
                     if (segment.startPoint == actualLine.endPoint && segment.endPoint != actualLine.startPoint) {
                         actualLine = segment;
-                        int indexInList = _boundaryLines.IndexOf(segment);
+                        int indexInList = BoundaryLines.IndexOf(segment);
                         orderIndex++;
                         boundaryLineOrderIndex[indexInList] = orderIndex;
                         nextFound = true;
@@ -83,7 +93,7 @@ namespace WindowsFormsApp1 {
                     }
                     if (segment.endPoint == actualLine.startPoint && segment.startPoint != actualLine.endPoint) {
                         actualLine = segment;
-                        int indexInList = _boundaryLines.IndexOf(segment);
+                        int indexInList = BoundaryLines.IndexOf(segment);
                         orderIndex++;
                         boundaryLineOrderIndex[indexInList] = orderIndex;
                         nextFound = true;
@@ -93,7 +103,7 @@ namespace WindowsFormsApp1 {
 
                     if (segment.endPoint == actualLine.endPoint && segment.startPoint != actualLine.startPoint) {
                         actualLine = segment;
-                        int indexInList = _boundaryLines.IndexOf(segment);
+                        int indexInList = BoundaryLines.IndexOf(segment);
                         orderIndex++;
                         boundaryLineOrderIndex[indexInList] = orderIndex;
                         nextFound = true;
@@ -105,7 +115,7 @@ namespace WindowsFormsApp1 {
                     //this is a problem
                 }
 
-                if (orderIndex == _boundaryLines.Count - 1 || st.ElapsedMilliseconds > 2000) {
+                if (orderIndex == BoundaryLines.Count - 1 || st.ElapsedMilliseconds > 2000) {
                     allFound = true;
                     //InitializeBoundaryOrderIndex();
                     return;
@@ -122,25 +132,24 @@ namespace WindowsFormsApp1 {
             if (boundaryLineOrderIndex == null || !boundaryLineOrderIndex.Any()) {
                 boundaryLineOrderIndex = new List<int>();
             }
-            for (int i = boundaryLineOrderIndex.Count; i < _boundaryLines.Count; i++) {
+            for (int i = boundaryLineOrderIndex.Count; i < BoundaryLines.Count; i++) {
                 boundaryLineOrderIndex.Add(i);
             }
 
         }
 
         //todo, remove private field
-        private List<Line> _boundaryLines;
-        public List<Point> boundaryPoints {
+        public List<Point> BoundaryPoints {
             get {
                 InitializeBoundaryOrderIndex();
-                _boundaryLines = _boundaryLines.OrderBy(i => boundaryLineOrderIndex.ElementAt(_boundaryLines.IndexOf(i))).ToList();
-                _boundaryPoints.Clear();
-                //Line firstLine = _boundaryLines.First();
-                //Line lastLine = _boundaryLines.Last();
-                Line actualLastLine = _boundaryLines[boundaryLineOrderIndex.Last()];
+                BoundaryLines = BoundaryLines.OrderBy(i => boundaryLineOrderIndex.ElementAt(BoundaryLines.IndexOf(i))).ToList();
+                BoundaryPoints.Clear();
+                //Line firstLine = BoundaryLines.First();
+                //Line lastLine = BoundaryLines.Last();
+                Line actualLastLine = BoundaryLines[boundaryLineOrderIndex.Last()];
 
-                for (var index = 0; index < _boundaryLines.Count; index++) {
-                    Line actualLine = _boundaryLines[boundaryLineOrderIndex[index]];
+                for (var index = 0; index < BoundaryLines.Count; index++) {
+                    Line actualLine = BoundaryLines[boundaryLineOrderIndex[index]];
                     Point commonPoint = null;
 
                     if (actualLastLine.startPoint == actualLine.startPoint) {
@@ -158,15 +167,13 @@ namespace WindowsFormsApp1 {
 
                     actualLastLine = actualLine;
 
-                    _boundaryPoints.Add(commonPoint);
+                    BoundaryPoints.Add(commonPoint);
                 }
 
-                return _boundaryPoints;
+                return BoundaryPoints;
             }
-            set { _boundaryPoints = value; }
+            set { BoundaryPoints = value; }
         }
-        //todo remove private field
-        private List<Point> _boundaryPoints;
 
         public bool IsLineMissing() {
             return false;
@@ -177,6 +184,9 @@ namespace WindowsFormsApp1 {
         }
 
 
-
+        public double CalculateArea()
+        {
+            return 0.0;
+        }
     }
 }

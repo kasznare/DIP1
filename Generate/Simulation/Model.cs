@@ -349,7 +349,7 @@ namespace WindowsFormsApp1 {
             }
             modelRooms = allRooms;//modelRooms.Distinct().ToList();
             Logger.WriteLog(modelRooms.ToString());
-            TraceValues();
+            //TraceValues();
         }
         void TraceValues() {
             foreach (Room room in modelRooms)
@@ -567,12 +567,78 @@ namespace WindowsFormsApp1 {
         public void SwitchRoom() {
 
         }
-        public int CalculateCost() {
-            return 0;
+        public double CalculateCost() {
+            double areacost = CalculateParameterCost();
+            double layoutcost = CalculateLayoutCost();
+            double constaintcost = CalculateConstraintCost();
+            double summary = areacost + layoutcost;
+            Logger.WriteLog("területköltség: " + areacost);
+            Logger.WriteLog("kerületköltség: " + layoutcost);
+            return summary;
         }
-        //TODO: make this a deeep copy
+
+        private double CalculateConstraintCost() {
+            //muszáj teljesülne
+            return 0.0;
+        }
+        private double CalculateParameterCost() {
+            double summary = 0.0;
+            try {
+                foreach (Room room in this.modelRooms) {
+                    try
+                    {
+                        string roomTypeId = room.Number;
+                        double actualarea = room.CalculateArea();
+                        RoomType type = roomTypes.Find(i => i.typeid.Equals(roomTypeId));
+                        if (actualarea < type.areamin) {
+                            summary += Math.Abs(type.areamin - actualarea);
+                        }
+                        else if (actualarea > type.areamax) {
+                            summary += Math.Abs(type.areamax - actualarea);
+                        }
+                    }
+                    catch (Exception e) {
+                        Logger.WriteLog(e);
+                    }
+                }
+            }
+            catch (Exception e) {
+                summary = 10;
+                Logger.WriteLog("outer exc" + e);
+            }
+            //elemszintű megfelelés
+            //minden helyiségre
+            //megkeresni a helyiség kategóriát a táblázatból
+            //számítani a megfelelést
+            //összegezni
+
+            return summary;
+        }
+
+        public List<RoomType> roomTypes { get; set; }
+
+        private double CalculateLayoutCost() {
+            double wallLength = 0.0;
+
+
+            foreach (Line seg in this.modelLines) {
+                wallLength += Math.Sqrt(seg.GetLength() * 3);
+            }
+            //Utils.WriteLog("Walllength: " + wallLength);
+            //elrendezésszintű
+            double passagewaycost = 0.0;
+
+            //ajtókat, nyílásokat letenni...(kérdés)
+            //bejárhatóság generálás
+            double privacygradientcost = 0.0;
+
+
+            //kerületszámítás
+            //minimális optimum kerület = sqrt(minden szoba area összege)*4
+            double summary = passagewaycost + privacygradientcost + wallLength;
+            return summary;
+        }
 
     }
-
-
+    
 }
