@@ -16,6 +16,9 @@ namespace WindowsFormsApp1 {
             g = this.CreateGraphics();
         }
 
+        private int actualSimulationThreshold = 0;
+        private int MaxSimulationThreshold = 5;
+
         protected override void OnPaint(PaintEventArgs e) {
             Logger.WriteLog("Onpaint started");
             //e.Graphics.DrawString("Hello World", this.Font, new SolidBrush(Color.Black), 10, 10);
@@ -74,7 +77,6 @@ namespace WindowsFormsApp1 {
 
         private void timer1_Tick(object sender, EventArgs e) {
             this.Invalidate();
-
         }
 
         private void splitButton_Click(object sender, EventArgs e) {
@@ -84,9 +86,20 @@ namespace WindowsFormsApp1 {
         }
 
         private void moveButton_Click(object sender, EventArgs e) {
+            if (actualSimulationThreshold < MaxSimulationThreshold) {
+                SimulationStep();
+                Invalidate();
+            }
+            else {
+                MessageBox.Show("Simulation threshold exit. Optimum reached.");
+            }
+
+        }
+
+        private void SimulationStep() {
             int moveDistance = int.Parse(this.textBox2.Text);
 
-            Dictionary<Line,int> Costs = new Dictionary<Line,int>();
+            Dictionary<Line, int> Costs = new Dictionary<Line, int>();
             int mincost = 100000;
             Line minline = null;
 
@@ -95,27 +108,28 @@ namespace WindowsFormsApp1 {
 
             //todo: make parallel
             //https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-write-a-simple-parallel-foreach-loop
-            foreach (Line line in model.modelLines)
-            {
-                Model tempModel = model.Copy();
+
+            int actualCost = model.CalculateCost();
+            foreach (Line line in model.modelLines) {
+                
+                Model tempModel = model.DeepCopy();
                 tempModel.MoveLine(moveDistance, line);
 
                 int cost = tempModel.CalculateCost();
                 Costs.Add(line, cost);
 
-                if (mincost > cost)
-                {
+                if (mincost > cost) {
                     mincost = cost;
                     minline = line;
                 }
             }
 
+            if (mincost >= actualCost) {
+                actualSimulationThreshold++;
+            }
+
             //model.MoveLine(moveDistance, model.GetRandomLine());
             model.MoveLine(moveDistance, minline);
-
-
-            Invalidate();
-
         }
 
         private void initButton_Click(object sender, EventArgs e) {
