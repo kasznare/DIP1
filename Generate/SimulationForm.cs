@@ -99,8 +99,8 @@ namespace WindowsFormsApp1 {
         private void SimulationStep() {
             int moveDistance = int.Parse(this.textBox2.Text);
 
-            Dictionary<Line, int> Costs = new Dictionary<Line, int>();
-            int mincost = 100000;
+            Dictionary<Line, double> Costs = new Dictionary<Line, double>();
+            double mincost = 100000;
             Line minline = null;
 
             //make threadpool like - room pool
@@ -109,13 +109,13 @@ namespace WindowsFormsApp1 {
             //todo: make parallel
             //https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-write-a-simple-parallel-foreach-loop
 
-            int actualCost = model.CalculateCost();
+            double actualCost = model.CalculateCost();
             foreach (Line line in model.modelLines) {
                 
                 Model tempModel = model.DeepCopy();
                 tempModel.MoveLine(moveDistance, line);
 
-                int cost = tempModel.CalculateCost();
+                double cost = tempModel.CalculateCost();
                 Costs.Add(line, cost);
 
                 if (mincost > cost) {

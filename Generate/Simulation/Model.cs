@@ -340,8 +340,8 @@ namespace WindowsFormsApp1 {
                     }
                     //annak a hozzá tartozó relatedroomjaiban
                     //a room boundarylinejai kozott szerepel-e a line
-                    if (!room.bundaryLines.Contains(line)) {
-                        room.bundaryLines.Add(line);
+                    if (!room.BoundaryLines.Contains(line)) {
+                        room.BoundaryLines.Add(line);
                         //Logger.WriteLog($"CalculateRooms for line {line} {room.Name} ");
                     }
                 }

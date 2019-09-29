@@ -11,7 +11,7 @@ namespace WindowsFormsApp1 {
             Name = name;
             Number = number;
             BoundaryPoints = new List<Point>();
-            bundaryLines = new List<Line>();
+            BoundaryLines = new List<Line>();
             boundaryLineOrderIndex = new List<int>();
             //observableBoundaryLines.CollectionChanged += ObservableBoundaryLinesOnCollectionChanged;
         }
@@ -29,28 +29,27 @@ namespace WindowsFormsApp1 {
             //to return the lines only in ordered form
             get {
                 if (boundaryLineOrderIndex != null) {
-                    try
-                    {
-                        BoundaryLines = BoundaryLines.OrderBy(i => boundaryLineOrderIndex.ElementAt(BoundaryLines.IndexOf(i))).ToList();
+                    try {
+                        boundaryLines = boundaryLines.OrderBy(i => boundaryLineOrderIndex.ElementAt(BoundaryLines.IndexOf(i))).ToList();
                     }
-                    catch (Exception e)
-                    {
+                    catch (Exception e) {
                         Logger.WriteLog(e);
                     }
                 }
-                return BoundaryLines;
+                return boundaryLines;
             }
             set {
-                BoundaryLines = value;
+                boundaryLines = value;
                 if (boundaryLineOrderIndex == null || !boundaryLineOrderIndex.Any()) {
                     InitializeBoundaryOrderIndex();
                 }
                 CalculateBoundaryLineOrderIndex();
-                if (BoundaryLines.Count > boundaryLineOrderIndex.Count) {
+                if (value.Count > boundaryLineOrderIndex.Count) {
                     throw new Exception("Failed to order");
                 }
             }
         }
+        private List<Line> boundaryLines;
 
         public List<int> boundaryLineOrderIndex;
         //store observable collections, implement Inotifypropertychanged to trigger recalculate
@@ -138,12 +137,13 @@ namespace WindowsFormsApp1 {
 
         }
 
-        //todo, remove private field
         public List<Point> BoundaryPoints {
             get {
                 InitializeBoundaryOrderIndex();
                 BoundaryLines = BoundaryLines.OrderBy(i => boundaryLineOrderIndex.ElementAt(BoundaryLines.IndexOf(i))).ToList();
-                BoundaryPoints.Clear();
+                //BoundaryPoints.Clear();
+                boundaryPoints = new List<Point>();
+
                 //Line firstLine = BoundaryLines.First();
                 //Line lastLine = BoundaryLines.Last();
                 Line actualLastLine = BoundaryLines[boundaryLineOrderIndex.Last()];
@@ -167,14 +167,15 @@ namespace WindowsFormsApp1 {
 
                     actualLastLine = actualLine;
 
-                    BoundaryPoints.Add(commonPoint);
+                    boundaryPoints.Add(commonPoint);
                 }
 
-                return BoundaryPoints;
+                return boundaryPoints;
             }
-            set { BoundaryPoints = value; }
+            set { boundaryPoints = value; }
         }
 
+        private List<Point> boundaryPoints;
         public bool IsLineMissing() {
             return false;
         }
@@ -183,10 +184,31 @@ namespace WindowsFormsApp1 {
             return false;
         }
 
+        public double CalculateArea() {
+            List<Point> bp = BoundaryPoints;
+            double area = polygonArea(bp.Select(i => i.X).ToArray(), bp.Select(i => i.Y).ToArray(), bp.Count);
+            return area;
+        }
 
-        public double CalculateArea()
-        {
-            return 0.0;
+        // (X[i], Y[i]) are coordinates of i'th point. 
+        public static double polygonArea(double[] X,
+            double[] Y, int n) {
+
+            // Initialze area 
+            double area = 0.0;
+
+            // Calculate value of shoelace formula 
+            int j = n - 1;
+
+            for (int i = 0; i < n; i++) {
+                area += (X[j] + X[i]) * (Y[j] - Y[i]);
+
+                // j is previous vertex to i 
+                j = i;
+            }
+
+            // Return absolute value 
+            return Math.Abs(area / 2.0);
         }
     }
 }
