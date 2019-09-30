@@ -5,8 +5,78 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UIWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="MainWindow"
+        Height="1000"
+        Width="1000">
+  <Window.Resources>
+    <Style TargetType="Button" x:Key="ButtonStyle">
+      <Setter Property="Foreground"
+              Value="Black" />
+      <Setter Property="VerticalAlignment"
+              Value="Bottom" />
+      <Setter Property="Height"
+              Value="40"></Setter>
+      <Setter Property="Width"
+              Value="200*"></Setter>
+    </Style>
+    <Style TargetType="Label">
+      <Setter Property="Height"
+              Value="25" />
+    </Style>
+    <Style TargetType="TextBlock">
+      <Setter Property="TextWrapping"
+              Value="Wrap"></Setter>
+      <Setter Property="VerticalAlignment"
+              Value="Top"></Setter>
+      <Setter Property="HorizontalAlignment"
+              Value="Stretch"></Setter>
+      <Setter Property="Margin"
+              Value="10,0,0,0"></Setter>
+    </Style>
+    <Style TargetType="TextBox">
+      <Setter Property="Margin"
+              Value="0,0,0,10"></Setter>
+    </Style>
+  </Window.Resources>
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="500*" />
+      <ColumnDefinition Width="500*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition MinHeight='50'
+                     Height="500"></RowDefinition>
+      <RowDefinition MinHeight='200'
+                     Height="400*"></RowDefinition>
+    </Grid.RowDefinitions>
+
+    <StackPanel Grid.Column="0"
+                Grid.Row="1"
+                Margin="10">
+      <StackPanel.Resources>
+        <Style TargetType="{x:Type Button}"
+               BasedOn="{StaticResource {ButtonStyle}}">
+          <Setter Property="Margin"
+                  Value="0,10,0,0" />
+          <Setter Property="Height"
+                  Value="40"></Setter>
+        </Style>
+      </StackPanel.Resources>
+      <Button Content="Start Simulation"></Button>
+      <Button Content="Move Wall"></Button>
+      <Button Content="Split Wall"></Button>
+      <Button Content="Make Simulation step"></Button>
+    </StackPanel>
+    <StackPanel></StackPanel>
+    <Rectangle Grid.Column="0"
+               Grid.Row="0"
+               Width="500"
+               Height="500"
+               Stroke='Black'>
+      <Rectangle.Fill>
+        <SolidColorBrush Color='#FFFFD1D1'
+                         Opacity='0.5' />
+      </Rectangle.Fill>
+    </Rectangle>
+  </Grid>
 </Window>

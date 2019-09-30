@@ -30,7 +30,7 @@ namespace WindowsFormsApp1 {
             get {
                 if (boundaryLineOrderIndex != null) {
                     try {
-                        boundaryLines = boundaryLines.OrderBy(i => boundaryLineOrderIndex.ElementAt(BoundaryLines.IndexOf(i))).ToList();
+                        boundaryLines = boundaryLines.OrderBy(i => boundaryLineOrderIndex.ElementAt(boundaryLines.IndexOf(i))).ToList();
                     }
                     catch (Exception e) {
                         Logger.WriteLog(e);
