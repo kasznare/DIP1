@@ -26,8 +26,8 @@ namespace UIWPF {
             model.InitModel();
             DataContext = this;
             InitializeComponent();
-            ZoomViewbox.Width = 1000;
-            ZoomViewbox.Height = 1000;
+            //ZoomViewbox.Width = 1000;
+            //ZoomViewbox.Height = 1000;
             Paint();
         }
 
