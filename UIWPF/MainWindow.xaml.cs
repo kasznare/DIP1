@@ -95,22 +95,22 @@ namespace UIWPF {
         private void MainWindow_OnMouseWheel(object sender, MouseWheelEventArgs e) {
             
         }
-        private void ZoomViewbox_MouseWheel(object sender, MouseWheelEventArgs e) {
-            UpdateViewBox((e.Delta > 0) ? 5 : -5);
-            //MessageBox.Show("mousewheel");
-        }
+        //private void ZoomViewbox_MouseWheel(object sender, MouseWheelEventArgs e) {
+        //    UpdateViewBox((e.Delta > 0) ? 5 : -5);
+        //    //MessageBox.Show("mousewheel");
+        //}
         //private void Window_MouseWheel(object sender, MouseWheelEventArgs e) {
         //    UpdateViewBox((e.Delta > 0) ? 5 : -5);
         //    MessageBox.Show("mousewheel2");
 
         //}
 
-        private void UpdateViewBox(int newValue) {
-            if ((ZoomViewbox.Width >= 0) && ZoomViewbox.Height >= 0) {
-                ZoomViewbox.Width += newValue;
-                ZoomViewbox.Height += newValue;
-            }
-        }
+        //private void UpdateViewBox(int newValue) {
+        //    if ((ZoomViewbox.Width >= 0) && ZoomViewbox.Height >= 0) {
+        //        ZoomViewbox.Width += newValue;
+        //        ZoomViewbox.Height += newValue;
+        //    }
+        //}
         private void Paint() {
             Points.Clear();
             Lines.Clear();
