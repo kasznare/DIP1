@@ -80,10 +80,24 @@
               Click='Button_Click_2'></Button>
       <Button Content="Make Simulation step"></Button>
     </StackPanel>
-    <ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
-      <Grid Name="zoomviewboxgrid2" Height="1000" Width="1000">
-        
-      </Grid>
+    <ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible"
+                  >
+
+      
+        <Canvas 
+                Height="1000"
+                Width="1000"
+                Name="testcanvas"
+                RenderTransformOrigin="0.5,0.25">
+          <Canvas.RenderTransform>
+            <TransformGroup>
+              <ScaleTransform ScaleY="-1"
+                              ScaleX="1" />
+            </TransformGroup>
+          </Canvas.RenderTransform>
+
+        </Canvas>
+      
     </ScrollViewer>
     <StackPanel Grid.Row="0"
                 Grid.Column="1"
@@ -100,13 +114,13 @@
         </Style>
       </StackPanel.Resources>
       <DataGrid Name="PointGrid"
-                ItemsSource="{Binding Points, IsAsync=True}">
+                ItemsSource="{Binding Points, IsAsync=True, Mode=OneWay}">
       </DataGrid>
       <DataGrid Name="LineGrid"
-                ItemsSource="{Binding Lines, IsAsync=True}">
+                ItemsSource="{Binding Lines, IsAsync=True, Mode=OneWay}">
       </DataGrid>
       <DataGrid Name="RoomGrid"
-                ItemsSource="{Binding Rooms, IsAsync=True}">
+                ItemsSource="{Binding Rooms, IsAsync=True, Mode=OneWay}">
       </DataGrid>
     </StackPanel>
     <!--<Rectangle Grid.Column="0"

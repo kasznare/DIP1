@@ -138,19 +138,21 @@ namespace UIWPF {
             {
                 ShapeLine myLine = new ShapeLine();
 
-                myLine.Stroke = System.Windows.Media.Brushes.LightSteelBlue;
+                myLine.Stroke = System.Windows.Media.Brushes.Black;
                 myLine.X1 = line.startPoint.X;
                 myLine.X2 = line.endPoint.X;
                 myLine.Y1 = line.startPoint.Y;
                 myLine.Y2 = line.endPoint.Y;
                 myLine.StrokeEndLineCap = PenLineCap.Triangle;
+                
                 myLine.StrokeStartLineCap = PenLineCap.Round;
                 //myLine.HorizontalAlignment = HorizontalAlignment.Left;
                 //myLine.VerticalAlignment = VerticalAlignment.Center;
-                myLine.StrokeThickness = 3;
+                myLine.StrokeThickness = 5;
 
                 //zoomviewboxgrid.Children.Add(myLine);
-                zoomviewboxgrid2.Children.Add(myLine);
+                //zoomviewboxgrid2.Children.Add(myLine);
+                testcanvas.Children.Add(myLine);
             }
         }
 
