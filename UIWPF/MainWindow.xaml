@@ -9,7 +9,8 @@
         Height="1000"
         Width="1000">
   <Window.Resources>
-    <Style TargetType="Button" x:Key="ButtonStyle">
+    <Style TargetType="Button"
+           x:Key="DefaultButtonStyles">
       <Setter Property="Foreground"
               Value="Black" />
       <Setter Property="VerticalAlignment"
@@ -40,35 +41,74 @@
   </Window.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="500*" />
-      <ColumnDefinition Width="500*" />
+      <ColumnDefinition Width="600*" />
+      <ColumnDefinition Width="400" />
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition MinHeight='50'
-                     Height="500"></RowDefinition>
+                     Height="600*"></RowDefinition>
       <RowDefinition MinHeight='200'
-                     Height="400*"></RowDefinition>
+                     Height="400"></RowDefinition>
     </Grid.RowDefinitions>
-
+    <!--<Grid Name="SimulationCanvas"
+          Grid.Column="0"
+          Grid.Row="0">
+      <Viewbox x:Name="ZoomViewbox"
+               MouseWheel='ZoomViewbox_MouseWheel'>--><!--Stretch="Fill"--><!--
+        <Grid Name="zoomviewboxgrid">
+          --><!--<Button>teszt</Button>--><!--
+        </Grid>
+      </Viewbox>
+    </Grid>-->
     <StackPanel Grid.Column="0"
                 Grid.Row="1"
                 Margin="10">
       <StackPanel.Resources>
-        <Style TargetType="{x:Type Button}"
-               BasedOn="{StaticResource {ButtonStyle}}">
+        <Style TargetType="{x:Type Button}">
           <Setter Property="Margin"
                   Value="0,10,0,0" />
           <Setter Property="Height"
                   Value="40"></Setter>
         </Style>
       </StackPanel.Resources>
-      <Button Content="Start Simulation"></Button>
-      <Button Content="Move Wall"></Button>
-      <Button Content="Split Wall"></Button>
+      <Button Content="Start Simulation"
+              Click='Button_Click_1'></Button>
+      <Button Content="Move Wall"
+              Click='Button_Click'></Button>
+      <Button Content="Split Wall"
+              Click='Button_Click_2'></Button>
       <Button Content="Make Simulation step"></Button>
     </StackPanel>
-    <StackPanel></StackPanel>
-    <Rectangle Grid.Column="0"
+    <ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
+      <Grid Name="zoomviewboxgrid2" Height="1000" Width="1000">
+        
+      </Grid>
+    </ScrollViewer>
+    <StackPanel Grid.Row="0"
+                Grid.Column="1"
+                Margin="10"
+                Grid.RowSpan="2">
+      <StackPanel.Resources>
+        <Style TargetType="{x:Type DataGrid}">
+          <Setter Property="Margin"
+                  Value="0,15,0,0" />
+          <Setter Property="Width"
+                  Value="400" />
+          <Setter Property="Height"
+                  Value="300" />
+        </Style>
+      </StackPanel.Resources>
+      <DataGrid Name="PointGrid"
+                ItemsSource="{Binding Points, IsAsync=True}">
+      </DataGrid>
+      <DataGrid Name="LineGrid"
+                ItemsSource="{Binding Lines, IsAsync=True}">
+      </DataGrid>
+      <DataGrid Name="RoomGrid"
+                ItemsSource="{Binding Rooms, IsAsync=True}">
+      </DataGrid>
+    </StackPanel>
+    <!--<Rectangle Grid.Column="0"
                Grid.Row="0"
                Width="500"
                Height="500"
@@ -77,6 +117,6 @@
         <SolidColorBrush Color='#FFFFD1D1'
                          Opacity='0.5' />
       </Rectangle.Fill>
-    </Rectangle>
+    </Rectangle>-->
   </Grid>
 </Window>
