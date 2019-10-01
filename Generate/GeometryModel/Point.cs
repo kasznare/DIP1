@@ -8,12 +8,19 @@ namespace WindowsFormsApp1 {
             this.X = x;
             this.Y = y;
             RelatedLines = new List<Line>();
+            Guid = Guid.NewGuid();
         }
+
+        public Guid Guid { get; set; }
         public List<Room> RelatedRooms {
             get {
                 List<Room> rooms = new List<Room>();
                 foreach (Line relatedLine in RelatedLines) {
-                    rooms.AddRange(relatedLine.relatedRooms);
+                    foreach (Room room in relatedLine.relatedRooms) {
+                        if (!rooms.Contains(room)) {
+                            rooms.Add(room);
+                        }
+                    }
                 }
                 return rooms;
             }
@@ -59,8 +66,7 @@ namespace WindowsFormsApp1 {
         /// <returns></returns>
         public override bool Equals(object obj) {
             Point a = obj as Point;
-            if (a == null)
-            {
+            if (a == null) {
                 return false;
             }
             return Close(a.X, X) && Close(a.Y, Y);

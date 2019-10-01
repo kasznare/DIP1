@@ -9,6 +9,7 @@ using WindowsFormsApp1;
 using Point = WindowsFormsApp1.Point;
 using Logger = WindowsFormsApp1.Logger;
 using ShapeLine = System.Windows.Shapes.Line;
+using ShapeEllipse = System.Windows.Shapes.Ellipse;
 namespace UIWPF {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -45,10 +46,12 @@ namespace UIWPF {
             //https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-write-a-simple-parallel-foreach-loop
 
             double actualCost = model.CalculateCost();
-            foreach (Line line in model.modelLines) {
+            foreach (Line line in model.modelLines)
+            {
 
-                Model tempModel = model.DeepCopy();
-                tempModel.MoveLine(moveDistance, line);
+                Line newLine = null;
+                Model tempModel = model.DeepCopy(line, out newLine);
+                tempModel.MoveLine(moveDistance, newLine);
 
                 double cost = tempModel.CalculateCost();
                 Costs.Add(line, cost);
@@ -153,6 +156,19 @@ namespace UIWPF {
                 //zoomviewboxgrid.Children.Add(myLine);
                 //zoomviewboxgrid2.Children.Add(myLine);
                 testcanvas.Children.Add(myLine);
+            }
+
+            foreach (Point point in model.ModelPoints)
+            {
+                ShapeEllipse myEllipse = new ShapeEllipse();
+                myEllipse.Stroke = System.Windows.Media.Brushes.Black;
+                myEllipse.Height = 50.0;
+                myEllipse.Width = 50.0;
+                myEllipse.StrokeThickness = 5;
+
+                //testcanvas.Children.Add(myEllipse);
+
+
             }
         }
 

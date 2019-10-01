@@ -72,13 +72,13 @@ namespace WindowsFormsApp1 {
             Logger.WriteLog("InitModel() finished");
         }
 
-        public Model DeepCopy() {
-            //model lines need to be newly instanceated too,
-            //rooms
 
+        
+        public Model DeepCopy(Line oldLine, out Line newLine) {
             Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
             Dictionary<Point, Point> oldNewPoints = new Dictionary<Point, Point>();
             Dictionary<Line, Line> oldNewLines = new Dictionary<Line, Line>();
+            
 
             foreach (Line line in modelLines) {
                 Point p1 = null;
@@ -95,6 +95,7 @@ namespace WindowsFormsApp1 {
                 }
                 Line l = new Line(p1, p2);
                 oldNewLines.Add(line, l);
+
                 foreach (Room room in line.relatedRooms) {
                     Room r = null;
                     if (!oldNewRooms.TryGetValue(room, out r)) {
@@ -104,6 +105,8 @@ namespace WindowsFormsApp1 {
                     l.relatedRooms.Add(r);
                 }
             }
+
+            newLine = oldNewLines[oldLine];
 
             return new Model(oldNewLines.Values.ToList(), oldNewRooms.Values.ToList());
         }

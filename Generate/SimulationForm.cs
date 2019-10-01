@@ -110,10 +110,11 @@ namespace WindowsFormsApp1 {
             //https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-write-a-simple-parallel-foreach-loop
 
             double actualCost = model.CalculateCost();
-            foreach (Line line in model.modelLines) {
-                
-                Model tempModel = model.DeepCopy();
-                tempModel.MoveLine(moveDistance, line);
+            foreach (Line line in model.modelLines)
+            {
+                Line newLine;
+                Model tempModel = model.DeepCopy(line, out newLine);
+                tempModel.MoveLine(moveDistance, newLine);
 
                 double cost = tempModel.CalculateCost();
                 Costs.Add(line, cost);

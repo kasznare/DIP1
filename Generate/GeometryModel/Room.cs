@@ -13,8 +13,12 @@ namespace WindowsFormsApp1 {
             BoundaryPoints = new List<Point>();
             BoundaryLines = new List<Line>();
             boundaryLineOrderIndex = new List<int>();
+            Guid = Guid.NewGuid();
+
             //observableBoundaryLines.CollectionChanged += ObservableBoundaryLinesOnCollectionChanged;
         }
+
+        public Guid Guid { get; set; }
         public string Name { get; set; }
         public string Number { get; set; }
 
@@ -186,7 +190,10 @@ namespace WindowsFormsApp1 {
 
         public double CalculateArea() {
             List<Point> bp = BoundaryPoints;
-            double area = polygonArea(bp.Select(i => i.X).ToArray(), bp.Select(i => i.Y).ToArray(), bp.Count);
+
+            double[] X = bp.Select(i => i.X).ToArray();
+            double[] Y = bp.Select(i => i.Y).ToArray();
+            double area = polygonArea(X, Y, bp.Count);
             return area;
         }
 

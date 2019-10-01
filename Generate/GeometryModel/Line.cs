@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace WindowsFormsApp1 {
-    public class Line :IGeometry {
+    public class Line : IGeometry {
         public Point startPoint { get; set; }
         public Point endPoint { get; set; }
         public bool HasOpening { get; set; }
@@ -87,7 +87,10 @@ namespace WindowsFormsApp1 {
 
             return ison;
         }
+
+        public Guid Guid { get; set; }
         public Line(Point startPoint, Point endPoint) {
+            Guid = Guid.NewGuid();
             this.startPoint = startPoint;
             this.endPoint = endPoint;
 
