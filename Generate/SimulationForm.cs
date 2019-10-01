@@ -99,7 +99,7 @@ namespace WindowsFormsApp1 {
         private void SimulationStep() {
             int moveDistance = int.Parse(this.textBox2.Text);
 
-            Dictionary<Line, double> Costs = new Dictionary<Line, double>();
+            //Dictionary<Line, double> Costs = new Dictionary<Line, double>();
             double mincost = 100000;
             Line minline = null;
 
@@ -117,7 +117,7 @@ namespace WindowsFormsApp1 {
                 tempModel.MoveLine(moveDistance, newLine);
 
                 double cost = tempModel.CalculateCost();
-                Costs.Add(line, cost);
+                //Costs.Add(line, cost);
 
                 if (mincost > cost) {
                     mincost = cost;
