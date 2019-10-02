@@ -162,12 +162,28 @@ namespace UIWPF {
 
             foreach (Point point in model.ModelPoints)
             {
-                Rectangle myRec = new Rectangle();
-                
-                
+                //Rectangle myRec = new Rectangle();
+                ShapeLine myLine = new ShapeLine();
+
+                myLine.Stroke = System.Windows.Media.Brushes.Red;
+                myLine.X1 = point.X;
+                myLine.X2 = point.X+1;
+                myLine.Y1 = point.Y;
+                myLine.Y2 = point.Y+1;
+
+                myLine.StrokeStartLineCap = PenLineCap.Round;
+                myLine.StrokeEndLineCap = PenLineCap.Triangle;
+                myLine.StrokeThickness = 5;
+
+                testcanvas.Children.Add(myLine);
+
+
+                //myLine.HorizontalAlignment = HorizontalAlignment.Left;
+                //myLine.VerticalAlignment = VerticalAlignment.Center;
+
                 //testcanvas.Children.Add(myEllipse);
 
-                CreateCanvasWithEllipse(200,200.0);
+                //CreateCanvasWithEllipse(200,200.0);
             }
         }
         void CreateCanvasWithEllipse(double desiredLeft, double desiredTop) {
