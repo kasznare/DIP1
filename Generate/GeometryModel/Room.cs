@@ -12,10 +12,7 @@ namespace WindowsFormsApp1 {
             Number = number;
             BoundaryPoints = new List<Point>();
             BoundaryLines = new List<Line>();
-            boundaryLineOrderIndex = new List<int>();
             Guid = Guid.NewGuid();
-
-            //observableBoundaryLines.CollectionChanged += ObservableBoundaryLinesOnCollectionChanged;
         }
 
         internal Room GetCopy() {
@@ -57,10 +54,30 @@ namespace WindowsFormsApp1 {
                 orderedLines.Add(actualLine);
                 actualIndex = 0;
                 foreach (Line line in BoundaryLines) {
-                    if ((line.startPoint == actualLine.startPoint && line.endPoint != actualLine.endPoint) ||
-                        (line.endPoint == actualLine.endPoint && line.startPoint != actualLine.startPoint)) {
+
+                    if (orderedLines.Contains(line))
+                    {
+                        actualIndex++;
+                        continue;
+                    }
+                    Point p1 = line.startPoint;
+                    Point p2 = line.endPoint;
+                    Point p3 = actualLine.startPoint;
+                    Point p4 = actualLine.endPoint;
+
+                    if (line.startPoint == actualLine.startPoint && line.endPoint != actualLine.endPoint) {
                         break;
                     }
+                    if (line.startPoint == actualLine.endPoint && line.endPoint != actualLine.startPoint) {
+                        break;
+                    }
+                    if (line.endPoint == actualLine.endPoint && line.startPoint != actualLine.startPoint) {
+                        break;
+                    }
+                    if (line.endPoint == actualLine.startPoint && line.startPoint != actualLine.endPoint) {
+                        break;
+                    }
+
                     actualIndex++;
                 }
                 if (actualIndex > BoundaryLines.Count) {
@@ -127,11 +144,11 @@ namespace WindowsFormsApp1 {
         }
 
         public double CalculateArea() {
-            List<Point> bp = BoundaryPoints;
+            List<Point> bp = GetBoundaryPointsSorted();
 
             double[] X = bp.Select(i => i.X).ToArray();
             double[] Y = bp.Select(i => i.Y).ToArray();
-            double area = polygonArea(X, Y, bp.Count);
+            double area = PolygonArea(X, Y, bp.Count);
             return area;
         }
         /// <summary>
@@ -141,7 +158,7 @@ namespace WindowsFormsApp1 {
         /// <param name="Y"></param>
         /// <param name="n"></param>
         /// <returns></returns>
-        public static double polygonArea(double[] X,
+        public static double PolygonArea(double[] X,
             double[] Y, int n) {
             // (X[i], Y[i]) are coordinates of i'th point. 
 

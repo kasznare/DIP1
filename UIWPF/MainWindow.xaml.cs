@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using WindowsFormsApp1;
-using Point = WindowsFormsApp1.Point;
+using Line = WindowsFormsApp1.Line;
 using Logger = WindowsFormsApp1.Logger;
-using ShapeLine = System.Windows.Shapes.Line;
+using Point = WindowsFormsApp1.Point;
 using ShapeEllipse = System.Windows.Shapes.Ellipse;
+using ShapeLine = System.Windows.Shapes.Line;
+using ShapeRectangle = System.Windows.Shapes.Rectangle;
 namespace UIWPF {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -160,18 +162,31 @@ namespace UIWPF {
 
             foreach (Point point in model.ModelPoints)
             {
-                ShapeEllipse myEllipse = new ShapeEllipse();
-                myEllipse.Stroke = System.Windows.Media.Brushes.Black;
-                myEllipse.Height = 50.0;
-                myEllipse.Width = 50.0;
-                myEllipse.StrokeThickness = 5;
-
+                Rectangle myRec = new Rectangle();
+                
+                
                 //testcanvas.Children.Add(myEllipse);
 
-
+                CreateCanvasWithEllipse(200,200.0);
             }
         }
+        void CreateCanvasWithEllipse(double desiredLeft, double desiredTop) {
+            Canvas canvas = new Canvas();
+            testcanvas.Children.Add(canvas);
+            ShapeEllipse ellipse = CreateEllipse(50,50,0,0);
+            Canvas.SetLeft(ellipse, desiredLeft);
+            Canvas.SetTop(ellipse, desiredTop);
+            canvas.Children.Add(ellipse);
+        }
 
+        ShapeEllipse CreateEllipse(double width, double height, double desiredCenterX, double desiredCenterY) {
+            Ellipse ellipse = new Ellipse { Width = width, Height = height };
+            double left = desiredCenterX - (width / 2);
+            double top = desiredCenterY - (height / 2);
+
+            ellipse.Margin = new Thickness(left, top, 0, 0);
+            return ellipse;
+        }
         private void Button_Click(object sender, RoutedEventArgs e) {
             if (actualSimulationThreshold < MaxSimulationThreshold) {
                 SimulationStep();
