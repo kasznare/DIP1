@@ -165,7 +165,7 @@ namespace UIWPF {
             {
                 Rooms.Add(room);
             }
-
+            testcanvas.Children.Clear();
             Logger.WriteLog("paint started");
             foreach (MyLine line in model.modelLines)
             {
@@ -217,9 +217,18 @@ namespace UIWPF {
             foreach (Room room in model.modelRooms)
             {
                 List<MyPoint> boundaries = room.GetBoundaryPointsSorted();
-
+                if (!boundaries.Any())
+                {
+                    continue;
+                }
+                List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
                 Polygon p = new Polygon();
-                p.Points = new PointCollection();
+                p.Points = new PointCollection(convertedPoints);
+                //p.FillRule = FillRule.EvenOdd;
+                p.Fill = Brushes.Yellow;
+                p.Opacity = 0.5;
+                testcanvas.Children.Add(p);
+
             }
         }
         void CreateCanvasWithEllipse(double desiredLeft, double desiredTop) {
