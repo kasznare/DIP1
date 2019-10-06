@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeometryModel\IGeometry.cs" />
+    <Compile Include="Utilities\MyInterlockedExchangeExampleClass.cs" />
     <Compile Include="Utilities\ImageSaver.cs" />
     <Compile Include="GeometryModel\RoomType.cs" />
     <Compile Include="SimulationForm.cs">

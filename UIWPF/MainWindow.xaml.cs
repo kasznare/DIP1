@@ -1,5 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -43,27 +48,52 @@ namespace UIWPF {
 
             //make threadpool like - room pool
             //fix number of modells, (number of threads) move elemnet, calculate cost
-
-            //todo: make parallel
-            //https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-write-a-simple-parallel-foreach-loop
-
+            
             double actualCost = model.CalculateCost();
+            //Stopwatch st = new Stopwatch();
+            //st.Start();
+            Parallel.For(0, model.modelLines.Count,
+                index =>
+                {
+                    Line line = model.modelLines.ElementAt(index);
+                    Line newLine = null;
+                    Model tempModel = model.DeepCopy(line, out newLine);
+                    tempModel.MoveLine(moveDistance, newLine);
+
+                    double cost = tempModel.CalculateCost();
+                    Costs.Add(line, cost);
+
+                    if (mincost > cost) {
+                        mincost = cost;
+                        minline = line;
+                    }
+
+
+                });
+            //st.Stop();
+            //Logger.WriteLog("Parallel FOR: " + st.ElapsedMilliseconds + " ms");
+            //st.Restart();
             foreach (Line line in model.modelLines)
             {
 
-                Line newLine = null;
-                Model tempModel = model.DeepCopy(line, out newLine);
-                tempModel.MoveLine(moveDistance, newLine);
+                //Line newLine = null;
+                //Model tempModel = model.DeepCopy(line, out newLine);
+                //tempModel.MoveLine(moveDistance, newLine);
 
-                double cost = tempModel.CalculateCost();
-                Costs.Add(line, cost);
+                //double cost = tempModel.CalculateCost();
+                //if (!Costs.ContainsKey(line))
+                //{
+                // Costs.Add(line, cost);
+                //}
 
-                if (mincost > cost) {
-                    mincost = cost;
-                    minline = line;
-                }
+                //if (mincost > cost) {
+                //    mincost = cost;
+                //    minline = line;
+                //}
             }
 
+            //st.Stop();
+            //Logger.WriteLog("FOR: " + st.ElapsedMilliseconds + " ms");
             if (mincost >= actualCost) {
                 actualSimulationThreshold++;
             }

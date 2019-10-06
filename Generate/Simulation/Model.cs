@@ -584,13 +584,16 @@ namespace WindowsFormsApp1 {
             //muszáj teljesülne
             return 0.0;
         }
-        private double CalculateParameterCost() {
+        private double CalculateParameterCost() 
+        
+        {
             double summary = 0.0;
             try {
                 foreach (Room room in this.modelRooms) {
                     try
                     {
                         string roomTypeId = room.Number;
+
                         double actualarea = room.CalculateArea();
                         RoomType type = roomTypes.Find(i => i.typeid.Equals(roomTypeId));
                         if (actualarea < type.areamin) {
