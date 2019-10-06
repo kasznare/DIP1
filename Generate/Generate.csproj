@@ -56,9 +56,9 @@
     <Compile Include="SimulationForm.Designer.cs">
       <DependentUpon>SimulationForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GeometryModel\Line.cs" />
+    <Compile Include="GeometryModel\MyLine.cs" />
     <Compile Include="Simulation\Model.cs" />
-    <Compile Include="GeometryModel\Point.cs" />
+    <Compile Include="GeometryModel\MyPoint.cs" />
     <Compile Include="Simulation\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GeometryModel\Room.cs" />

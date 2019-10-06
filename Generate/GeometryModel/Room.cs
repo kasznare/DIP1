@@ -10,8 +10,8 @@ namespace WindowsFormsApp1 {
         public Room(string name, string number) {
             Name = name;
             Number = number;
-            BoundaryPoints = new List<Point>();
-            BoundaryLines = new List<Line>();
+            BoundaryPoints = new List<MyPoint>();
+            BoundaryLines = new List<MyLine>();
             Guid = Guid.NewGuid();
         }
 
@@ -29,8 +29,8 @@ namespace WindowsFormsApp1 {
         public RoomType type { get; set; }
         private bool isBoundaryLinesPossiblyUnsorted = false;
         private bool isBoundaryPointsPossiblyUnsorted = false;
-        private List<Line> boundaryLines;
-        public List<Line> BoundaryLines {
+        private List<MyLine> boundaryLines;
+        public List<MyLine> BoundaryLines {
             get => boundaryLines;
             set {
                 boundaryLines = value;
@@ -39,42 +39,42 @@ namespace WindowsFormsApp1 {
         }
 
         //to return the lines only in ordered form
-        public List<Line> GetBoundaryLinesSorted() {
+        public List<MyLine> GetBoundaryLinesSorted() {
             if (isBoundaryLinesPossiblyUnsorted) {
                 SortBoundaryLines();
             }
             return BoundaryLines;
         }
         private void SortBoundaryLines() {
-            List<Line> orderedLines = new List<Line>();
+            List<MyLine> orderedLines = new List<MyLine>();
 
             int actualIndex = 0;
             for (int i = 0; i < BoundaryLines.Count; i++) {
-                Line actualLine = BoundaryLines.ElementAt(actualIndex);
-                orderedLines.Add(actualLine);
+                MyLine actualMyLine = BoundaryLines.ElementAt(actualIndex);
+                orderedLines.Add(actualMyLine);
                 actualIndex = 0;
-                foreach (Line line in BoundaryLines) {
+                foreach (MyLine line in BoundaryLines) {
 
                     if (orderedLines.Contains(line))
                     {
                         actualIndex++;
                         continue;
                     }
-                    Point p1 = line.startPoint;
-                    Point p2 = line.endPoint;
-                    Point p3 = actualLine.startPoint;
-                    Point p4 = actualLine.endPoint;
+                    MyPoint p1 = line.StartMyPoint;
+                    MyPoint p2 = line.EndMyPoint;
+                    MyPoint p3 = actualMyLine.StartMyPoint;
+                    MyPoint p4 = actualMyLine.EndMyPoint;
 
-                    if (line.startPoint == actualLine.startPoint && line.endPoint != actualLine.endPoint) {
+                    if (line.StartMyPoint == actualMyLine.StartMyPoint && line.EndMyPoint != actualMyLine.EndMyPoint) {
                         break;
                     }
-                    if (line.startPoint == actualLine.endPoint && line.endPoint != actualLine.startPoint) {
+                    if (line.StartMyPoint == actualMyLine.EndMyPoint && line.EndMyPoint != actualMyLine.StartMyPoint) {
                         break;
                     }
-                    if (line.endPoint == actualLine.endPoint && line.startPoint != actualLine.startPoint) {
+                    if (line.EndMyPoint == actualMyLine.EndMyPoint && line.StartMyPoint != actualMyLine.StartMyPoint) {
                         break;
                     }
-                    if (line.endPoint == actualLine.startPoint && line.startPoint != actualLine.endPoint) {
+                    if (line.EndMyPoint == actualMyLine.StartMyPoint && line.StartMyPoint != actualMyLine.EndMyPoint) {
                         break;
                     }
 
@@ -88,7 +88,7 @@ namespace WindowsFormsApp1 {
             BoundaryLines = orderedLines;
             isBoundaryLinesPossiblyUnsorted = false;
         }
-        public List<Point> BoundaryPoints {
+        public List<MyPoint> BoundaryPoints {
             get => boundaryPoints;
             set {
                 boundaryPoints = value;
@@ -96,7 +96,7 @@ namespace WindowsFormsApp1 {
             }
         }
 
-        public List<Point> GetBoundaryPointsSorted() {
+        public List<MyPoint> GetBoundaryPointsSorted() {
             if (isBoundaryPointsPossiblyUnsorted) {
                 SortBoundaryPoints();
             }
@@ -107,35 +107,35 @@ namespace WindowsFormsApp1 {
             if (isBoundaryLinesPossiblyUnsorted) {
                 SortBoundaryLines();
             }
-            boundaryPoints = new List<Point>();
+            boundaryPoints = new List<MyPoint>();
 
             for (var index = 0; index < BoundaryLines.Count; index++) {
-                Line firstLine = BoundaryLines.ElementAt(index);
-                Line nextLine = BoundaryLines.ElementAt((index + 1) % BoundaryLines.Count);
-                Point commonPoint = FindCommonPointOnTwoLines(firstLine, nextLine);
-                boundaryPoints.Add(commonPoint);
+                MyLine firstMyLine = BoundaryLines.ElementAt(index);
+                MyLine nextMyLine = BoundaryLines.ElementAt((index + 1) % BoundaryLines.Count);
+                MyPoint commonMyPoint = FindCommonPointOnTwoLines(firstMyLine, nextMyLine);
+                boundaryPoints.Add(commonMyPoint);
             }
         }
 
-        private static Point FindCommonPointOnTwoLines(Line firstLine, Line nextLine) {
-            Point commonPoint = null;
-            if (firstLine.startPoint == nextLine.startPoint) {
-                commonPoint = nextLine.startPoint;
+        private static MyPoint FindCommonPointOnTwoLines(MyLine firstMyLine, MyLine nextMyLine) {
+            MyPoint commonMyPoint = null;
+            if (firstMyLine.StartMyPoint == nextMyLine.StartMyPoint) {
+                commonMyPoint = nextMyLine.StartMyPoint;
             }
-            if (firstLine.startPoint == nextLine.endPoint) {
-                commonPoint = nextLine.endPoint;
+            if (firstMyLine.StartMyPoint == nextMyLine.EndMyPoint) {
+                commonMyPoint = nextMyLine.EndMyPoint;
             }
-            if (firstLine.endPoint == nextLine.startPoint) {
-                commonPoint = nextLine.startPoint;
+            if (firstMyLine.EndMyPoint == nextMyLine.StartMyPoint) {
+                commonMyPoint = nextMyLine.StartMyPoint;
             }
-            if (firstLine.endPoint == nextLine.endPoint) {
-                commonPoint = nextLine.endPoint;
+            if (firstMyLine.EndMyPoint == nextMyLine.EndMyPoint) {
+                commonMyPoint = nextMyLine.EndMyPoint;
             }
 
-            return commonPoint;
+            return commonMyPoint;
         }
 
-        private List<Point> boundaryPoints;
+        private List<MyPoint> boundaryPoints;
         public bool IsLineMissing() {
             return false;
         }
@@ -144,7 +144,7 @@ namespace WindowsFormsApp1 {
         }
 
         public double CalculateArea() {
-            List<Point> bp = GetBoundaryPointsSorted();
+            List<MyPoint> bp = GetBoundaryPointsSorted();
 
             double[] X = bp.Select(i => i.X).ToArray();
             double[] Y = bp.Select(i => i.Y).ToArray();
@@ -160,7 +160,7 @@ namespace WindowsFormsApp1 {
         /// <returns></returns>
         public static double PolygonArea(double[] X,
             double[] Y, int n) {
-            // (X[i], Y[i]) are coordinates of i'th point. 
+            // (X[i], Y[i]) are coordinates of i'th myPoint. 
 
             // Initialze area 
             double area = 0.0;

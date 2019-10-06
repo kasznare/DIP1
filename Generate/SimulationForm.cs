@@ -22,12 +22,12 @@ namespace WindowsFormsApp1 {
         protected override void OnPaint(PaintEventArgs e) {
             Logger.WriteLog("Onpaint started");
             //e.Graphics.DrawString("Hello World", this.Font, new SolidBrush(Color.Black), 10, 10);
-            foreach (Line line in model.modelLines) {
-                e.Graphics.DrawLine(Pens.Blue, ConvertToFormCoordinate(line.startPoint), ConvertToFormCoordinate(line.endPoint));
-                List<Point> points = new List<Point>();
-                points.Add(line.startPoint);
-                points.Add(line.endPoint);
-                foreach (Point point in points) {
+            foreach (MyLine line in model.modelLines) {
+                e.Graphics.DrawLine(Pens.Blue, ConvertToFormCoordinate(line.StartMyPoint), ConvertToFormCoordinate(line.EndMyPoint));
+                List<MyPoint> points = new List<MyPoint>();
+                points.Add(line.StartMyPoint);
+                points.Add(line.EndMyPoint);
+                foreach (MyPoint point in points) {
                     e.Graphics.DrawEllipse(Pens.Blue, ConvertToFormCoordinate(point).X - 5, ConvertToFormCoordinate(point).Y - 5, 10, 10);
                     Font f = DefaultFont;
                     FontFamily fontFamily = new FontFamily("Arial");
@@ -45,9 +45,9 @@ namespace WindowsFormsApp1 {
             foreach (Room modelRoom in model.modelRooms) {
                 List<PointF> points = new List<PointF>();
                 for (var index = 0; index < modelRoom.BoundaryPoints.AsReadOnly().Count; index++) {
-                    Point point = modelRoom.BoundaryPoints.AsReadOnly()[index];
-                    Logger.WriteLog($"Point at index {index} is {point}");
-                    points.Add(ConvertToFormCoordinate(point));
+                    MyPoint myPoint = modelRoom.BoundaryPoints.AsReadOnly()[index];
+                    Logger.WriteLog($"MyPoint at index {index} is {myPoint}");
+                    points.Add(ConvertToFormCoordinate(myPoint));
                 }
 
                 e.Graphics.FillPolygon(Brushes.Aquamarine, points.ToArray());
@@ -99,9 +99,9 @@ namespace WindowsFormsApp1 {
         private void SimulationStep() {
             int moveDistance = int.Parse(this.textBox2.Text);
 
-            //Dictionary<Line, double> Costs = new Dictionary<Line, double>();
+            //Dictionary<MyLine, double> Costs = new Dictionary<MyLine, double>();
             double mincost = 100000;
-            Line minline = null;
+            MyLine minline = null;
 
             //make threadpool like - room pool
             //fix number of modells, (number of threads) move elemnet, calculate cost
@@ -110,14 +110,14 @@ namespace WindowsFormsApp1 {
             //https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-write-a-simple-parallel-foreach-loop
 
             double actualCost = model.CalculateCost();
-            foreach (Line line in model.modelLines)
+            foreach (MyLine line in model.modelLines)
             {
-                Line newLine;
-                Model tempModel = model.DeepCopy(line, out newLine);
-                tempModel.MoveLine(moveDistance, newLine);
+                MyLine newMyLine;
+                Model tempModel = model.DeepCopy(line, out newMyLine);
+                tempModel.MoveLine(moveDistance, newMyLine);
 
                 double cost = tempModel.CalculateCost();
-                //Costs.Add(line, cost);
+                //Costs.Add(myLine, cost);
 
                 if (mincost > cost) {
                     mincost = cost;
@@ -140,7 +140,7 @@ namespace WindowsFormsApp1 {
         }
 
         //convert to offset coordinates
-        private PointF ConvertToFormCoordinate(Point P) {
+        private PointF ConvertToFormCoordinate(MyPoint P) {
             if (P == null) return new PointF(0, 0);
 
             int x = Convert.ToInt32(P.X);

@@ -11,9 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using WindowsFormsApp1;
-using Line = WindowsFormsApp1.Line;
 using Logger = WindowsFormsApp1.Logger;
-using Point = WindowsFormsApp1.Point;
 using ShapeEllipse = System.Windows.Shapes.Ellipse;
 using ShapeLine = System.Windows.Shapes.Line;
 using ShapeRectangle = System.Windows.Shapes.Rectangle;
@@ -23,13 +21,13 @@ namespace UIWPF {
     /// </summary>
     public partial class MainWindow : Window {
         public Model model;
-        public ObservableCollection<Point> Points { get; set; }
-        public ObservableCollection<Line> Lines { get; set; }
+        public ObservableCollection<MyPoint> Points { get; set; }
+        public ObservableCollection<MyLine> Lines { get; set; }
         public ObservableCollection<Room> Rooms { get; set; }
         public MainWindow() {
             model = new Model();
-            Points = new ObservableCollection<Point>();
-            Lines = new ObservableCollection<Line>();
+            Points = new ObservableCollection<MyPoint>();
+            Lines = new ObservableCollection<MyLine>();
             Rooms = new ObservableCollection<Room>();
             model.InitModel();
             DataContext = this;
@@ -42,9 +40,9 @@ namespace UIWPF {
         private void SimulationStep() {
             int moveDistance = int.Parse("10");
 
-            Dictionary<Line, double> Costs = new Dictionary<Line, double>();
+            Dictionary<MyLine, double> Costs = new Dictionary<MyLine, double>();
             double mincost = 100000;
-            Line minline = null;
+            MyLine minline = null;
 
             //make threadpool like - room pool
             //fix number of modells, (number of threads) move elemnet, calculate cost
@@ -55,17 +53,17 @@ namespace UIWPF {
             Parallel.For(0, model.modelLines.Count,
                 index =>
                 {
-                    Line line = model.modelLines.ElementAt(index);
-                    Line newLine = null;
-                    Model tempModel = model.DeepCopy(line, out newLine);
-                    tempModel.MoveLine(moveDistance, newLine);
+                    MyLine myLine = model.modelLines.ElementAt(index);
+                    MyLine newMyLine = null;
+                    Model tempModel = model.DeepCopy(myLine, out newMyLine);
+                    tempModel.MoveLine(moveDistance, newMyLine);
 
                     double cost = tempModel.CalculateCost();
-                    Costs.Add(line, cost);
+                    Costs.Add(myLine, cost);
 
                     if (mincost > cost) {
                         mincost = cost;
-                        minline = line;
+                        minline = myLine;
                     }
 
 
@@ -73,10 +71,10 @@ namespace UIWPF {
             //st.Stop();
             //Logger.WriteLog("Parallel FOR: " + st.ElapsedMilliseconds + " ms");
             //st.Restart();
-            foreach (Line line in model.modelLines)
+            foreach (MyLine line in model.modelLines)
             {
 
-                //Line newLine = null;
+                //MyLine newLine = null;
                 //Model tempModel = model.DeepCopy(line, out newLine);
                 //tempModel.MoveLine(moveDistance, newLine);
 
@@ -109,23 +107,23 @@ namespace UIWPF {
             //foreach (Room modelRoom in model.modelRooms) {
             //    List<PointF> points = new List<PointF>();
             //    for (var index = 0; index < modelRoom.BoundaryPoints.AsReadOnly().Count; index++) {
-            //        Point point = modelRoom.BoundaryPoints.AsReadOnly()[index];
-            //        Logger.WriteLog($"Point at index {index} is {point}");
-            //        points.Add(ConvertToFormCoordinate(point));
+            //        MyPoint myPoint = modelRoom.BoundaryPoints.AsReadOnly()[index];
+            //        Logger.WriteLog($"MyPoint at index {index} is {myPoint}");
+            //        points.Add(ConvertToFormCoordinate(myPoint));
             //    }
 
             //    e.Graphics.FillPolygon(Brushes.Aquamarine, points.ToArray());
             //}
         }
         //convert to offset coordinates
-        //private PointF ConvertToFormCoordinate(Point P) {
+        //private PointF ConvertToFormCoordinate(MyPoint P) {
         //    if (P == null) return new PointF(0, 0);
 
         //    int x = Convert.ToInt32(P.X);
         //    int y = Convert.ToInt32(-P.Y + 600);
         //    //Logger.WriteLog($"Convert from {P} to {x},{y}");
-        //    PointF point = new PointF(x, y);
-        //    return point;
+        //    PointF myPoint = new PointF(x, y);
+        //    return myPoint;
         //}
         private void MainWindow_OnMouseWheel(object sender, MouseWheelEventArgs e) {
             
@@ -153,12 +151,12 @@ namespace UIWPF {
             Points.Clear();
             Lines.Clear();
             Rooms.Clear();
-            foreach (Point point in model.ModelPoints)
+            foreach (MyPoint point in model.ModelPoints)
             {
                 Points.Add(point);
             }
 
-            foreach (Line line in model.modelLines)
+            foreach (MyLine line in model.modelLines)
             {
                 Lines.Add(line);
             }
@@ -169,15 +167,15 @@ namespace UIWPF {
             }
 
             Logger.WriteLog("paint started");
-            foreach (Line line in model.modelLines)
+            foreach (MyLine line in model.modelLines)
             {
                 ShapeLine myLine = new ShapeLine();
 
                 myLine.Stroke = System.Windows.Media.Brushes.Black;
-                myLine.X1 = line.startPoint.X;
-                myLine.X2 = line.endPoint.X;
-                myLine.Y1 = line.startPoint.Y;
-                myLine.Y2 = line.endPoint.Y;
+                myLine.X1 = line.StartMyPoint.X;
+                myLine.X2 = line.EndMyPoint.X;
+                myLine.Y1 = line.StartMyPoint.Y;
+                myLine.Y2 = line.EndMyPoint.Y;
                 myLine.StrokeEndLineCap = PenLineCap.Triangle;
                 
                 myLine.StrokeStartLineCap = PenLineCap.Round;
@@ -190,7 +188,7 @@ namespace UIWPF {
                 testcanvas.Children.Add(myLine);
             }
 
-            foreach (Point point in model.ModelPoints)
+            foreach (MyPoint point in model.ModelPoints)
             {
                 //Rectangle myRec = new Rectangle();
                 ShapeLine myLine = new ShapeLine();
@@ -214,6 +212,14 @@ namespace UIWPF {
                 //testcanvas.Children.Add(myEllipse);
 
                 //CreateCanvasWithEllipse(200,200.0);
+            }
+
+            foreach (Room room in model.modelRooms)
+            {
+                List<MyPoint> boundaries = room.GetBoundaryPointsSorted();
+
+                Polygon p = new Polygon();
+                p.Points = new PointCollection();
             }
         }
         void CreateCanvasWithEllipse(double desiredLeft, double desiredTop) {
