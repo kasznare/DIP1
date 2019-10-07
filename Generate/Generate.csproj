@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GeometryModel\Costs.cs" />
     <Compile Include="GeometryModel\IGeometry.cs" />
     <Compile Include="Utilities\MyInterlockedExchangeExampleClass.cs" />
     <Compile Include="Utilities\ImageSaver.cs" />

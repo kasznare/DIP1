@@ -66,9 +66,12 @@
         </Grid>
       </Viewbox>
     </Grid>-->
+    <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal">
+
     <StackPanel Grid.Column="0"
                 Grid.Row="1"
-                Margin="10">
+                Margin="10"
+                Width="200">
       <StackPanel.Resources>
         <Style TargetType="{x:Type Button}">
           <Setter Property="Margin"
@@ -88,6 +91,36 @@
       <Button Content="Split Wall"
               Click='Button_Click_2'></Button>
       <Button Content="Make Simulation step"></Button>
+
+    </StackPanel>
+    <StackPanel Grid.Column="0" Grid.Row="1" MaxHeight="300">
+      <DataGrid x:Name="CostGrid"
+                ItemsSource="{Binding SimulationCosts, IsAsync=True, Mode=OneWay}"
+                AutoGenerateColumns="False"
+                VerticalScrollBarVisibility="Visible">
+        <DataGrid.Columns>
+          <DataGridTemplateColumn Header="Index"
+                                  Width="50">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding index}"
+                           TextWrapping="Wrap" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="Value"
+                                  Width="150">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding value}"
+                           TextWrapping="Wrap" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+        </DataGrid.Columns>
+      </DataGrid>
+
+    </StackPanel>
     </StackPanel>
     <ScrollViewer Grid.Column="0"
                   Grid.Row="0"
@@ -158,13 +191,6 @@
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
-          <!--<DataGridTextColumn Header="Name"
-                              Binding="{Binding Name}" />
-          <DataGridTextColumn Width='*'
-                              Header="Number"
-                              Binding="{Binding Number}" />
-          <DataGridTextColumn Header='boundaryLineNames'
-                              Binding="{Binding boundaryLineNames}" />-->
         </DataGrid.Columns>
       </DataGrid>
     </StackPanel>

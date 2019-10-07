@@ -7,12 +7,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using WindowsFormsApp1;
+using WindowsFormsApp1.GeometryModel;
 using WindowsFormsApp1.Utilities;
 using Logger = WindowsFormsApp1.Logger;
+using MessageBox = System.Windows.MessageBox;
 using ShapeEllipse = System.Windows.Shapes.Ellipse;
 using ShapeLine = System.Windows.Shapes.Line;
 using ShapeRectangle = System.Windows.Shapes.Rectangle;
@@ -25,11 +28,15 @@ namespace UIWPF {
         public ObservableCollection<MyPoint> Points { get; set; }
         public ObservableCollection<MyLine> Lines { get; set; }
         public ObservableCollection<Room> Rooms { get; set; }
+
+        public ObservableCollection<Costs> SimulationCosts { get; set; }
+
         public MainWindow() {
             model = new Model();
             Points = new ObservableCollection<MyPoint>();
             Lines = new ObservableCollection<MyLine>();
             Rooms = new ObservableCollection<Room>();
+            SimulationCosts = new ObservableCollection<Costs>();
             model.InitModel();
             //model.InitRoomTypes();
             DataContext = this;
@@ -39,70 +46,89 @@ namespace UIWPF {
             Paint();
         }
 
+        public int actualSimulationIndex = 0;
+        readonly object locker = new object();
         private void SimulationStep() {
             int moveDistance = int.Parse("10");
 
             Dictionary<MyLine, double> Costs = new Dictionary<MyLine, double>();
-            double mincost = 100000;
+            double mincost = 10000000;
             MyLine minline = null;
 
             //make threadpool like - room pool
             //fix number of modells, (number of threads) move elemnet, calculate cost
-            
+
             double actualCost = model.CalculateCost();
             //Stopwatch st = new Stopwatch();
             //st.Start();
-            ////Parallel.For(0, model.modelLines.Count,
-            ////    index =>
-            ////    {
-            ////        MyLine myLine = model.modelLines.ElementAt(index);
-            ////        MyLine newMyLine = null;
-            ////        Model tempModel = model.DeepCopy(myLine, out newMyLine);
-            ////        if (newMyLine == null)
-            ////        {
-            ////            return;
-            ////        }
-            ////        tempModel.MoveLine(moveDistance, newMyLine);
+            Parallel.For(0, model.modelLines.Count,
+                index => {
+                    MyLine myLine = model.modelLines.ElementAt(index);
+                    MyLine newMyLine = null;
+                    Model tempModel = model.DeepCopy(myLine, out newMyLine);
+                    //if (newMyLine == null) {
+                    //    return;
+                    //}
 
-            ////        double cost = tempModel.CalculateCost();
-            ////        //Costs.Add(myLine, cost);
+                    tempModel.MoveLine(moveDistance, newMyLine);
 
-            ////        if (mincost > cost) {
-            ////            mincost = cost;
-            ////            minline = myLine;
-            ////        }
+                    double cost = tempModel.CalculateCost();
+                    lock (locker) {
+                        Costs.Add(myLine, cost);
+                    }
+
+                    if (mincost > cost) {
+                        mincost = cost;
+                        minline = myLine;
+                    }
 
 
-            ////    });
+                });
             //st.Stop();
             //Logger.WriteLog("Parallel FOR: " + st.ElapsedMilliseconds + " ms");
             //st.Restart();
-            foreach (MyLine line in model.modelLines)
-            {
+            foreach (MyLine line in model.modelLines) {
 
-                MyLine newLine = null;
-                Model tempModel = model.DeepCopy(line, out newLine);
-                tempModel.MoveLine(moveDistance, newLine);
+                //MyLine newLine = null;
+                //Model tempModel = model.DeepCopy(line, out newLine);
+                //tempModel.MoveLine(moveDistance, newLine);
 
-                double cost = tempModel.CalculateCost();
-                if (!Costs.ContainsKey(line)) {
-                    Costs.Add(line, cost);
-                }
+                //double cost = tempModel.CalculateCost();
+                //if (!Costs.ContainsKey(line)) {
+                //    Costs.Add(line, cost);
+                //}
 
-                if (mincost > cost) {
-                    mincost = cost;
-                    minline = line;
-                }
+                //if (mincost > cost) {
+                //    mincost = cost;
+                //    minline = line;
+                //}
             }
 
+            double minCost = Costs.Values.Min();
+
+            foreach (KeyValuePair<MyLine, double> pair in Costs) {
+                if (pair.Value.Equals(mincost)) {
+                    minline = pair.Key;
+                }
+            }
             //st.Stop();
             //Logger.WriteLog("FOR: " + st.ElapsedMilliseconds + " ms");
             if (mincost >= actualCost) {
                 actualSimulationThreshold++;
             }
 
+            SimulationCosts.Add(new Costs(actualSimulationIndex, actualCost));
             //model.MoveLine(moveDistance, model.GetRandomLine());
-            model.MoveLine(moveDistance, minline);
+            if (minline != null) {
+
+                model.MoveLine(moveDistance, minline);
+            }
+            else {
+                MessageBox.Show("no line to move");
+
+            }
+
+            actualSimulationIndex++;
         }
 
         private int actualSimulationThreshold = 0;
@@ -131,7 +157,7 @@ namespace UIWPF {
         //    return myPoint;
         //}
         private void MainWindow_OnMouseWheel(object sender, MouseWheelEventArgs e) {
-            
+
         }
         //private void ZoomViewbox_MouseWheel(object sender, MouseWheelEventArgs e) {
         //    UpdateViewBox((e.Delta > 0) ? 5 : -5);
@@ -156,24 +182,20 @@ namespace UIWPF {
             Points.Clear();
             Lines.Clear();
             Rooms.Clear();
-            foreach (MyPoint point in model.ModelPoints)
-            {
+            foreach (MyPoint point in model.ModelPoints) {
                 Points.Add(point);
             }
 
-            foreach (MyLine line in model.modelLines)
-            {
+            foreach (MyLine line in model.modelLines) {
                 Lines.Add(line);
             }
 
-            foreach (Room room in model.modelRooms)
-            {
+            foreach (Room room in model.modelRooms) {
                 Rooms.Add(room);
             }
             testcanvas.Children.Clear();
             Logger.WriteLog("paint started");
-            foreach (MyLine line in model.modelLines)
-            {
+            foreach (MyLine line in model.modelLines) {
                 ShapeLine myLine = new ShapeLine();
 
                 myLine.Stroke = System.Windows.Media.Brushes.Black;
@@ -182,7 +204,7 @@ namespace UIWPF {
                 myLine.Y1 = line.StartMyPoint.Y;
                 myLine.Y2 = line.EndMyPoint.Y;
                 myLine.StrokeEndLineCap = PenLineCap.Triangle;
-                
+
                 myLine.StrokeStartLineCap = PenLineCap.Round;
                 //myLine.HorizontalAlignment = HorizontalAlignment.Left;
                 //myLine.VerticalAlignment = VerticalAlignment.Center;
@@ -193,16 +215,15 @@ namespace UIWPF {
                 testcanvas.Children.Add(myLine);
             }
 
-            foreach (MyPoint point in model.ModelPoints)
-            {
+            foreach (MyPoint point in model.ModelPoints) {
                 //Rectangle myRec = new Rectangle();
                 ShapeLine myLine = new ShapeLine();
 
                 myLine.Stroke = System.Windows.Media.Brushes.Red;
                 myLine.X1 = point.X;
-                myLine.X2 = point.X+1;
+                myLine.X2 = point.X + 1;
                 myLine.Y1 = point.Y;
-                myLine.Y2 = point.Y+1;
+                myLine.Y2 = point.Y + 1;
 
                 myLine.StrokeStartLineCap = PenLineCap.Round;
                 myLine.StrokeEndLineCap = PenLineCap.Triangle;
@@ -219,11 +240,9 @@ namespace UIWPF {
                 //CreateCanvasWithEllipse(200,200.0);
             }
 
-            foreach (Room room in model.modelRooms)
-            {
+            foreach (Room room in model.modelRooms) {
                 List<MyPoint> boundaries = room.GetBoundaryPointsSorted();
-                if (!boundaries.Any())
-                {
+                if (!boundaries.Any()) {
                     continue;
                 }
                 List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
@@ -238,7 +257,7 @@ namespace UIWPF {
         void CreateCanvasWithEllipse(double desiredLeft, double desiredTop) {
             Canvas canvas = new Canvas();
             testcanvas.Children.Add(canvas);
-            ShapeEllipse ellipse = CreateEllipse(50,50,0,0);
+            ShapeEllipse ellipse = CreateEllipse(50, 50, 0, 0);
             Canvas.SetLeft(ellipse, desiredLeft);
             Canvas.SetTop(ellipse, desiredTop);
             canvas.Children.Add(ellipse);
@@ -274,6 +293,6 @@ namespace UIWPF {
             Paint();
         }
 
-        
+
     }
 }
