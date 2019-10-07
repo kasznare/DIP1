@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -48,7 +49,7 @@ namespace UIWPF {
 
         public int actualSimulationIndex = 0;
         readonly object locker = new object();
-        private void SimulationStep() {
+        private void SimulationStepMove() {
             int moveDistance = int.Parse("10");
 
             Dictionary<MyLine, double> Costs = new Dictionary<MyLine, double>();
@@ -59,34 +60,23 @@ namespace UIWPF {
             //fix number of modells, (number of threads) move elemnet, calculate cost
 
             double actualCost = model.CalculateCost();
-            //Stopwatch st = new Stopwatch();
-            //st.Start();
             Parallel.For(0, model.modelLines.Count,
                 index => {
                     MyLine myLine = model.modelLines.ElementAt(index);
                     MyLine newMyLine = null;
                     Model tempModel = model.DeepCopy(myLine, out newMyLine);
-                    //if (newMyLine == null) {
-                    //    return;
-                    //}
-
                     tempModel.MoveLine(moveDistance, newMyLine);
 
                     double cost = tempModel.CalculateCost();
                     lock (locker) {
                         Costs.Add(myLine, cost);
+                        if (mincost > cost) {
+                            mincost = cost;
+                            minline = myLine;
+                        }
                     }
-
-                    if (mincost > cost) {
-                        mincost = cost;
-                        minline = myLine;
-                    }
-
-
                 });
-            //st.Stop();
-            //Logger.WriteLog("Parallel FOR: " + st.ElapsedMilliseconds + " ms");
-            //st.Restart();
+
             foreach (MyLine line in model.modelLines) {
 
                 //MyLine newLine = null;
@@ -111,26 +101,78 @@ namespace UIWPF {
                     minline = pair.Key;
                 }
             }
-            //st.Stop();
-            //Logger.WriteLog("FOR: " + st.ElapsedMilliseconds + " ms");
+
             if (mincost >= actualCost) {
                 actualSimulationThreshold++;
             }
 
-            SimulationCosts.Add(new Costs(actualSimulationIndex, actualCost));
-            //model.MoveLine(moveDistance, model.GetRandomLine());
+
             if (minline != null) {
 
                 model.MoveLine(moveDistance, minline);
             }
             else {
                 MessageBox.Show("no line to move");
-
             }
 
+            SimulationCosts.Add(new Costs(actualSimulationIndex, actualCost));
             actualSimulationIndex++;
         }
 
+        private void SimulationStepSwitch() {
+            Dictionary<Room, double> RoomCosts = new Dictionary<Room, double>();
+
+            double mincost = 1000000;
+            double actualCost = model.CalculateCost();
+            int rooms = model.modelRooms.Count;
+            Room switchThisRoomFrom=null;
+            Room switchThisRoomTo=null;
+            Parallel.For(0, rooms,
+                index => {
+                    Parallel.For(index, rooms, secondindex => {
+
+                        Room r1 = model.modelRooms.ElementAt(index);
+                        Room r2 = model.modelRooms.ElementAt(secondindex);
+                        Model tempModel = model.DeepCopy(r1, out r2);
+                        tempModel.SwitchRooms(ref r1, ref r2);
+
+                        double cost = tempModel.CalculateCost();
+                        lock (locker) {
+                            RoomCosts.Add(r1, cost);
+                            if (mincost > cost) {
+                                mincost = cost;
+                                //this might need to be switched later
+                                switchThisRoomFrom = r1;
+                                switchThisRoomTo = r2;
+                            }
+                        }
+                    });
+                });
+
+            //double minCost = RoomCosts.Values.Min();
+
+            //foreach (KeyValuePair<Room, double> pair in RoomCosts) {
+            //    if (pair.Value.Equals(mincost)) {
+            //        minline = pair.Key;
+            //    }
+            //}
+
+            if (mincost >= actualCost) {
+                actualSimulationThreshold++;
+            }
+
+
+            if (switchThisRoomFrom != null && switchThisRoomTo!=null) {
+
+                model.SwitchRooms(ref switchThisRoomFrom, ref switchThisRoomTo);
+            }
+            else {
+                MessageBox.Show("no room to move");
+            }
+
+            SimulationCosts.Add(new Costs(actualSimulationIndex, actualCost));
+            actualSimulationIndex++;
+        }
         private int actualSimulationThreshold = 0;
         private int MaxSimulationThreshold = 5;
         private void drawModelRooms() {
@@ -273,7 +315,7 @@ namespace UIWPF {
         }
         private void Button_Click(object sender, RoutedEventArgs e) {
             if (actualSimulationThreshold < MaxSimulationThreshold) {
-                SimulationStep();
+                SimulationStepMove();
                 Paint();
             }
             else {

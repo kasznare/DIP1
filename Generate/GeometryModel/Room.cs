@@ -16,6 +16,13 @@ namespace WindowsFormsApp1 {
             type = rt;
         }
 
+        public static void ChangeAllParams(ref Room keep, Room getDataFrom)
+        {
+            keep.Number = getDataFrom.Number;
+            keep.Name = getDataFrom.Name;
+            keep.type = getDataFrom.type;
+           // return keep;
+        }
         internal Room GetCopy() {
             return new Room(Name, Number, type);
         }

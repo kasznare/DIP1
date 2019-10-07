@@ -187,6 +187,15 @@ namespace WindowsFormsApp1 {
         public int ReachableRooms() {
             return 0;
         }
+
+        public void SwitchRooms(ref Room room1, ref Room room2)
+        {
+            Room temp1 = room1.GetCopy();
+            Room temp2 = room2.GetCopy();
+            Room.ChangeAllParams(ref room1, temp2);
+            Room.ChangeAllParams(ref room2, temp1);
+            //make a constructor by another room, or preferably two rooms, and only copy the info of the second, and kepp the reference
+        }
         public void MoveLine(int offsetDistance, MyLine myLineToMove) {
             try {
                 MyPoint p1 = myLineToMove.StartMyPoint;
