@@ -43,8 +43,8 @@
   </Window.Resources>
   <Grid>
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="600*" />
-      <ColumnDefinition Width="400" />
+      <ColumnDefinition Width="600" />
+      <ColumnDefinition Width="400*" />
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition MinHeight='50'
@@ -56,9 +56,13 @@
           Grid.Column="0"
           Grid.Row="0">
       <Viewbox x:Name="ZoomViewbox"
-               MouseWheel='ZoomViewbox_MouseWheel'>--><!--Stretch="Fill"--><!--
+               MouseWheel='ZoomViewbox_MouseWheel'>-->
+    <!--Stretch="Fill"-->
+    <!--
         <Grid Name="zoomviewboxgrid">
-          --><!--<Button>teszt</Button>--><!--
+          -->
+    <!--<Button>teszt</Button>-->
+    <!--
         </Grid>
       </Viewbox>
     </Grid>-->
@@ -71,8 +75,9 @@
                   Value="0,10,0,0" />
           <Setter Property="Height"
                   Value="40"></Setter>
-          <Setter Property="Background" Value="DarkGray">
-            
+          <Setter Property="Background"
+                  Value="DarkGray">
+
           </Setter>
         </Style>
       </StackPanel.Resources>
@@ -84,18 +89,21 @@
               Click='Button_Click_2'></Button>
       <Button Content="Make Simulation step"></Button>
     </StackPanel>
-    <ScrollViewer Grid.Column="0" Grid.Row="0" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
-        <Canvas Height="600"
-                Width="600"
-                Name="testcanvas"
-                RenderTransformOrigin="0.5,0.5">
-          <Canvas.RenderTransform>
-            <TransformGroup>
-              <ScaleTransform ScaleY="-1"
-                              ScaleX="1" />
-            </TransformGroup>
-          </Canvas.RenderTransform>
-        </Canvas>
+    <ScrollViewer Grid.Column="0"
+                  Grid.Row="0"
+                  VerticalScrollBarVisibility="Visible"
+                  HorizontalScrollBarVisibility="Visible">
+      <Canvas Height="600"
+              Width="600"
+              Name="testcanvas"
+              RenderTransformOrigin="0.5,0.5">
+        <Canvas.RenderTransform>
+          <TransformGroup>
+            <ScaleTransform ScaleY="-1"
+                            ScaleX="1" />
+          </TransformGroup>
+        </Canvas.RenderTransform>
+      </Canvas>
     </ScrollViewer>
     <StackPanel Grid.Row="0"
                 Grid.Column="1"
@@ -105,11 +113,13 @@
         <Style TargetType="{x:Type DataGrid}">
           <Setter Property="Margin"
                   Value="0,15,0,0" />
-          <Setter Property="Width"
-                  Value="400" />
+          <Setter Property="MinRowHeight"
+                  Value="30">
+          </Setter>
           <Setter Property="Height"
                   Value="300" />
         </Style>
+
       </StackPanel.Resources>
       <DataGrid Name="PointGrid"
                 ItemsSource="{Binding Points, IsAsync=True, Mode=OneWay}">
@@ -118,7 +128,44 @@
                 ItemsSource="{Binding Lines, IsAsync=True, Mode=OneWay}">
       </DataGrid>
       <DataGrid Name="RoomGrid"
-                ItemsSource="{Binding Rooms, IsAsync=True, Mode=OneWay}">
+                ItemsSource="{Binding Rooms, IsAsync=True, Mode=OneWay}"
+                AutoGenerateColumns="False">
+        <DataGrid.Columns>
+          <DataGridTemplateColumn Header="Name"
+                                  Width="50">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Name}"
+                           TextWrapping="Wrap" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="Number"
+                                  Width="50">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Number}"
+                           TextWrapping="Wrap" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="boundaryLineNames"
+                                  Width="300">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding boundaryLineNames}"
+                           TextWrapping="Wrap" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <!--<DataGridTextColumn Header="Name"
+                              Binding="{Binding Name}" />
+          <DataGridTextColumn Width='*'
+                              Header="Number"
+                              Binding="{Binding Number}" />
+          <DataGridTextColumn Header='boundaryLineNames'
+                              Binding="{Binding boundaryLineNames}" />-->
+        </DataGrid.Columns>
       </DataGrid>
     </StackPanel>
     <!--<Rectangle Grid.Column="0"

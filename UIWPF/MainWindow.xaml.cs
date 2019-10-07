@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using WindowsFormsApp1;
+using WindowsFormsApp1.Utilities;
 using Logger = WindowsFormsApp1.Logger;
 using ShapeEllipse = System.Windows.Shapes.Ellipse;
 using ShapeLine = System.Windows.Shapes.Line;
@@ -30,6 +31,7 @@ namespace UIWPF {
             Lines = new ObservableCollection<MyLine>();
             Rooms = new ObservableCollection<Room>();
             model.InitModel();
+            //model.InitRoomTypes();
             DataContext = this;
             InitializeComponent();
             //ZoomViewbox.Width = 1000;
@@ -50,44 +52,47 @@ namespace UIWPF {
             double actualCost = model.CalculateCost();
             //Stopwatch st = new Stopwatch();
             //st.Start();
-            Parallel.For(0, model.modelLines.Count,
-                index =>
-                {
-                    MyLine myLine = model.modelLines.ElementAt(index);
-                    MyLine newMyLine = null;
-                    Model tempModel = model.DeepCopy(myLine, out newMyLine);
-                    tempModel.MoveLine(moveDistance, newMyLine);
+            ////Parallel.For(0, model.modelLines.Count,
+            ////    index =>
+            ////    {
+            ////        MyLine myLine = model.modelLines.ElementAt(index);
+            ////        MyLine newMyLine = null;
+            ////        Model tempModel = model.DeepCopy(myLine, out newMyLine);
+            ////        if (newMyLine == null)
+            ////        {
+            ////            return;
+            ////        }
+            ////        tempModel.MoveLine(moveDistance, newMyLine);
 
-                    double cost = tempModel.CalculateCost();
-                    Costs.Add(myLine, cost);
+            ////        double cost = tempModel.CalculateCost();
+            ////        //Costs.Add(myLine, cost);
 
-                    if (mincost > cost) {
-                        mincost = cost;
-                        minline = myLine;
-                    }
+            ////        if (mincost > cost) {
+            ////            mincost = cost;
+            ////            minline = myLine;
+            ////        }
 
 
-                });
+            ////    });
             //st.Stop();
             //Logger.WriteLog("Parallel FOR: " + st.ElapsedMilliseconds + " ms");
             //st.Restart();
             foreach (MyLine line in model.modelLines)
             {
 
-                //MyLine newLine = null;
-                //Model tempModel = model.DeepCopy(line, out newLine);
-                //tempModel.MoveLine(moveDistance, newLine);
+                MyLine newLine = null;
+                Model tempModel = model.DeepCopy(line, out newLine);
+                tempModel.MoveLine(moveDistance, newLine);
 
-                //double cost = tempModel.CalculateCost();
-                //if (!Costs.ContainsKey(line))
-                //{
-                // Costs.Add(line, cost);
-                //}
+                double cost = tempModel.CalculateCost();
+                if (!Costs.ContainsKey(line)) {
+                    Costs.Add(line, cost);
+                }
 
-                //if (mincost > cost) {
-                //    mincost = cost;
-                //    minline = line;
-                //}
+                if (mincost > cost) {
+                    mincost = cost;
+                    minline = line;
+                }
             }
 
             //st.Stop();
@@ -224,8 +229,7 @@ namespace UIWPF {
                 List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
                 Polygon p = new Polygon();
                 p.Points = new PointCollection(convertedPoints);
-                //p.FillRule = FillRule.EvenOdd;
-                p.Fill = Brushes.Yellow;
+                p.Fill = new SolidColorBrush(room.type.fillColor.ToMediaColor());
                 p.Opacity = 0.5;
                 testcanvas.Children.Add(p);
 
@@ -265,8 +269,8 @@ namespace UIWPF {
         }
 
         private void Button_Click_2(object sender, RoutedEventArgs e) {
-            int moveDistance = int.Parse("50");
-            model.SplitEdge(moveDistance, model.GetRandomLine());
+            int splitPercentage = int.Parse("50");
+            model.SplitEdge(splitPercentage, model.GetRandomLine());
             Paint();
         }
 

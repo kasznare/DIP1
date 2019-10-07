@@ -7,16 +7,17 @@ using ONLAB2;
 
 namespace WindowsFormsApp1 {
     public class Room : IGeometry {
-        public Room(string name, string number) {
+        public Room(string name, string number, RoomType rt) {
             Name = name;
             Number = number;
             BoundaryPoints = new List<MyPoint>();
             BoundaryLines = new List<MyLine>();
             Guid = Guid.NewGuid();
+            type = rt;
         }
 
         internal Room GetCopy() {
-            return new Room(Name, Number);
+            return new Room(Name, Number, type);
         }
         public Guid Guid { get; set; }
         public string Name { get; set; }
@@ -26,6 +27,12 @@ namespace WindowsFormsApp1 {
         /// </summary>
         public int Degree { get; set; }
         public bool isStartRoom { get; set; }
+
+        public string boundaryLineNames
+        {
+            get { return String.Join("\n", GetBoundaryLinesSorted().Select(i => i.ToString()).ToArray()); }
+        }
+
         public RoomType type { get; set; }
         private bool isBoundaryLinesPossiblyUnsorted = false;
         private bool isBoundaryPointsPossiblyUnsorted = false;
@@ -104,7 +111,7 @@ namespace WindowsFormsApp1 {
         }
 
         private void SortBoundaryPoints() {
-            if (isBoundaryLinesPossiblyUnsorted) {
+            if (isBoundaryLinesPossiblyUnsorted || true) {
                 SortBoundaryLines();
             }
             boundaryPoints = new List<MyPoint>();
@@ -131,6 +138,11 @@ namespace WindowsFormsApp1 {
             if (firstMyLine.EndMyPoint == nextMyLine.EndMyPoint) {
                 commonMyPoint = nextMyLine.EndMyPoint;
             }
+
+            //if (commonMyPoint==null)
+            //{
+            //    throw new Exception($"NoCommonPoint! between {firstMyLine} and {nextMyLine}");
+            //}
 
             return commonMyPoint;
         }

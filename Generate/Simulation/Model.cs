@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
+using WindowsFormsApp1.Utilities;
 using ONLAB2;
 
 //TODO: körüljárás alapján lehet megmondani, hogy melyik szobába kerüljün
@@ -57,8 +58,8 @@ namespace WindowsFormsApp1 {
             modelLines.Add(l2);
             modelLines.Add(l3);
 
-            Room first = new Room("FirstRoom", "1");
-            Room second = new Room("SecondRoom", "2");
+            Room first = new Room("FirstRoom", "1", RoomType.Kitchen);
+            Room second = new Room("SecondRoom", "2", RoomType.LivingRoom);
 
             foreach (MyLine modelLine in new List<MyLine>() { line1, line2, line3, line4 }) {
                 modelLine.relatedRooms.Add(first);
@@ -72,13 +73,24 @@ namespace WindowsFormsApp1 {
             Logger.WriteLog("InitModel() finished");
         }
 
+        public void InitRoomTypes() {
+            //typeid room name entrance    privacy area min area max visual connection
+            //1	living room yes	1	12	50	yes
+            //2	kitchen no	2	10	40	yes
+            //3	restroom no	2	2	10	no
+            //4	bedroom no	4	10	20	yes
+            roomTypes.Add(RoomType.LivingRoom);
+            roomTypes.Add(RoomType.Kitchen);
+            roomTypes.Add(RoomType.BedRoom);
+            roomTypes.Add(RoomType.RestRoom);
+        }
 
-        
+
         public Model DeepCopy(MyLine oldMyLine, out MyLine newMyLine) {
             Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
             Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
             Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
-            
+
 
             foreach (MyLine line in modelLines) {
                 MyPoint p1 = null;
@@ -128,7 +140,9 @@ namespace WindowsFormsApp1 {
             if (modelLines.Count == 0) return;
 
             double length = selectedEdge.GetLength();
+            if (length < 1) return;
 
+            Logger.WriteLog("Selected: "+selectedEdge+ " rooms: " + String.Join(",",selectedEdge.relatedRooms.Select(i=> i.Name).ToArray()));
             List<Room> selectedEdgeRelatedRooms = selectedEdge.relatedRooms;
             modelLines.Remove(selectedEdge);
             selectedEdge.StartMyPoint.RelatedLines.Remove(selectedEdge);
@@ -138,9 +152,26 @@ namespace WindowsFormsApp1 {
             MyLine a = new MyLine(selectedEdge.StartMyPoint, splitMyPoint);
             a.relatedRooms.AddRange(selectedEdgeRelatedRooms);
             modelLines.Add(a);
+            Logger.WriteLog("Added instead: "+a+ " rooms: " + String.Join(",",selectedEdge.relatedRooms.Select(i=> i.Name).ToArray()));
             MyLine b = new MyLine(splitMyPoint, selectedEdge.EndMyPoint);
             b.relatedRooms.AddRange(selectedEdgeRelatedRooms);
             modelLines.Add(b);
+            Logger.WriteLog("Added instead: "+b+ " rooms: " + String.Join(",",selectedEdge.relatedRooms.Select(i=> i.Name).ToArray()));
+
+            foreach (Room edgeRelatedRoom in selectedEdgeRelatedRooms)
+            {
+                try {
+                    edgeRelatedRoom.BoundaryLines.Remove(selectedEdge);
+                    edgeRelatedRoom.BoundaryLines.Add(a);
+                    edgeRelatedRoom.BoundaryLines.Add(b);
+                }
+                catch (Exception) {
+
+                    Logger.WriteLog("Error: there is something wrong with the split. Check it out.");
+                }
+            }
+            
+            Logger.WriteLog($"Lines to that room {selectedEdge.relatedRooms.First()}: {String.Join(",",selectedEdge.relatedRooms.First().BoundaryLines.Select(i=>i))}");
         }
         public void HandleOpening(MyLine l) {
             if (l.relatedRooms.Count == 1) return; //külső fal
@@ -296,6 +327,7 @@ namespace WindowsFormsApp1 {
             }
             catch (Exception e) {
                 Logger.WriteLog("Not legal move " + e.Message);
+                Logger.WriteLog(e);
                 //MessageBox.Show();
             }
 
@@ -571,12 +603,18 @@ namespace WindowsFormsApp1 {
 
         }
         public double CalculateCost() {
-            double areacost = CalculateParameterCost();
-            double layoutcost = CalculateLayoutCost();
-            double constaintcost = CalculateConstraintCost();
-            double summary = areacost + layoutcost;
-            Logger.WriteLog("területköltség: " + areacost);
-            Logger.WriteLog("kerületköltség: " + layoutcost);
+            double summary = 0.0;
+            try {
+                double areacost = CalculateParameterCost();
+                double layoutcost = CalculateLayoutCost();
+                double constaintcost = CalculateConstraintCost();
+                summary = areacost + layoutcost + constaintcost;
+                Logger.WriteLog("területköltség: " + areacost);
+                Logger.WriteLog("kerületköltség: " + layoutcost);
+            }
+            catch (Exception ex) {
+                Logger.WriteLog("Error during cost calculation" + ex);
+            }
             return summary;
         }
 
@@ -584,18 +622,16 @@ namespace WindowsFormsApp1 {
             //muszáj teljesülne
             return 0.0;
         }
-        private double CalculateParameterCost() 
-        
-        {
+        private double CalculateParameterCost() {
             double summary = 0.0;
             try {
                 foreach (Room room in this.modelRooms) {
-                    try
-                    {
-                        string roomTypeId = room.Number;
+                    try {
+                        //string roomTypeId = room.Number;
 
                         double actualarea = room.CalculateArea();
-                        RoomType type = roomTypes.Find(i => i.typeid.Equals(roomTypeId));
+
+                        RoomType type = room.type;
                         if (actualarea < type.areamin) {
                             summary += Math.Abs(type.areamin - actualarea);
                         }
@@ -646,5 +682,5 @@ namespace WindowsFormsApp1 {
         }
 
     }
-    
+
 }
