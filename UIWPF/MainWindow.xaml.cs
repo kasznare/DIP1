@@ -84,6 +84,7 @@ namespace UIWPF {
                 MessageBox.Show("no line to move");
             }
 
+            //System.Windows.Forms.MessageBox.Show(mincost.ToString());
             SimulationCosts.Add(new Costs(actualSimulationIndex, mincost));
             actualSimulationIndex++;
         }
@@ -118,14 +119,6 @@ namespace UIWPF {
                         }
                     });
                 });
-
-            //double minCost = RoomCosts.Values.Min();
-
-            //foreach (KeyValuePair<Room, double> pair in RoomCosts) {
-            //    if (pair.Value.Equals(mincost)) {
-            //        minline = pair.Key;
-            //    }
-            //}
 
             if (mincost >= actualCost) {
                 actualSimulationThreshold++;

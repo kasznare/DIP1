@@ -91,13 +91,14 @@
         <DataGrid x:Name="CostGrid"
                   ItemsSource="{Binding SimulationCosts, IsAsync=True, Mode=OneWay}"
                   AutoGenerateColumns="False"
-                  VerticalScrollBarVisibility="Visible">
+                  VerticalScrollBarVisibility="Visible"
+                  MaxHeight='280'>
           <DataGrid.Columns>
             <DataGridTemplateColumn Header="Index"
                                     Width="50">
               <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
-                  <TextBlock Text="{Binding index}"
+                  <TextBlock Text="{Binding Index}"
                              TextWrapping="Wrap" />
                 </DataTemplate>
               </DataGridTemplateColumn.CellTemplate>
@@ -106,7 +107,7 @@
                                     Width="150">
               <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
-                  <TextBlock Text="{Binding value}"
+                  <TextBlock Text="{Binding Value}"
                              TextWrapping="Wrap" />
                 </DataTemplate>
               </DataGridTemplateColumn.CellTemplate>
