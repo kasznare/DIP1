@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace WindowsFormsApp1.GeometryModel {
     public class Costs {
-        public int index { get; set; }
-        public double value { get; set; }
+        public int Index { get; set; }
+        public double Value { get; set; }
 
         public Costs(int index, double value)
         {
-            this.index = index;
-            this.value = value;
+            this.Index = index;
+            this.Value = value;
         }
     }
 }

@@ -184,7 +184,7 @@ namespace WindowsFormsApp1 {
             // Initialze area 
             double area = 0.0;
 
-            // Calculate value of shoelace formula 
+            // Calculate Value of shoelace formula 
             int j = n - 1;
 
             for (int i = 0; i < n; i++) {
@@ -194,7 +194,7 @@ namespace WindowsFormsApp1 {
                 j = i;
             }
 
-            // Return absolute value 
+            // Return absolute Value 
             return Math.Abs(area / 2.0);
         }
     }

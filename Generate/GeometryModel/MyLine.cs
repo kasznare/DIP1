@@ -3,13 +3,29 @@ using System.Collections.Generic;
 
 namespace WindowsFormsApp1 {
     public class MyLine : IGeometry {
+        #region Variables
+        public Guid Guid { get; set; }
         public MyPoint StartMyPoint { get; set; }
         public MyPoint EndMyPoint { get; set; }
         public bool HasOpening { get; set; }
         public bool IsOpening { get; set; }
-        //public double length;
         public List<Room> relatedRooms { get; set; }
-        public List<MyPoint> relatedPoints { get; set; }
+        public List<MyPoint> relatedPoints { get; set; } 
+        #endregion
+        public MyLine(MyPoint startMyPoint, MyPoint endMyPoint) {
+            Guid = Guid.NewGuid();
+            this.StartMyPoint = startMyPoint;
+            this.EndMyPoint = endMyPoint;
+
+            this.relatedPoints = new List<MyPoint>();
+            relatedPoints.Add(startMyPoint);
+            relatedPoints.Add(endMyPoint);
+
+            startMyPoint.RelatedLines.Add(this);
+            endMyPoint.RelatedLines.Add(this);
+
+            relatedRooms = new List<Room>();
+        }
         public MyPoint GetDirection() {
             return new MyPoint(StartMyPoint.X - EndMyPoint.X, StartMyPoint.Y - EndMyPoint.Y);
         }
@@ -37,7 +53,6 @@ namespace WindowsFormsApp1 {
             else {
                 return Normalize(normaMyLine);
             }
-
         }
         public MyPoint GetNV(bool isNormalized = false) {
             //if we define dx = x2 - x1 and dy = y2 - y1, then the normals are(-dy, dx) and(dy, -dx).
@@ -68,41 +83,16 @@ namespace WindowsFormsApp1 {
             if (percentage > 1) {
                 percentage = percentage / 100;
             }
-
             if (percentage < 0) {
                 percentage = -percentage;
             }
-
             double newx = StartMyPoint.X * (1 - percentage) + EndMyPoint.X * percentage;
             double newy = StartMyPoint.Y * (1 - percentage) + EndMyPoint.Y * percentage;
             newx = Math.Round(newx);
             newy = Math.Round(newy);
             return new MyPoint(newx, newy);
-
-        }
-        public bool IsPointOnLine(MyPoint p) {
-            bool ison = false;
-
-
-
-            return ison;
         }
 
-        public Guid Guid { get; set; }
-        public MyLine(MyPoint startMyPoint, MyPoint endMyPoint) {
-            Guid = Guid.NewGuid();
-            this.StartMyPoint = startMyPoint;
-            this.EndMyPoint = endMyPoint;
-
-            this.relatedPoints = new List<MyPoint>();
-            relatedPoints.Add(startMyPoint);
-            relatedPoints.Add(endMyPoint);
-
-            startMyPoint.RelatedLines.Add(this);
-            endMyPoint.RelatedLines.Add(this);
-
-            relatedRooms = new List<Room>();
-        }
         public override string ToString() {
             return $"MyLine from {StartMyPoint} to {EndMyPoint}";
         }

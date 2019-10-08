@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using WindowsFormsApp1.Utilities;
 using ONLAB2;
 
+//TODO: load model
+        //TODO: save model
 //TODO: körüljárás alapján lehet megmondani, hogy melyik szobába kerüljün
 //TODO: körüljárás jó a kirajzoláshoz és a karbantartáshoz is
 //le kell kezelni minden módosítás során a szobák állapotváltozásait, ha nem jó a lépés, dobjuk el
@@ -25,9 +27,6 @@ namespace WindowsFormsApp1 {
         public List<MyLine> modelLines = new List<MyLine>();
         public List<Room> modelRooms = new List<Room>();
         Random rand = new Random(10);
-
-        //TODO: load model
-        //TODO: save model
 
         public List<MyPoint> ModelPoints => modelLines.Select(i => i.StartMyPoint).ToList();
 
@@ -72,19 +71,6 @@ namespace WindowsFormsApp1 {
             CalculateRooms();
             Logger.WriteLog("InitModel() finished");
         }
-
-        public void InitRoomTypes() {
-            //typeid room name entrance    privacy area min area max visual connection
-            //1	living room yes	1	12	50	yes
-            //2	kitchen no	2	10	40	yes
-            //3	restroom no	2	2	10	no
-            //4	bedroom no	4	10	20	yes
-            roomTypes.Add(RoomType.LivingRoom);
-            roomTypes.Add(RoomType.Kitchen);
-            roomTypes.Add(RoomType.BedRoom);
-            roomTypes.Add(RoomType.RestRoom);
-        }
-
 
         public Model DeepCopy(MyLine oldMyLine, out MyLine newMyLine) {
             Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
@@ -162,16 +148,6 @@ namespace WindowsFormsApp1 {
             int randint = rand.Next(0, modelLines.Count);
             return modelLines.ElementAt(randint);
         }
-        //public List<MyLine> ModelLines
-        //{
-        //    get { return modelLines; }
-        //    set { modelLines = value; }
-        //}
-        //public List<Room> ModelRooms
-        //{
-        //    get { return modelRooms; }
-        //    set { modelRooms = value; }
-        //}
         public void SplitEdge(int splitPercentage, MyLine selectedEdge) {
             if (modelLines.Count == 0) return;
 
@@ -223,7 +199,6 @@ namespace WindowsFormsApp1 {
         public int ReachableRooms() {
             return 0;
         }
-
         public void SwitchRooms(ref Room room1, ref Room room2)
         {
             Room temp1 = room1.GetCopy();
@@ -431,138 +406,6 @@ namespace WindowsFormsApp1 {
             Logger.WriteLog(modelRooms.ToString());
             //TraceValues();
         }
-        void TraceValues() {
-            foreach (Room room in modelRooms)
-                Logger.WriteLog(room.Name);
-        }
-        private void RunRedundancyCheck(MyPoint p1, MyPoint p2) {
-            #region test
-            //List<MyLine> conflictList = new List<MyLine>();
-            //foreach (MyLine edge in ModelLines)
-            //{
-            //    if (edge.startMyPoint.Equals(p1) ||
-            //        edge.startMyPoint.Equals(p2) ||
-            //        edge.endMyPoint.Equals(p2) ||
-            //        edge.endMyPoint.Equals(p1))
-            //    {
-            //        conflictList.Add(edge);
-            //    }
-            //} 
-            #endregion
-            List<MyLine> toRemoveLines = new List<MyLine>();
-            List<MyLine> toAddLines = new List<MyLine>();
-            List<MyPoint> toRemovePoints = new List<MyPoint>();
-
-            #region test
-            //foreach (MyLine line1 in conflictList)
-            //{
-            //    foreach (MyLine line2 in conflictList)
-            //    {
-            //        bool lineEQ = line1.Equals(line2);
-            //        bool sameDir = line1.GetNV(true).Equals(line2.GetNV(true));
-            //        bool oppDir = (line1.GetNV(true) * (-1)).Equals(line2.GetNV(true));
-            //        if (!lineEQ && sameDir || oppDir)
-            //        {
-
-            //            if (line1.startMyPoint.Equals(line2.startMyPoint) && !line1.endMyPoint.Equals(line2.endMyPoint))
-            //            {
-            //                MyLine goodline = new MyLine(line1.endMyPoint, line2.endMyPoint);
-            //                toAddLines.Add(goodline);
-            //                if (!toRemoveLines.Contains(line1))
-            //                {
-            //                    toRemoveLines.Add(line1);
-
-            //                }
-            //                if (!toRemoveLines.Contains(line2))
-            //                {
-            //                    toRemoveLines.Add(line2);
-
-            //                }
-
-            //                if (!toRemovePoints.Contains(line1.startMyPoint))
-            //                {
-            //                    toRemovePoints.Add(line1.startMyPoint);
-
-            //                }
-            //            }
-            //            if (line1.startMyPoint.Equals(line2.endMyPoint) && !line1.endMyPoint.Equals(line2.startMyPoint))
-            //            {
-            //                MyLine goodline = new MyLine(line1.endMyPoint, line2.startMyPoint);
-            //                toAddLines.Add(goodline);
-            //                toRemoveLines.Add(line1);
-            //                toRemoveLines.Add(line2);
-            //                toRemovePoints.Add(line1.startMyPoint);
-            //            }
-            //            if (line1.endMyPoint.Equals(line2.startMyPoint) && !line1.startMyPoint.Equals(line2.endMyPoint))
-            //            {
-            //                MyLine goodline = new MyLine(line1.startMyPoint, line2.endMyPoint);
-            //                toAddLines.Add(goodline);
-            //                toRemoveLines.Add(line1);
-            //                toRemoveLines.Add(line2);
-            //                toRemovePoints.Add(line1.endMyPoint);
-            //            }
-            //            if (line1.endMyPoint.Equals(line2.startMyPoint) && !line1.startMyPoint.Equals(line2.endMyPoint))
-            //            {
-            //                MyLine goodline = new MyLine(line1.startMyPoint, line2.endMyPoint);
-            //                toAddLines.Add(goodline);
-            //                toRemoveLines.Add(line1);
-            //                toRemoveLines.Add(line2);
-            //                toRemovePoints.Add(line1.endMyPoint);
-            //            }
-            //        }
-            //    }
-            //} 
-            #endregion
-
-
-            List<List<MyLine>> results = new List<List<MyLine>>();
-            toAddLines.Clear();
-            toRemoveLines.Clear();
-            for (var index = 0; index < modelLines.Count; index++) {
-                MyLine line1 = modelLines[index];
-                for (var i = index + 1; i < modelLines.Count; i++) {
-                    MyLine line2 = modelLines[i];
-                    bool isLineEQ = (line1 == line2);
-                    if (!isLineEQ) {
-                        results = CalculateContaining(line1, line2);
-                        toAddLines.AddRange(results.First());
-                        toRemoveLines.AddRange(results.Last());
-                    }
-                }
-            }
-
-            MessageBox.Show("ToAddLines: " + WriteOutList(toAddLines));
-            MessageBox.Show("ToRemoveLines: " + WriteOutList(toRemoveLines));
-
-            foreach (var goodline in toAddLines) {
-                try {
-                    modelLines.Add(goodline);
-                }
-                catch (Exception) {
-                }
-            }
-            foreach (var badline in toRemoveLines) {
-                try {
-                    modelLines.Remove(badline);
-                }
-                catch (Exception) {
-                }
-            }
-            //delete duplicate points
-            //join points if possible
-        }
-        public static string WriteOutList<T>(List<T> list) {
-            string output = String.Empty;
-
-            foreach (T listItem in list) {
-                MyLine item = listItem as MyLine;
-
-                output += String.Concat(item.StartMyPoint.X + "," + item.StartMyPoint.Y + "  " +
-                                        item.EndMyPoint.X + "," + item.EndMyPoint.Y, Environment.NewLine);
-            }
-
-            return output;
-        }
         private List<List<MyLine>> CalculateContaining(MyLine line1, MyLine line2) {
 
             List<List<MyLine>> results = new List<List<MyLine>>();
@@ -644,9 +487,7 @@ namespace WindowsFormsApp1 {
 
             return newMyLine;
         }
-        public void SwitchRoom() {
 
-        }
         public double CalculateCost() {
             double summary = 0.0;
             try {
@@ -662,7 +503,6 @@ namespace WindowsFormsApp1 {
             }
             return summary;
         }
-
         private double CalculateConstraintCost() {
             //muszáj teljesülne
             return 0.0;
@@ -701,9 +541,6 @@ namespace WindowsFormsApp1 {
 
             return summary;
         }
-
-        public List<RoomType> roomTypes { get; set; }
-
         private double CalculateLayoutCost() {
             double wallLength = 0.0;
             foreach (MyLine seg in this.modelLines) {
