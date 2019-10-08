@@ -21,7 +21,7 @@ namespace WindowsFormsApp1 {
             keep.Number = getDataFrom.Number;
             keep.Name = getDataFrom.Name;
             keep.type = getDataFrom.type;
-           // return keep;
+           
         }
         internal Room GetCopy() {
             return new Room(Name, Number, type);
@@ -111,7 +111,7 @@ namespace WindowsFormsApp1 {
         }
 
         public List<MyPoint> GetBoundaryPointsSorted() {
-            if (isBoundaryPointsPossiblyUnsorted) {
+            if (isBoundaryPointsPossiblyUnsorted || true) {
                 SortBoundaryPoints();
             }
             return BoundaryPoints;
@@ -168,7 +168,7 @@ namespace WindowsFormsApp1 {
             double[] X = bp.Select(i => i.X).ToArray();
             double[] Y = bp.Select(i => i.Y).ToArray();
             double area = PolygonArea(X, Y, bp.Count);
-            return area;
+            return area/10000;
         }
         /// <summary>
         /// of a polygon using shoelace formula

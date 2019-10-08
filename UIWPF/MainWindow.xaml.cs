@@ -122,8 +122,8 @@ namespace UIWPF {
         private void SimulationStepSwitch() {
             Dictionary<Room, double> RoomCosts = new Dictionary<Room, double>();
 
-            double mincost = 1000000;
             double actualCost = model.CalculateCost();
+            double mincost = actualCost;
             int rooms = model.modelRooms.Count;
             Room switchThisRoomFrom=null;
             Room switchThisRoomTo=null;
@@ -141,7 +141,7 @@ namespace UIWPF {
                         double cost = tempModel.CalculateCost();
                         lock (locker) {
                             RoomCosts.Add(r1, cost);
-                            if (mincost > cost) {
+                            if (mincost >= cost) {
                                 mincost = cost;
                                 //this might need to be switched later
                                 switchThisRoomFrom = r1;
@@ -172,7 +172,7 @@ namespace UIWPF {
                 MessageBox.Show("no room to switch");
             }
 
-            SimulationCosts.Add(new Costs(actualSimulationIndex, actualCost));
+            SimulationCosts.Add(new Costs(actualSimulationIndex, mincost));
             actualSimulationIndex++;
         }
         private int actualSimulationThreshold = 0;
