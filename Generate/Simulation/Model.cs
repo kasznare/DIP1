@@ -706,20 +706,15 @@ namespace WindowsFormsApp1 {
 
         private double CalculateLayoutCost() {
             double wallLength = 0.0;
-
-
             foreach (MyLine seg in this.modelLines) {
-                wallLength += Math.Sqrt(seg.GetLength() * 3);
+                wallLength += Math.Sqrt((seg.GetLength()/100) * 3);
             }
             //Utils.WriteLog("Walllength: " + wallLength);
             //elrendezésszintű
             double passagewaycost = 0.0;
-
             //ajtókat, nyílásokat letenni...(kérdés)
             //bejárhatóság generálás
             double privacygradientcost = 0.0;
-
-
             //kerületszámítás
             //minimális optimum kerület = sqrt(minden szoba area összege)*4
             double summary = passagewaycost + privacygradientcost + wallLength;

@@ -29,9 +29,12 @@ namespace UIWPF {
         public ObservableCollection<MyPoint> Points { get; set; }
         public ObservableCollection<MyLine> Lines { get; set; }
         public ObservableCollection<Room> Rooms { get; set; }
-
         public ObservableCollection<Costs> SimulationCosts { get; set; }
 
+        private int actualSimulationThreshold = 0;
+        private int MaxSimulationThreshold = 5;
+        public int actualSimulationIndex = 0;
+        readonly object locker = new object();
         public MainWindow() {
             model = new Model();
             Points = new ObservableCollection<MyPoint>();
@@ -47,19 +50,14 @@ namespace UIWPF {
             Paint();
         }
 
-        public int actualSimulationIndex = 0;
-        readonly object locker = new object();
         private void SimulationStepMove() {
             int moveDistance = int.Parse("10");
 
             Dictionary<MyLine, double> Costs = new Dictionary<MyLine, double>();
-            double mincost = 10000000;
             MyLine minline = null;
 
-            //make threadpool like - room pool
-            //fix number of modells, (number of threads) move elemnet, calculate cost
-
             double actualCost = model.CalculateCost();
+            double mincost = actualCost;
             Parallel.For(0, model.modelLines.Count,
                 index => {
                     MyLine myLine = model.modelLines.ElementAt(index);
@@ -76,49 +74,19 @@ namespace UIWPF {
                         }
                     }
                 });
-
-            foreach (MyLine line in model.modelLines) {
-
-                //MyLine newLine = null;
-                //Model tempModel = model.DeepCopy(line, out newLine);
-                //tempModel.MoveLine(moveDistance, newLine);
-
-                //double cost = tempModel.CalculateCost();
-                //if (!Costs.ContainsKey(line)) {
-                //    Costs.Add(line, cost);
-                //}
-
-                //if (mincost > cost) {
-                //    mincost = cost;
-                //    minline = line;
-                //}
-            }
-
-            double minCost = Costs.Values.Min();
-
-            foreach (KeyValuePair<MyLine, double> pair in Costs) {
-                if (pair.Value.Equals(mincost)) {
-                    minline = pair.Key;
-                }
-            }
-
             if (mincost >= actualCost) {
                 actualSimulationThreshold++;
             }
-
-
             if (minline != null) {
-
                 model.MoveLine(moveDistance, minline);
             }
             else {
                 MessageBox.Show("no line to move");
             }
 
-            SimulationCosts.Add(new Costs(actualSimulationIndex, actualCost));
+            SimulationCosts.Add(new Costs(actualSimulationIndex, mincost));
             actualSimulationIndex++;
         }
-
         private void SimulationStepSwitch() {
             Dictionary<Room, double> RoomCosts = new Dictionary<Room, double>();
 
@@ -175,50 +143,7 @@ namespace UIWPF {
             SimulationCosts.Add(new Costs(actualSimulationIndex, mincost));
             actualSimulationIndex++;
         }
-        private int actualSimulationThreshold = 0;
-        private int MaxSimulationThreshold = 5;
-        private void drawModelRooms() {
-            //Logger.WriteLog("draw model rooms");
-            //foreach (Room modelRoom in model.modelRooms) {
-            //    List<PointF> points = new List<PointF>();
-            //    for (var index = 0; index < modelRoom.BoundaryPoints.AsReadOnly().Count; index++) {
-            //        MyPoint myPoint = modelRoom.BoundaryPoints.AsReadOnly()[index];
-            //        Logger.WriteLog($"MyPoint at index {index} is {myPoint}");
-            //        points.Add(ConvertToFormCoordinate(myPoint));
-            //    }
 
-            //    e.Graphics.FillPolygon(Brushes.Aquamarine, points.ToArray());
-            //}
-        }
-        //convert to offset coordinates
-        //private PointF ConvertToFormCoordinate(MyPoint P) {
-        //    if (P == null) return new PointF(0, 0);
-
-        //    int x = Convert.ToInt32(P.X);
-        //    int y = Convert.ToInt32(-P.Y + 600);
-        //    //Logger.WriteLog($"Convert from {P} to {x},{y}");
-        //    PointF myPoint = new PointF(x, y);
-        //    return myPoint;
-        //}
-        private void MainWindow_OnMouseWheel(object sender, MouseWheelEventArgs e) {
-
-        }
-        //private void ZoomViewbox_MouseWheel(object sender, MouseWheelEventArgs e) {
-        //    UpdateViewBox((e.Delta > 0) ? 5 : -5);
-        //    //MessageBox.Show("mousewheel");
-        //}
-        //private void Window_MouseWheel(object sender, MouseWheelEventArgs e) {
-        //    UpdateViewBox((e.Delta > 0) ? 5 : -5);
-        //    MessageBox.Show("mousewheel2");
-
-        //}
-
-        //private void UpdateViewBox(int newValue) {
-        //    if ((ZoomViewbox.Width >= 0) && ZoomViewbox.Height >= 0) {
-        //        ZoomViewbox.Width += newValue;
-        //        ZoomViewbox.Height += newValue;
-        //    }
-        //}
         private void Paint() {
             Points.Clear();
             Lines.Clear();
@@ -241,81 +166,43 @@ namespace UIWPF {
             Logger.WriteLog("paint started");
             foreach (MyLine line in model.modelLines) {
                 ShapeLine myLine = new ShapeLine();
-
                 myLine.Stroke = System.Windows.Media.Brushes.Black;
                 myLine.X1 = line.StartMyPoint.X;
                 myLine.X2 = line.EndMyPoint.X;
                 myLine.Y1 = line.StartMyPoint.Y;
                 myLine.Y2 = line.EndMyPoint.Y;
                 myLine.StrokeEndLineCap = PenLineCap.Triangle;
-
                 myLine.StrokeStartLineCap = PenLineCap.Round;
-                //myLine.HorizontalAlignment = HorizontalAlignment.Left;
-                //myLine.VerticalAlignment = VerticalAlignment.Center;
                 myLine.StrokeThickness = 5;
-
-                //zoomviewboxgrid.Children.Add(myLine);
-                //zoomviewboxgrid2.Children.Add(myLine);
                 testcanvas.Children.Add(myLine);
             }
 
             foreach (MyPoint point in model.ModelPoints) {
-                //Rectangle myRec = new Rectangle();
                 ShapeLine myLine = new ShapeLine();
-
                 myLine.Stroke = System.Windows.Media.Brushes.Red;
                 myLine.X1 = point.X;
                 myLine.X2 = point.X + 1;
                 myLine.Y1 = point.Y;
                 myLine.Y2 = point.Y + 1;
-
                 myLine.StrokeStartLineCap = PenLineCap.Round;
                 myLine.StrokeEndLineCap = PenLineCap.Triangle;
                 myLine.StrokeThickness = 5;
-
                 testcanvas.Children.Add(myLine);
-
-
-                //myLine.HorizontalAlignment = HorizontalAlignment.Left;
-                //myLine.VerticalAlignment = VerticalAlignment.Center;
-
-                //testcanvas.Children.Add(myEllipse);
-
-                //CreateCanvasWithEllipse(200,200.0);
             }
 
             foreach (Room room in model.modelRooms) {
                 List<MyPoint> boundaries = room.GetBoundaryPointsSorted();
-                if (!boundaries.Any()) {
-                    continue;
-                }
+                if (!boundaries.Any()) continue;
+
                 List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
                 Polygon p = new Polygon();
                 p.Points = new PointCollection(convertedPoints);
                 p.Fill = new SolidColorBrush(room.type.fillColor.ToMediaColor());
                 p.Opacity = 0.5;
                 testcanvas.Children.Add(p);
-
             }
         }
-        void CreateCanvasWithEllipse(double desiredLeft, double desiredTop) {
-            Canvas canvas = new Canvas();
-            testcanvas.Children.Add(canvas);
-            ShapeEllipse ellipse = CreateEllipse(50, 50, 0, 0);
-            Canvas.SetLeft(ellipse, desiredLeft);
-            Canvas.SetTop(ellipse, desiredTop);
-            canvas.Children.Add(ellipse);
-        }
-
-        ShapeEllipse CreateEllipse(double width, double height, double desiredCenterX, double desiredCenterY) {
-            Ellipse ellipse = new Ellipse { Width = width, Height = height };
-            double left = desiredCenterX - (width / 2);
-            double top = desiredCenterY - (height / 2);
-
-            ellipse.Margin = new Thickness(left, top, 0, 0);
-            return ellipse;
-        }
-        private void Button_Click(object sender, RoutedEventArgs e) {
+        private void MoveWallClick(object sender, RoutedEventArgs e) {
             if (actualSimulationThreshold < MaxSimulationThreshold) {
                 SimulationStepMove();
                 Paint();
@@ -324,20 +211,16 @@ namespace UIWPF {
                 MessageBox.Show("Simulation threshold exit. Optimum reached.");
             }
         }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e) {
+        private void StartSimulationClick(object sender, RoutedEventArgs e) {
             model = new Model();
             model.InitModel();
             Paint();
         }
-
-        private void Button_Click_2(object sender, RoutedEventArgs e) {
+        private void SplitWallClick(object sender, RoutedEventArgs e) {
             int splitPercentage = int.Parse("50");
             model.SplitEdge(splitPercentage, model.GetRandomLine());
             Paint();
         }
-
-
         private void SwitchRoomClick(object sender, RoutedEventArgs e)
         {
             SimulationStepSwitch();

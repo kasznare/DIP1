@@ -52,77 +52,69 @@
       <RowDefinition MinHeight='200'
                      Height="300"></RowDefinition>
     </Grid.RowDefinitions>
-    <!--<Grid Name="SimulationCanvas"
-          Grid.Column="0"
-          Grid.Row="0">
-      <Viewbox x:Name="ZoomViewbox"
-               MouseWheel='ZoomViewbox_MouseWheel'>-->
-    <!--Stretch="Fill"-->
-    <!--
-        <Grid Name="zoomviewboxgrid">
-          -->
-    <!--<Button>teszt</Button>-->
-    <!--
-        </Grid>
-      </Viewbox>
-    </Grid>-->
-    <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal">
-
+    
     <StackPanel Grid.Column="0"
                 Grid.Row="1"
-                Margin="10"
-                Width="200">
-      <StackPanel.Resources>
-        <Style TargetType="{x:Type Button}">
-          <Setter Property="Margin"
-                  Value="0,10,0,0" />
-          <Setter Property="Height"
-                  Value="40"></Setter>
-          <Setter Property="Background"
-                  Value="DarkGray">
+                Orientation="Horizontal">
 
-          </Setter>
-        </Style>
-      </StackPanel.Resources>
-      <Button Content="Start Simulation"
-              Click='Button_Click_1'></Button>
-      <Button Content="Move Wall"
-              Click='Button_Click'></Button>
-      <Button Content="Split Wall"
-              Click='Button_Click_2'></Button>
-      <Button Content="Switch Room"
-              Click='SwitchRoomClick'></Button>
-        <Button Content="Make Simulation step"></Button>
+      <StackPanel Grid.Column="0"
+                  Grid.Row="1"
+                  Margin="10"
+                  Width="200">
+        <StackPanel.Resources>
+          <Style TargetType="{x:Type Button}">
+            <Setter Property="Margin"
+                    Value="0,10,0,0" />
+            <Setter Property="Height"
+                    Value="40"></Setter>
+            <Setter Property="Background"
+                    Value="DarkGray">
 
-    </StackPanel>
-    <StackPanel Grid.Column="0" Grid.Row="1" MaxHeight="300">
-      <DataGrid x:Name="CostGrid"
-                ItemsSource="{Binding SimulationCosts, IsAsync=True, Mode=OneWay}"
-                AutoGenerateColumns="False"
-                VerticalScrollBarVisibility="Visible">
-        <DataGrid.Columns>
-          <DataGridTemplateColumn Header="Index"
-                                  Width="50">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <TextBlock Text="{Binding index}"
-                           TextWrapping="Wrap" />
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-          <DataGridTemplateColumn Header="Value"
-                                  Width="150">
-            <DataGridTemplateColumn.CellTemplate>
-              <DataTemplate>
-                <TextBlock Text="{Binding value}"
-                           TextWrapping="Wrap" />
-              </DataTemplate>
-            </DataGridTemplateColumn.CellTemplate>
-          </DataGridTemplateColumn>
-        </DataGrid.Columns>
-      </DataGrid>
+            </Setter>
+          </Style>
+        </StackPanel.Resources>
+        <Button Content="Start Simulation"
+                Click='StartSimulationClick'></Button>
+        <Button Content="Move Wall"
+                Click='MoveWallClick'></Button>
+        <Button Content="Split Wall"
+                Click='SplitWallClick'></Button>
+        <Button Content="Switch Room"
+                Click='SwitchRoomClick'></Button>
+        <Button Content="Make Simulation step">
+        </Button>
 
-    </StackPanel>
+      </StackPanel>
+      <StackPanel Grid.Column="0"
+                  Grid.Row="1"
+                  MaxHeight="300">
+        <DataGrid x:Name="CostGrid"
+                  ItemsSource="{Binding SimulationCosts, IsAsync=True, Mode=OneWay}"
+                  AutoGenerateColumns="False"
+                  VerticalScrollBarVisibility="Visible">
+          <DataGrid.Columns>
+            <DataGridTemplateColumn Header="Index"
+                                    Width="50">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding index}"
+                             TextWrapping="Wrap" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Value"
+                                    Width="150">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding value}"
+                             TextWrapping="Wrap" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+          </DataGrid.Columns>
+        </DataGrid>
+
+      </StackPanel>
     </StackPanel>
     <ScrollViewer Grid.Column="0"
                   Grid.Row="0"
