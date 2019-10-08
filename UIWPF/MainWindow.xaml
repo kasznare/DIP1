@@ -90,7 +90,9 @@
               Click='Button_Click'></Button>
       <Button Content="Split Wall"
               Click='Button_Click_2'></Button>
-      <Button Content="Make Simulation step"></Button>
+      <Button Content="Switch Room"
+              Click='SwitchRoomClick'></Button>
+        <Button Content="Make Simulation step"></Button>
 
     </StackPanel>
     <StackPanel Grid.Column="0" Grid.Row="1" MaxHeight="300">

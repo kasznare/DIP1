@@ -129,12 +129,14 @@ namespace UIWPF {
             Room switchThisRoomTo=null;
             Parallel.For(0, rooms,
                 index => {
-                    Parallel.For(index, rooms, secondindex => {
+                    Parallel.For(index+1, rooms, secondindex => {
 
                         Room r1 = model.modelRooms.ElementAt(index);
                         Room r2 = model.modelRooms.ElementAt(secondindex);
-                        Model tempModel = model.DeepCopy(r1, out r2);
-                        tempModel.SwitchRooms(ref r1, ref r2);
+                        Room r1target = null;
+                        Room r2target = null;
+                        Model tempModel = model.DeepCopy(r1, r2, out r1target, out r2target);
+                        tempModel.SwitchRooms(ref r1target, ref r2target);
 
                         double cost = tempModel.CalculateCost();
                         lock (locker) {
@@ -167,7 +169,7 @@ namespace UIWPF {
                 model.SwitchRooms(ref switchThisRoomFrom, ref switchThisRoomTo);
             }
             else {
-                MessageBox.Show("no room to move");
+                MessageBox.Show("no room to switch");
             }
 
             SimulationCosts.Add(new Costs(actualSimulationIndex, actualCost));
@@ -336,5 +338,10 @@ namespace UIWPF {
         }
 
 
+        private void SwitchRoomClick(object sender, RoutedEventArgs e)
+        {
+            SimulationStepSwitch();
+            Paint();
+        }
     }
 }

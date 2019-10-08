@@ -122,6 +122,42 @@ namespace WindowsFormsApp1 {
 
             return new Model(oldNewLines.Values.ToList(), oldNewRooms.Values.ToList());
         }
+        public Model DeepCopy(Room oldMyRoom1, Room oldMyRoom2, out Room newMyRoom1, out Room newMyRoom2) {
+            Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
+            Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
+            Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
+
+            foreach (MyLine line in modelLines) {
+                MyPoint p1 = null;
+                MyPoint p2 = null;
+
+                if (!oldNewPoints.TryGetValue(line.StartMyPoint, out p1)) {
+                    p1 = line.StartMyPoint.GetCopy();
+                    oldNewPoints.Add(line.StartMyPoint, p1);
+                }
+
+                if (!oldNewPoints.TryGetValue(line.EndMyPoint, out p2)) {
+                    p2 = line.EndMyPoint.GetCopy();
+                    oldNewPoints.Add(line.EndMyPoint, p2);
+                }
+                MyLine l = new MyLine(p1, p2);
+                oldNewLines.Add(line, l);
+
+                foreach (Room room in line.relatedRooms) {
+                    Room r = null;
+                    if (!oldNewRooms.TryGetValue(room, out r)) {
+                        r = room.GetCopy();
+                        oldNewRooms.Add(room, r);
+                    }
+                    l.relatedRooms.Add(r);
+                }
+            }
+
+            newMyRoom1 = oldNewRooms[oldMyRoom1];
+            newMyRoom2 = oldNewRooms[oldMyRoom2];
+
+            return new Model(oldNewLines.Values.ToList(), oldNewRooms.Values.ToList());
+        }
         public MyLine GetRandomLine() {
             int randint = rand.Next(0, modelLines.Count);
             return modelLines.ElementAt(randint);
