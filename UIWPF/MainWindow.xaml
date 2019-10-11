@@ -121,10 +121,10 @@
                   Grid.Row="0"
                   VerticalScrollBarVisibility="Visible"
                   HorizontalScrollBarVisibility="Visible">
-      <Canvas Height="600"
+      <Canvas Height="700"
               Width="600"
               Name="testcanvas"
-              RenderTransformOrigin="0.5,0.5">
+              RenderTransformOrigin="0.5,0.4">
         <Canvas.RenderTransform>
           <TransformGroup>
             <ScaleTransform ScaleY="-1"
@@ -160,7 +160,7 @@
                 AutoGenerateColumns="False">
         <DataGrid.Columns>
           <DataGridTemplateColumn Header="Name"
-                                  Width="50">
+                                  Width="65">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <TextBlock Text="{Binding Name}"

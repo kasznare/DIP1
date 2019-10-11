@@ -42,11 +42,8 @@ namespace UIWPF {
             Rooms = new ObservableCollection<Room>();
             SimulationCosts = new ObservableCollection<Costs>();
             model.InitModel();
-            //model.InitRoomTypes();
             DataContext = this;
             InitializeComponent();
-            //ZoomViewbox.Width = 1000;
-            //ZoomViewbox.Height = 1000;
             Paint();
         }
 
