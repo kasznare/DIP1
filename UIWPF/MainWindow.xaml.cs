@@ -54,8 +54,14 @@ namespace UIWPF {
         }
 
         private void ModelChangeHandler(object sender, ProgressEventArgs e) {
-            model = e.Status;
-            Paint();
+            lock (locker) {
+
+                model = e.model;
+                SimulationCosts.Add(new Costs(e.simIndex, e.cost, 0, 0, 0));
+                Paint();
+
+            }
+
         }
 
         private void SimulationStepMove() {
@@ -224,8 +230,11 @@ namespace UIWPF {
             model = new Model();
             model.InitModel();
             Paint();
+            s.model = model;
+            //Task t = Task.Run(() => {
+                s.run();
+            //});
 
-            s.run();
         }
         private void SplitWallClick(object sender, RoutedEventArgs e) {
             int splitPercentage = int.Parse("50");
