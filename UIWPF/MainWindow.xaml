@@ -60,7 +60,7 @@
       <StackPanel Grid.Column="0"
                   Grid.Row="1"
                   Margin="10"
-                  Width="200">
+                  Width="100">
         <StackPanel.Resources>
           <Style TargetType="{x:Type Button}">
             <Setter Property="Margin"
@@ -87,7 +87,8 @@
       </StackPanel>
       <StackPanel Grid.Column="0"
                   Grid.Row="1"
-                  MaxHeight="300">
+                  MaxHeight="300"
+                  Orientation='Horizontal'>
         <DataGrid x:Name="CostGrid"
                   ItemsSource="{Binding SimulationCosts, IsAsync=True, Mode=OneWay}"
                   AutoGenerateColumns="False"
@@ -95,7 +96,7 @@
                   MaxHeight='280'>
           <DataGrid.Columns>
             <DataGridTemplateColumn Header="Index"
-                                    Width="50">
+                                    Width="40">
               <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
                   <TextBlock Text="{Binding Index}"
@@ -103,18 +104,70 @@
                 </DataTemplate>
               </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="Value"
-                                    Width="150">
+            <DataGridTemplateColumn Header="Summary"
+                                    Width="60">
               <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
-                  <TextBlock Text="{Binding Value}"
+                  <TextBlock Text="{Binding SummaryCost}"
+                             TextWrapping="Wrap" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="AreaCost"
+                                    Width="60">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding AreaCost}"
+                             TextWrapping="Wrap" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="LayoutCost"
+                                    Width="60">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding LayoutCost}"
                              TextWrapping="Wrap" />
                 </DataTemplate>
               </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
           </DataGrid.Columns>
         </DataGrid>
-
+        <DataGrid x:Name="CostGrid2"
+                  ItemsSource="{Binding LineAndCostActualStep, IsAsync=True, Mode=OneWay}"
+                  AutoGenerateColumns="False"
+                  VerticalScrollBarVisibility="Visible"
+                  MaxHeight='280'>
+          <DataGrid.Columns>
+            <DataGridTemplateColumn Header="Index"
+                                    Width="40">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding index}"
+                             TextWrapping="Wrap" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="line"
+                                    Width="120">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding line}"
+                             TextWrapping="Wrap" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="cost"
+                                    Width="40">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding cost}"
+                             TextWrapping="Wrap" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+          </DataGrid.Columns>
+        </DataGrid>
       </StackPanel>
     </StackPanel>
     <ScrollViewer Grid.Column="0"
@@ -145,7 +198,7 @@
                   Value="30">
           </Setter>
           <Setter Property="Height"
-                  Value="300" />
+                  Value="250" />
         </Style>
 
       </StackPanel.Resources>

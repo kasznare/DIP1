@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using WindowsFormsApp1;
 using WindowsFormsApp1.GeometryModel;
+using WindowsFormsApp1.Simulation;
 using WindowsFormsApp1.Utilities;
 using Logger = WindowsFormsApp1.Logger;
 using MessageBox = System.Windows.MessageBox;
@@ -30,30 +31,39 @@ namespace UIWPF {
         public ObservableCollection<MyLine> Lines { get; set; }
         public ObservableCollection<Room> Rooms { get; set; }
         public ObservableCollection<Costs> SimulationCosts { get; set; }
+        public Simulate s = new Simulate();
+        public ObservableCollection<LineAndCost> LineAndCostActualStep { get; set; }
 
         private int actualSimulationThreshold = 0;
         private int MaxSimulationThreshold = 5;
         public int actualSimulationIndex = 0;
         readonly object locker = new object();
+        public int moveDistance = 10;
         public MainWindow() {
             model = new Model();
             Points = new ObservableCollection<MyPoint>();
             Lines = new ObservableCollection<MyLine>();
             Rooms = new ObservableCollection<Room>();
             SimulationCosts = new ObservableCollection<Costs>();
+            LineAndCostActualStep = new ObservableCollection<LineAndCost>();
             model.InitModel();
             DataContext = this;
             InitializeComponent();
             Paint();
+            s.ModelChanged += ModelChangeHandler;
+        }
+
+        private void ModelChangeHandler(object sender, ProgressEventArgs e) {
+            model = e.Status;
+            Paint();
         }
 
         private void SimulationStepMove() {
-            int moveDistance = int.Parse("10");
 
             Dictionary<MyLine, double> Costs = new Dictionary<MyLine, double>();
             MyLine minline = null;
 
-            double actualCost = model.CalculateCost();
+            double actualCost = model.CalculateCost().First();
             double mincost = actualCost;
             Parallel.For(0, model.modelLines.Count,
                 index => {
@@ -62,7 +72,7 @@ namespace UIWPF {
                     Model tempModel = model.DeepCopy(myLine, out newMyLine);
                     tempModel.MoveLine(moveDistance, newMyLine);
 
-                    double cost = tempModel.CalculateCost();
+                    double cost = tempModel.CalculateCost().First();
                     lock (locker) {
                         Costs.Add(myLine, cost);
                         if (mincost > cost) {
@@ -80,22 +90,29 @@ namespace UIWPF {
             else {
                 MessageBox.Show("no line to move");
             }
-
+            LineAndCostActualStep.Clear();
+            foreach (var item in Costs) {
+                LineAndCostActualStep.Add(new LineAndCost(item.Key, item.Value, actualSimulationIndex));
+            }
             //System.Windows.Forms.MessageBox.Show(mincost.ToString());
-            SimulationCosts.Add(new Costs(actualSimulationIndex, mincost));
+            //SimulationCosts.Add(new Costs(actualSimulationIndex, mincost));
+
+            double[] costArray = model.CalculateCost();
+            SimulationCosts.Add(new Costs(actualSimulationIndex, costArray[0], costArray[1], costArray[2], costArray[3]));
+
             actualSimulationIndex++;
         }
         private void SimulationStepSwitch() {
             Dictionary<Room, double> RoomCosts = new Dictionary<Room, double>();
 
-            double actualCost = model.CalculateCost();
+            double actualCost = model.CalculateCost().First();
             double mincost = actualCost;
             int rooms = model.modelRooms.Count;
-            Room switchThisRoomFrom=null;
-            Room switchThisRoomTo=null;
+            Room switchThisRoomFrom = null;
+            Room switchThisRoomTo = null;
             Parallel.For(0, rooms,
                 index => {
-                    Parallel.For(index+1, rooms, secondindex => {
+                    Parallel.For(index + 1, rooms, secondindex => {
 
                         Room r1 = model.modelRooms.ElementAt(index);
                         Room r2 = model.modelRooms.ElementAt(secondindex);
@@ -104,7 +121,7 @@ namespace UIWPF {
                         Model tempModel = model.DeepCopy(r1, r2, out r1target, out r2target);
                         tempModel.SwitchRooms(ref r1target, ref r2target);
 
-                        double cost = tempModel.CalculateCost();
+                        double cost = tempModel.CalculateCost().First();
                         lock (locker) {
                             RoomCosts.Add(r1, cost);
                             if (mincost >= cost) {
@@ -122,7 +139,7 @@ namespace UIWPF {
             }
 
 
-            if (switchThisRoomFrom != null && switchThisRoomTo!=null) {
+            if (switchThisRoomFrom != null && switchThisRoomTo != null) {
 
                 model.SwitchRooms(ref switchThisRoomFrom, ref switchThisRoomTo);
             }
@@ -130,7 +147,9 @@ namespace UIWPF {
                 MessageBox.Show("no room to switch");
             }
 
-            SimulationCosts.Add(new Costs(actualSimulationIndex, mincost));
+            double[] costArray = model.CalculateCost();
+
+            SimulationCosts.Add(new Costs(actualSimulationIndex, costArray[0], costArray[1], costArray[2], costArray[3]));
             actualSimulationIndex++;
         }
 
@@ -205,14 +224,15 @@ namespace UIWPF {
             model = new Model();
             model.InitModel();
             Paint();
+
+            s.run();
         }
         private void SplitWallClick(object sender, RoutedEventArgs e) {
             int splitPercentage = int.Parse("50");
             model.SplitEdge(splitPercentage, model.GetRandomLine());
             Paint();
         }
-        private void SwitchRoomClick(object sender, RoutedEventArgs e)
-        {
+        private void SwitchRoomClick(object sender, RoutedEventArgs e) {
             SimulationStepSwitch();
             Paint();
         }

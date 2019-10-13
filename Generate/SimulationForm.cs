@@ -109,14 +109,14 @@ namespace WindowsFormsApp1 {
             //todo: make parallel
             //https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-write-a-simple-parallel-foreach-loop
 
-            double actualCost = model.CalculateCost();
+            double actualCost = model.CalculateCost().First();
             foreach (MyLine line in model.modelLines)
             {
                 MyLine newMyLine;
                 Model tempModel = model.DeepCopy(line, out newMyLine);
                 tempModel.MoveLine(moveDistance, newMyLine);
 
-                double cost = tempModel.CalculateCost();
+                double cost = tempModel.CalculateCost().First();
                 //Costs.Add(myLine, cost);
 
                 if (mincost > cost) {

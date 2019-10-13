@@ -7,7 +7,7 @@ using WindowsFormsApp1.Utilities;
 using ONLAB2;
 
 //TODO: load model
-        //TODO: save model
+//TODO: save model
 //TODO: körüljárás alapján lehet megmondani, hogy melyik szobába kerüljün
 //TODO: körüljárás jó a kirajzoláshoz és a karbantartáshoz is
 //le kell kezelni minden módosítás során a szobák állapotváltozásait, ha nem jó a lépés, dobjuk el
@@ -37,11 +37,11 @@ namespace WindowsFormsApp1 {
         public void InitModel() {
 
             MyPoint q1 = new MyPoint(100, 0);
-            MyPoint q2 = new MyPoint(500, 0);
+            MyPoint q2 = new MyPoint(400, 0);
             MyPoint p1 = new MyPoint(100, 100);
-            MyPoint p2 = new MyPoint(500, 100);
-            MyPoint p3 = new MyPoint(500, 500);
-            MyPoint p4 = new MyPoint(100, 500);
+            MyPoint p2 = new MyPoint(400, 100);
+            MyPoint p3 = new MyPoint(400, 400);
+            MyPoint p4 = new MyPoint(100, 400);
             MyLine line1 = new MyLine(p1, p2);
             modelLines.Add(line1);
             MyLine line2 = new MyLine(p2, p3);
@@ -488,12 +488,16 @@ namespace WindowsFormsApp1 {
             return newMyLine;
         }
 
-        public double CalculateCost() {
+        public double[] CalculateCost() {
             double summary = 0.0;
+            double areacost = 0.0;
+            double layoutcost = 0.0;
+            double constaintcost = 0.0;
+
             try {
-                double areacost = CalculateParameterCost();
-                double layoutcost = CalculateLayoutCost();
-                double constaintcost = CalculateConstraintCost();
+                 areacost = CalculateParameterCost();
+                 layoutcost = CalculateLayoutCost();
+                 constaintcost = CalculateConstraintCost();
                 summary = areacost + layoutcost + constaintcost;
                 Logger.WriteLog("területköltség: " + areacost);
                 Logger.WriteLog("kerületköltség: " + layoutcost);
@@ -501,7 +505,7 @@ namespace WindowsFormsApp1 {
             catch (Exception ex) {
                 Logger.WriteLog("Error during cost calculation" + ex);
             }
-            return summary;
+            return new double[] { summary, areacost, layoutcost, constaintcost };
         }
         private double CalculateConstraintCost() {
             //muszáj teljesülne
@@ -538,7 +542,7 @@ namespace WindowsFormsApp1 {
             //megkeresni a helyiség kategóriát a táblázatból
             //számítani a megfelelést
             //összegezni
-
+            summary = Math.Round(summary, 2);
             return summary;
         }
         private double CalculateLayoutCost() {
@@ -555,6 +559,7 @@ namespace WindowsFormsApp1 {
             //kerületszámítás
             //minimális optimum kerület = sqrt(minden szoba area összege)*4
             double summary = passagewaycost + privacygradientcost + wallLength;
+            summary = Math.Round(summary, 2);
             return summary;
         }
 

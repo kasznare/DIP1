@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,7 +52,8 @@
   <ItemGroup>
     <Compile Include="GeometryModel\Costs.cs" />
     <Compile Include="GeometryModel\IGeometry.cs" />
-    <Compile Include="Simulation\Simulation.cs" />
+    <Compile Include="GeometryModel\LineAndCost.cs" />
+    <Compile Include="Simulation\Simulate.cs" />
     <Compile Include="Utilities\MyInterlockedExchangeExampleClass.cs" />
     <Compile Include="Utilities\ImageSaver.cs" />
     <Compile Include="GeometryModel\RoomType.cs" />
@@ -67,6 +71,7 @@
     <Compile Include="GeometryModel\Room.cs" />
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\Utils.cs" />
+    <None Include="packages.config" />
     <None Include="_testcomman.cs" />
     <EmbeddedResource Include="SimulationForm.resx">
       <DependentUpon>SimulationForm.cs</DependentUpon>

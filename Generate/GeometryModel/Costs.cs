@@ -7,12 +7,21 @@ using System.Threading.Tasks;
 namespace WindowsFormsApp1.GeometryModel {
     public class Costs {
         public int Index { get; set; }
-        public double Value { get; set; }
+        public double SummaryCost { get; set; }
 
-        public Costs(int index, double value)
+        public double AreaCost { get; set; }
+
+        public double LayoutCost { get; set; }
+
+        public double ConstaintCost { get; set; }
+
+        public Costs(int index, double summary, double areacost, double layoutcost, double constaintcost )
         {
             this.Index = index;
-            this.Value = value;
+            this.SummaryCost = summary;
+            AreaCost = areacost;
+            LayoutCost = layoutcost;
+            ConstaintCost = constaintcost;
         }
     }
 }
