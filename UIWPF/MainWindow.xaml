@@ -174,10 +174,10 @@
                   Grid.Row="0"
                   VerticalScrollBarVisibility="Visible"
                   HorizontalScrollBarVisibility="Visible">
-      <Canvas Height="700"
+      <Canvas Height="1700"
               Width="600"
               Name="testcanvas"
-              RenderTransformOrigin="0.5,0.4">
+              RenderTransformOrigin="0.5,0.35">
         <Canvas.RenderTransform>
           <TransformGroup>
             <ScaleTransform ScaleY="-1"

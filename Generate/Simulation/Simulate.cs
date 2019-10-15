@@ -93,7 +93,18 @@ namespace WindowsFormsApp1.Simulation {
                     tempModel.MoveLine(moveDistance, newMyLine);
                     double cost = tempModel.CalculateCost().First();
                     lock (locker) {
-                        Actions.Add(new Move(myLine, cost));
+                        Actions.Add(new Move(myLine, cost, moveDistance));
+                    }
+                });
+            Parallel.For(0, model.modelLines.Count,
+                index => {
+                    MyLine myLine = model.modelLines.ElementAt(index);
+                    MyLine newMyLine = null;
+                    Model tempModel = model.DeepCopy(myLine, out newMyLine);
+                    tempModel.MoveLine(-moveDistance, newMyLine);
+                    double cost = tempModel.CalculateCost().First();
+                    lock (locker) {
+                        Actions.Add(new Move(myLine, cost, -moveDistance));
                     }
                 });
         }
@@ -141,12 +152,14 @@ namespace WindowsFormsApp1.Simulation {
     }
     public class Move : Action {
         private MyLine myLine;
-        public Move(MyLine myLine, double cost) {
+        private int moveDistance;
+        public Move(MyLine myLine, double cost, int moveDistance) {
             this.myLine = myLine;
             this.cost = cost;
+            this.moveDistance = moveDistance;
         }
         public override void Step(Model m) {
-            m.MoveLine(10, myLine);
+            m.MoveLine(moveDistance, myLine);
         }
     }
     public class Split : Action {

@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using WindowsFormsApp1.Utilities;
 using ONLAB2;
 
+//TODO: branchelés - model operáció sorrend invariáns? akkor lehet őket osszevonogatni
+
 //TODO: load model
 //TODO: save model
 //TODO: körüljárás alapján lehet megmondani, hogy melyik szobába kerüljün
@@ -548,7 +550,7 @@ namespace WindowsFormsApp1 {
         private double CalculateLayoutCost() {
             double wallLength = 0.0;
             foreach (MyLine seg in this.modelLines) {
-                wallLength += Math.Sqrt((seg.GetLength()/100) * 3);
+                wallLength += Math.Sqrt((seg.GetLength()/40) * 3);
             }
             //Utils.WriteLog("Walllength: " + wallLength);
             //elrendezésszintű

@@ -12,10 +12,12 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using WindowsFormsApp1;
 using WindowsFormsApp1.GeometryModel;
 using WindowsFormsApp1.Simulation;
 using WindowsFormsApp1.Utilities;
+using Action = System.Action;
 using Logger = WindowsFormsApp1.Logger;
 using MessageBox = System.Windows.MessageBox;
 using ShapeEllipse = System.Windows.Shapes.Ellipse;
@@ -54,21 +56,26 @@ namespace UIWPF {
         }
 
         private void ModelChangeHandler(object sender, ProgressEventArgs e) {
-            lock (locker) {
 
-                model = e.model;
-                SimulationCosts.Add(new Costs(e.simIndex, e.cost, 0, 0, 0));
-                Paint();
+            Dispatcher.BeginInvoke(new Action(() => {
 
-            }
+                lock (locker) {
+
+                    model = e.model;
+                    SimulationCosts.Add(new Costs(e.simIndex, e.cost, 0, 0, 0));
+                    Paint();
+
+                }
+            }), DispatcherPriority.SystemIdle);
+
 
         }
 
         private void SimulationStepMove() {
 
-            Dictionary<MyLine, double> Costs = new Dictionary<MyLine, double>();
+            Dictionary<string, double> Costs = new Dictionary<string, double>();
             MyLine minline = null;
-
+            int currentMoveDistance = moveDistance;
             double actualCost = model.CalculateCost().First();
             double mincost = actualCost;
             Parallel.For(0, model.modelLines.Count,
@@ -80,18 +87,38 @@ namespace UIWPF {
 
                     double cost = tempModel.CalculateCost().First();
                     lock (locker) {
-                        Costs.Add(myLine, cost);
+                        Costs.Add("+"+myLine.ToString(), cost);
                         if (mincost > cost) {
                             mincost = cost;
                             minline = myLine;
+                            currentMoveDistance = moveDistance;
                         }
                     }
                 });
+
+            Parallel.For(0, model.modelLines.Count,
+                index => {
+                    MyLine myLine = model.modelLines.ElementAt(index);
+                    MyLine newMyLine = null;
+                    Model tempModel = model.DeepCopy(myLine, out newMyLine);
+                    tempModel.MoveLine(-moveDistance, newMyLine);
+
+                    double cost = tempModel.CalculateCost().First();
+                    lock (locker) {
+                        Costs.Add("-" + myLine.ToString(), cost);
+                        if (mincost > cost) {
+                            mincost = cost;
+                            minline = myLine;
+                            currentMoveDistance = -moveDistance;
+                        }
+                    }
+                });
+
             if (mincost >= actualCost) {
                 actualSimulationThreshold++;
             }
             if (minline != null) {
-                model.MoveLine(moveDistance, minline);
+                model.MoveLine(currentMoveDistance, minline);
             }
             else {
                 MessageBox.Show("no line to move");
@@ -231,11 +258,13 @@ namespace UIWPF {
             model.InitModel();
             Paint();
             s.model = model;
-            //Task t = Task.Run(() => {
-                s.run();
-            //});
+
+            Thread t = new Thread(s.run);
+            t.Start();
 
         }
+
+
         private void SplitWallClick(object sender, RoutedEventArgs e) {
             int splitPercentage = int.Parse("50");
             model.SplitEdge(splitPercentage, model.GetRandomLine());
