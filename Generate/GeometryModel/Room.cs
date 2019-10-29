@@ -162,6 +162,26 @@ namespace WindowsFormsApp1 {
             return false;
         }
 
+        public double CalculateProportion()
+        {
+            List<MyPoint> bp = GetBoundaryPointsSorted();
+
+            double[] X = bp.Select(i => i.X).ToArray();
+            double[] Y = bp.Select(i => i.Y).ToArray();
+
+            MyPoint max = new MyPoint(X.Max(), Y.Max());
+            MyPoint min = new MyPoint(X.Min(), Y.Min());
+
+
+            double proportion = (max.X - min.X) / (max.Y - min.Y);
+            if (proportion < 1 && Math.Abs(proportion) > 0.01)
+            {
+                proportion = 1 / proportion;
+            }
+            return proportion;
+        }
+
+
         public double CalculateArea() {
             List<MyPoint> bp = GetBoundaryPointsSorted();
 

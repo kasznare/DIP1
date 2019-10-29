@@ -53,6 +53,7 @@
     <Compile Include="GeometryModel\Costs.cs" />
     <Compile Include="GeometryModel\IGeometry.cs" />
     <Compile Include="GeometryModel\LineAndCost.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Simulation\Simulate.cs" />
     <Compile Include="Utilities\MyInterlockedExchangeExampleClass.cs" />
     <Compile Include="Utilities\ImageSaver.cs" />

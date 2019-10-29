@@ -1,33 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using WindowsFormsApp1.Utilities;
 using ONLAB2;
 
+//still todo
 //TODO: branchelés - model operáció sorrend invariáns? akkor lehet őket osszevonogatni
+//TODO: kézi léptetést engedjen - intuitívabb lenne a kolstegfüggvény tervezése
+//TODO: a listában kijelölt vonalnak látszódnia kéne az UI-on
+//költség: belső fal (több mint 1 fajta relatedroom)
 
-//TODO: load model
-//TODO: save model
-//TODO: körüljárás alapján lehet megmondani, hogy melyik szobába kerüljün
-//TODO: körüljárás jó a kirajzoláshoz és a karbantartáshoz is
+//done
+//helyiségarány - befoglaló téglalappal
+//kell-e az observablecollection - nem kell az odavissza hatás
+//load model
+//save model
+//körüljárás alapján lehet megmondani, hogy melyik szobába kerüljün
+//körüljárás jó a kirajzoláshoz és a karbantartáshoz is
 //le kell kezelni minden módosítás során a szobák állapotváltozásait, ha nem jó a lépés, dobjuk el
 //a lépés előtt lehetne tárolni az előző állapotot
-//TODO: implement deepcopy for model class
-//TODO: hogyan változik a loss
+//implement deepcopy for model class
+//hogyan változik a loss
 namespace WindowsFormsApp1 {
     public class Model {
         public Model(List<MyLine> lines = null, List<Room> rooms = null) {
             if (lines != null) {
-                this.modelLines = lines;
+                this.modelLines = new ObservableCollection<MyLine>(lines);
             }
             if (rooms != null) {
-                modelRooms = rooms;
+                modelRooms = new ObservableCollection<Room>(rooms);
             }
         }
-        public List<MyLine> modelLines = new List<MyLine>();
-        public List<Room> modelRooms = new List<Room>();
+
+        public string Save()
+        {
+            string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(this);
+            return jsonString;
+        }
+
+        public void Load(string jsonString)
+        {
+            Model obj = Newtonsoft.Json.JsonConvert.DeserializeObject<Model>(jsonString);
+            modelLines = obj.modelLines;
+            modelRooms = obj.modelRooms;
+        }
+
+        public ObservableCollection<MyLine> modelLines { get; set; } = new ObservableCollection<MyLine>();
+        public ObservableCollection<Room> modelRooms = new ObservableCollection<Room>();
         Random rand = new Random(10);
 
         public List<MyPoint> ModelPoints => modelLines.Select(i => i.StartMyPoint).ToList();
@@ -73,7 +95,40 @@ namespace WindowsFormsApp1 {
             CalculateRooms();
             Logger.WriteLog("InitModel() finished");
         }
+        public Model DeepCopy() {
+            Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
+            Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
+            Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
 
+
+            foreach (MyLine line in modelLines) {
+                MyPoint p1 = null;
+                MyPoint p2 = null;
+
+                if (!oldNewPoints.TryGetValue(line.StartMyPoint, out p1)) {
+                    p1 = line.StartMyPoint.GetCopy();
+                    oldNewPoints.Add(line.StartMyPoint, p1);
+                }
+
+                if (!oldNewPoints.TryGetValue(line.EndMyPoint, out p2)) {
+                    p2 = line.EndMyPoint.GetCopy();
+                    oldNewPoints.Add(line.EndMyPoint, p2);
+                }
+                MyLine l = new MyLine(p1, p2);
+                oldNewLines.Add(line, l);
+
+                foreach (Room room in line.relatedRooms) {
+                    Room r = null;
+                    if (!oldNewRooms.TryGetValue(room, out r)) {
+                        r = room.GetCopy();
+                        oldNewRooms.Add(room, r);
+                    }
+                    l.relatedRooms.Add(r);
+                }
+            }
+
+            return new Model(oldNewLines.Values.ToList(), oldNewRooms.Values.ToList());
+        }
         public Model DeepCopy(MyLine oldMyLine, out MyLine newMyLine) {
             Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
             Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
@@ -385,7 +440,7 @@ namespace WindowsFormsApp1 {
         //TODO: this could be calculated for only the lines, that actually changed, this is huge resource waste
         public void CalculateRooms() {
             if (modelRooms == null)
-                modelRooms = new List<Room>();
+                modelRooms = new ObservableCollection<Room>();
 
             modelRooms.Clear();
             List<Room> allRooms = new List<Room>();
@@ -404,7 +459,7 @@ namespace WindowsFormsApp1 {
                 }
                 // modelRooms.AddRange(myLine.relatedRooms);
             }
-            modelRooms = allRooms;//modelRooms.Distinct().ToList();
+            modelRooms = new ObservableCollection<Room>(allRooms);//modelRooms.Distinct().ToList();
             Logger.WriteLog(modelRooms.ToString());
             //TraceValues();
         }
@@ -529,6 +584,14 @@ namespace WindowsFormsApp1 {
                         else if (actualarea > type.areamax) {
                             summary += Math.Abs(type.areamax - actualarea);
                         }
+
+                        double actualprop = room.CalculateProportion();
+                        if (actualprop > type.proportion)
+                        {
+                            summary += Math.Pow(2, actualprop - type.proportion);
+                        }
+
+
                     }
                     catch (Exception e) {
                         Logger.WriteLog(e);
@@ -549,8 +612,17 @@ namespace WindowsFormsApp1 {
         }
         private double CalculateLayoutCost() {
             double wallLength = 0.0;
-            foreach (MyLine seg in this.modelLines) {
-                wallLength += Math.Sqrt((seg.GetLength()/40) * 3);
+            foreach (MyLine seg in this.modelLines)
+            {
+                if (seg.relatedRooms.Count > 1)
+                {
+                    wallLength += Math.Sqrt((seg.GetLength() / 100))/1000;
+                }
+                else
+                {
+                    wallLength += Math.Sqrt((seg.GetLength() / 100)) *3;
+
+                }
             }
             //Utils.WriteLog("Walllength: " + wallLength);
             //elrendezésszintű

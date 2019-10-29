@@ -13,15 +13,17 @@ namespace WindowsFormsApp1 {
         public int privacy;
         public double areamin;
         public double areamax;
+        public double proportion;
         public bool visualCommection;
         public Color fillColor;
 
-        public static RoomType LivingRoom { get { return new RoomType(1, "LivingRoom", true, 1, 30, 30, true, Color.DarkOliveGreen); } }
-        public static RoomType Kitchen { get { return new RoomType(2, "Kitchen", true, 2, 15, 15, true, Color.Chocolate); } }
-        public static RoomType RestRoom { get { return new RoomType(3, "RestRoom", true, 2, 5, 5, true, Color.LightBlue); } }
-        public static RoomType BedRoom { get { return new RoomType(4, "BedRoom", true, 3, 15, 15, true, Color.CornflowerBlue); } }
-        public RoomType(int TypeId, string RoomName, bool Entrance, int Privacy, double AreaMin, double AreaMax, bool VisualConnection, Color fill) {
+        public static RoomType LivingRoom { get { return new RoomType(1, "LivingRoom",1.5, true, 1, 20, 20, true, Color.DarkOliveGreen); } }
+        public static RoomType Kitchen { get { return new RoomType(2, "Kitchen", 1.5,true, 2, 10, 10, true, Color.Chocolate); } }
+        public static RoomType RestRoom { get { return new RoomType(3, "RestRoom", 2,true, 2, 5, 5, true, Color.LightBlue); } }
+        public static RoomType BedRoom { get { return new RoomType(4, "BedRoom",2, true, 3, 15, 15, true, Color.CornflowerBlue); } }
+        public RoomType(int TypeId, string RoomName, double prop, bool Entrance, int Privacy, double AreaMin, double AreaMax, bool VisualConnection, Color fill) {
             typeid = TypeId;
+            proportion = prop;
             roomname = RoomName;
             entrance = Entrance;
             privacy = Privacy;

@@ -28,7 +28,7 @@ namespace UIWPF {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-        public Model model;
+        public Model model { get; set; }
         public ObservableCollection<MyPoint> Points { get; set; }
         public ObservableCollection<MyLine> Lines { get; set; }
         public ObservableCollection<Room> Rooms { get; set; }
@@ -36,6 +36,7 @@ namespace UIWPF {
         public Simulate s = new Simulate();
         public ObservableCollection<LineAndCost> LineAndCostActualStep { get; set; }
 
+        public int LineGridSelectedIndex { get; set; }
         private int actualSimulationThreshold = 0;
         private int MaxSimulationThreshold = 5;
         public int actualSimulationIndex = 0;
@@ -52,6 +53,7 @@ namespace UIWPF {
             DataContext = this;
             InitializeComponent();
             Paint();
+            s.model = model;
             s.ModelChanged += ModelChangeHandler;
         }
 
@@ -62,7 +64,7 @@ namespace UIWPF {
                 lock (locker) {
 
                     model = e.model;
-                    SimulationCosts.Add(new Costs(e.simIndex, e.cost, 0, 0, 0));
+                    SimulationCosts.Add(new Costs(e.simIndex, e.cost, e.areacost, e.layoutcost, 0));
                     Paint();
 
                 }
@@ -87,7 +89,7 @@ namespace UIWPF {
 
                     double cost = tempModel.CalculateCost().First();
                     lock (locker) {
-                        Costs.Add("+"+myLine.ToString(), cost);
+                        Costs.Add("+" + myLine.ToString(), cost);
                         if (mincost > cost) {
                             mincost = cost;
                             minline = myLine;
@@ -186,29 +188,19 @@ namespace UIWPF {
             actualSimulationIndex++;
         }
 
+        private bool isPainting = false;
         private void Paint() {
-            Points.Clear();
-            Lines.Clear();
-            Rooms.Clear();
-            Points.Clear();
-            Lines.Clear();
-            Rooms.Clear();
-            foreach (MyPoint point in model.ModelPoints) {
-                Points.Add(point);
-            }
-
-            foreach (MyLine line in model.modelLines) {
-                Lines.Add(line);
-            }
-
-            foreach (Room room in model.modelRooms) {
-                Rooms.Add(room);
-            }
+            isPainting = true;
+            LoadDataFromModel();
             testcanvas.Children.Clear();
             Logger.WriteLog("paint started");
-            foreach (MyLine line in model.modelLines) {
+            for (var i = 0; i < model.modelLines.Count; i++) {
+                MyLine line = model.modelLines[i];
                 ShapeLine myLine = new ShapeLine();
                 myLine.Stroke = System.Windows.Media.Brushes.Black;
+                if (i.Equals(selectedLineIndex)) {
+                    myLine.Stroke = Brushes.Yellow;
+                }
                 myLine.X1 = line.StartMyPoint.X;
                 myLine.X2 = line.EndMyPoint.X;
                 myLine.Y1 = line.StartMyPoint.Y;
@@ -243,21 +235,52 @@ namespace UIWPF {
                 p.Opacity = 0.5;
                 testcanvas.Children.Add(p);
             }
+
+            isPainting = false;
         }
+
+        private void LoadDataFromModel() {
+            Points.Clear();
+            Lines.Clear();
+            Rooms.Clear();
+            Points.Clear();
+            Lines.Clear();
+            Rooms.Clear();
+            foreach (MyPoint point in model.ModelPoints) {
+                Points.Add(point);
+            }
+
+            foreach (MyLine line in model.modelLines) {
+                Lines.Add(line);
+            }
+
+            foreach (Room room in model.modelRooms) {
+                Rooms.Add(room);
+            }
+        }
+
+        
+
         private void MoveWallClick(object sender, RoutedEventArgs e) {
-            if (actualSimulationThreshold < MaxSimulationThreshold) {
-                SimulationStepMove();
-                Paint();
-            }
-            else {
-                MessageBox.Show("Simulation threshold exit. Optimum reached.");
-            }
+            //if (actualSimulationThreshold < MaxSimulationThreshold) {
+            //    SimulationStepMove();
+            //    Paint();
+            //}
+            //else {
+            //    MessageBox.Show("Simulation threshold exit. Optimum reached.");
+            //}
+            model.MoveLine(10, LineGrid.SelectedItem as MyLine);
+            Paint();
+        }
+        private void MoveWallClick2(object sender, RoutedEventArgs e) {
+            model.MoveLine(-10, LineGrid.SelectedItem as MyLine);
+            Paint();
         }
         private void StartSimulationClick(object sender, RoutedEventArgs e) {
-            model = new Model();
-            model.InitModel();
-            Paint();
+            //model = new Model();
+            //model.InitModel();
             s.model = model;
+            Paint();
 
             Thread t = new Thread(s.run);
             t.Start();
@@ -267,12 +290,60 @@ namespace UIWPF {
 
         private void SplitWallClick(object sender, RoutedEventArgs e) {
             int splitPercentage = int.Parse("50");
-            model.SplitEdge(splitPercentage, model.GetRandomLine());
-            Paint();
+            //model.SplitEdge(splitPercentage, model.GetRandomLine());
+            s.Split(splitPercentage, LineGrid.SelectedItem as MyLine);
+            //int index = LineGrid.SelectedIndex;
+            //model.SplitEdge(splitPercentage, LineGrid.SelectedItem as MyLine);
+            //Paint();
+            //LineGrid.GetBindingExpression().UpdateTarget();
         }
         private void SwitchRoomClick(object sender, RoutedEventArgs e) {
             SimulationStepSwitch();
             Paint();
         }
+
+        private int selectedLineIndex = -1;
+
+
+        private void LineGrid_OnCurrentCellChanged(object sender, EventArgs e) {
+            //selectedLineIndex = LineGrid.SelectedIndex;
+            //MessageBox.Show(selectedLineIndex.ToString());
+
+        }
+
+        private void LineGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+
+            if (!isPainting) {
+                selectedLineIndex = LineGrid.SelectedIndex;
+                Paint();
+
+            }
+
+            //LineGrid.SelectedIndex = selectedLineIndex;
+            //MessageBox.Show("selectionchanged" + selectedLineIndex.ToString());
+        }
+
+        private void CostGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void CostGrid_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            int actualCostIndex = CostGrid.SelectedIndex;
+            Model requested = s.modelCopyHistory.ElementAt(actualCostIndex);
+            model = requested;
+            Paint();
+        }
+
+        private void LoadSelectedClick(object sender, RoutedEventArgs e)
+        {
+            int actualCostIndex = CostGrid.SelectedIndex;
+            Model requested = s.modelCopyHistory.ElementAt(actualCostIndex);
+            model = requested;
+            Paint();
+        }
+
+       
     }
 }

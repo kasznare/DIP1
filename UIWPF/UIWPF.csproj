@@ -58,6 +58,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ViewModel.cs" />
     <Compile Include="Zoom.xaml.cs">
       <DependentUpon>Zoom.xaml</DependentUpon>
     </Compile>
