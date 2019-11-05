@@ -166,6 +166,16 @@ namespace WindowsFormsApp1.Simulation {
             actualLayoutCost = costs[2];
             HandleModelChangeUpdate();
         }
+        public void Move(MyLine lineGridSelectedItem, int movedistance) {
+            Action a = new Move(lineGridSelectedItem, movedistance);
+            a.Step(model);
+            double[] costs = model.CalculateCost();
+
+            actualCost = costs[0];
+            actualAreaCost = costs[1];
+            actualLayoutCost = costs[2];
+            HandleModelChangeUpdate();
+        }
     }
     public class ProgressEventArgs : EventArgs {
         public Model model { get; private set; }
@@ -192,6 +202,11 @@ namespace WindowsFormsApp1.Simulation {
         private int moveDistance;
         private double summary;
 
+        public Move(MyLine myLine, int moveDistance)
+        {
+            this.myLine = myLine;
+            this.moveDistance = moveDistance;
+        }
         public Move(MyLine myLine, double cost, int moveDistance) {
             this.myLine = myLine;
             this.cost = cost;

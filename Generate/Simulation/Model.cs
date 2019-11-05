@@ -11,9 +11,15 @@ using ONLAB2;
 //TODO: branchelés - model operáció sorrend invariáns? akkor lehet őket osszevonogatni
 //TODO: kézi léptetést engedjen - intuitívabb lenne a kolstegfüggvény tervezése
 //TODO: a listában kijelölt vonalnak látszódnia kéne az UI-on
-//költség: belső fal (több mint 1 fajta relatedroom)
+//TODO: a léptetés negatív irányban nem működik jól
+
+//TODO: közvetlen következő teendő az, hogy a mozgatás és a split kiírja a költségeket is
+//kérdés, hogy hol történjen a mozgatás, most ugye az UI részen van
+
+
 
 //done
+//költség: belső fal (több mint 1 fajta relatedroom)
 //helyiségarány - befoglaló téglalappal
 //kell-e az observablecollection - nem kell az odavissza hatás
 //load model

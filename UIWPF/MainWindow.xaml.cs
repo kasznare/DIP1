@@ -269,12 +269,14 @@ namespace UIWPF {
             //else {
             //    MessageBox.Show("Simulation threshold exit. Optimum reached.");
             //}
-            model.MoveLine(10, LineGrid.SelectedItem as MyLine);
-            Paint();
+            s.Move(LineGrid.SelectedItem as MyLine,10);
+            //model.MoveLine(10, LineGrid.SelectedItem as MyLine);
+            //Paint();
         }
         private void MoveWallClick2(object sender, RoutedEventArgs e) {
-            model.MoveLine(-10, LineGrid.SelectedItem as MyLine);
-            Paint();
+            s.Move(LineGrid.SelectedItem as MyLine,10);
+            //model.MoveLine(-10, LineGrid.SelectedItem as MyLine);
+            //Paint();
         }
         private void StartSimulationClick(object sender, RoutedEventArgs e) {
             //model = new Model();
