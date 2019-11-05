@@ -16,12 +16,11 @@ namespace WindowsFormsApp1 {
             type = rt;
         }
 
-        public static void ChangeAllParams(ref Room keep, Room getDataFrom)
-        {
+        public static void ChangeAllParams(ref Room keep, Room getDataFrom) {
             keep.Number = getDataFrom.Number;
             keep.Name = getDataFrom.Name;
             keep.type = getDataFrom.type;
-           
+
         }
         internal Room GetCopy() {
             return new Room(Name, Number, type);
@@ -35,8 +34,7 @@ namespace WindowsFormsApp1 {
         public int Degree { get; set; }
         public bool isStartRoom { get; set; }
 
-        public string boundaryLineNames
-        {
+        public string boundaryLineNames {
             get { return String.Join("\n", GetBoundaryLinesSorted().Select(i => i.ToString()).ToArray()); }
         }
 
@@ -63,14 +61,17 @@ namespace WindowsFormsApp1 {
             List<MyLine> orderedLines = new List<MyLine>();
 
             int actualIndex = 0;
-            for (int i = 0; i < BoundaryLines.Count; i++) {
+            int boundCount = BoundaryLines.Count;
+            for (int i = 0; i < boundCount; i++) {
+                if (actualIndex >= boundCount) {
+                    continue;
+                }
                 MyLine actualMyLine = BoundaryLines.ElementAt(actualIndex);
                 orderedLines.Add(actualMyLine);
                 actualIndex = 0;
                 foreach (MyLine line in BoundaryLines) {
 
-                    if (orderedLines.Contains(line))
-                    {
+                    if (orderedLines.Contains(line)) {
                         actualIndex++;
                         continue;
                     }
@@ -94,7 +95,7 @@ namespace WindowsFormsApp1 {
 
                     actualIndex++;
                 }
-                if (actualIndex > BoundaryLines.Count) {
+                if (actualIndex > boundCount) {
                     throw new Exception("LineOrderingFailed");
                 }
             }
@@ -162,22 +163,27 @@ namespace WindowsFormsApp1 {
             return false;
         }
 
-        public double CalculateProportion()
-        {
-            List<MyPoint> bp = GetBoundaryPointsSorted();
+        public double CalculateProportion() {
+                double proportion = 0.0;
+            try {
+                List<MyPoint> bp = GetBoundaryPointsSorted();
 
-            double[] X = bp.Select(i => i.X).ToArray();
-            double[] Y = bp.Select(i => i.Y).ToArray();
+                double[] X = bp.Select(i => i.X).ToArray();
+                double[] Y = bp.Select(i => i.Y).ToArray();
 
-            MyPoint max = new MyPoint(X.Max(), Y.Max());
-            MyPoint min = new MyPoint(X.Min(), Y.Min());
+                MyPoint max = new MyPoint(X.Max(), Y.Max());
+                MyPoint min = new MyPoint(X.Min(), Y.Min());
 
 
-            double proportion = (max.X - min.X) / (max.Y - min.Y);
-            if (proportion < 1 && Math.Abs(proportion) > 0.01)
-            {
-                proportion = 1 / proportion;
+                proportion = (max.X - min.X) / (max.Y - min.Y);
+                if (proportion < 1 && Math.Abs(proportion) > 0.01) {
+                    proportion = 1 / proportion;
+                }
             }
+            catch (Exception exception) {
+                Logger.WriteLog(exception);
+            }
+
             return proportion;
         }
 
@@ -188,7 +194,7 @@ namespace WindowsFormsApp1 {
             double[] X = bp.Select(i => i.X).ToArray();
             double[] Y = bp.Select(i => i.Y).ToArray();
             double area = PolygonArea(X, Y, bp.Count);
-            return area/10000;
+            return area / 10000;
         }
         /// <summary>
         /// of a polygon using shoelace formula

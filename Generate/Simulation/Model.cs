@@ -9,16 +9,16 @@ using ONLAB2;
 
 //still todo
 //TODO: branchelés - model operáció sorrend invariáns? akkor lehet őket osszevonogatni
-//TODO: kézi léptetést engedjen - intuitívabb lenne a kolstegfüggvény tervezése
-//TODO: a listában kijelölt vonalnak látszódnia kéne az UI-on
-//TODO: a léptetés negatív irányban nem működik jól
-
-//TODO: közvetlen következő teendő az, hogy a mozgatás és a split kiírja a költségeket is
-//kérdés, hogy hol történjen a mozgatás, most ugye az UI részen van
-
+//TODO: a hurok esetben nem kapunk jó eredményt
+//TODO: volt egy darab pont duplikálva
 
 
 //done
+//kézi léptetést engedjen - intuitívabb lenne a kolstegfüggvény tervezése
+//a listában kijelölt vonalnak látszódnia kéne az UI-on
+//a léptetés negatív irányban nem működik jól
+//közvetlen következő teendő az, hogy a mozgatás és a split kiírja a költségeket is
+//kérdés, hogy hol történjen a mozgatás, most ugye az UI részen van
 //költség: belső fal (több mint 1 fajta relatedroom)
 //helyiségarány - befoglaló téglalappal
 //kell-e az observablecollection - nem kell az odavissza hatás
@@ -40,7 +40,8 @@ namespace WindowsFormsApp1 {
                 modelRooms = new ObservableCollection<Room>(rooms);
             }
         }
-
+        //TODO: set this in the move/split/switch 
+        public bool IsInInvalidState { get; set; }
         public string Save()
         {
             string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(this);
@@ -58,14 +59,25 @@ namespace WindowsFormsApp1 {
         public ObservableCollection<Room> modelRooms = new ObservableCollection<Room>();
         Random rand = new Random(10);
 
-        public List<MyPoint> ModelPoints => modelLines.Select(i => i.StartMyPoint).ToList();
+        public List<MyPoint> ModelPoints
+        {
+            get
+            {
+                List<MyPoint> starts = modelLines.Select(i => i.StartMyPoint).ToList();
+                List<MyPoint> ends = modelLines.Select(i => i.EndMyPoint).ToList();
+                starts.AddRange(ends);
+                starts = starts.OrderBy(x => x.Guid).ToList();
+                return starts;
+            }
+        }
 
         /// <summary>
         /// create new model
         /// </summary>
         /// <returns></returns>
-        public void InitModel() {
-
+        public void InitSimpleModel() {
+            modelLines = new ObservableCollection<MyLine>();
+            modelRooms = new ObservableCollection<Room>();
             MyPoint q1 = new MyPoint(100, 0);
             MyPoint q2 = new MyPoint(400, 0);
             MyPoint p1 = new MyPoint(100, 100);
@@ -99,7 +111,76 @@ namespace WindowsFormsApp1 {
             }
 
             CalculateRooms();
-            Logger.WriteLog("InitModel() finished");
+            Logger.WriteLog("InitSimpleModel() finished");
+        }
+        public void InitNormalModel() {
+            modelLines = new ObservableCollection<MyLine>();
+            modelRooms = new ObservableCollection<Room>();
+            MyPoint a1 = new MyPoint(0, 0);
+            MyPoint a2 = new MyPoint(200, 0);
+            MyPoint a3 = new MyPoint(200, 200);
+            MyPoint a4 = new MyPoint(0, 200);
+
+            MyPoint a5 = new MyPoint(200, 400);
+            MyPoint a6 = new MyPoint(0, 400);
+
+            MyPoint a7 = new MyPoint(400, 0);
+            MyPoint a8 = new MyPoint(400, 200);
+
+            MyPoint a9 = new MyPoint(400, 400);
+
+            MyLine l12 = new MyLine(a1, a2);
+            MyLine l23 = new MyLine(a2, a3);
+            MyLine l34 = new MyLine(a3, a4);
+            MyLine l41 = new MyLine(a4, a1);
+
+            MyLine l35 = new MyLine(a3, a5);
+            MyLine l56 = new MyLine(a5, a6);
+            MyLine l64 = new MyLine(a6, a4);
+
+            MyLine l27 = new MyLine(a2, a7);
+            MyLine l78 = new MyLine(a7, a8);
+            MyLine l83 = new MyLine(a8, a3);
+
+            MyLine l89 = new MyLine(a8, a9);
+            MyLine l95 = new MyLine(a9, a5);
+
+            modelLines.Add(l41);
+            modelLines.Add(l34);
+            modelLines.Add(l23);
+            modelLines.Add(l12);
+            modelLines.Add(l35);
+            modelLines.Add(l56);
+            modelLines.Add(l64);
+            modelLines.Add(l27);
+            modelLines.Add(l78);
+            modelLines.Add(l83);
+            modelLines.Add(l89);
+            modelLines.Add(l95);
+
+
+            Room first = new Room("FirstRoom", "1", RoomType.Kitchen);
+            Room second = new Room("SecondRoom", "2", RoomType.LivingRoom);
+            Room third = new Room("ThirdRoom", "3", RoomType.BedRoom);
+            Room fourth = new Room("FourthRoom", "4", RoomType.RestRoom);
+
+            foreach (MyLine modelLine in new List<MyLine>() { l12, l23, l34, l41 }) {
+                modelLine.relatedRooms.Add(first);
+            }
+
+            foreach (MyLine modelLine in new List<MyLine>() { l35, l56, l64, l34 }) {
+                modelLine.relatedRooms.Add(second);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { l23, l27, l78, l83 }) {
+                modelLine.relatedRooms.Add(third);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { l83, l89, l95, l35 }) {
+                modelLine.relatedRooms.Add(fourth);
+            }
+
+
+            CalculateRooms();
+            Logger.WriteLog("InitSimpleModel() finished");
         }
         public Model DeepCopy() {
             Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
@@ -622,7 +703,7 @@ namespace WindowsFormsApp1 {
             {
                 if (seg.relatedRooms.Count > 1)
                 {
-                    wallLength += Math.Sqrt((seg.GetLength() / 100))/1000;
+                    wallLength += Math.Sqrt((seg.GetLength() / 100))/10;
                 }
                 else
                 {

@@ -22,7 +22,7 @@ namespace WindowsFormsApp1.Simulation {
         bool isFinished = false;
         bool isTimeout = false;
         bool isTreshold = false;
-        double actualCost=1000000;
+        double actualCost = 1000000;
         private double actualAreaCost;
         private double actualLayoutCost;
 
@@ -34,6 +34,7 @@ namespace WindowsFormsApp1.Simulation {
             Stopwatch st = new Stopwatch();
             st.Start();
             while (true && !isFinished && !isTimeout && !isTreshold) {
+                Actions.Clear();
                 SaveState();
                 CalculateCostsForState();
                 MakeAStepByTheCalculatedCosts();
@@ -94,43 +95,48 @@ namespace WindowsFormsApp1.Simulation {
                     });
                 });
         }
-        private void CalculateMoveCosts() {
+        private void CalculateMoveCosts()  {
 
-            Parallel.For(0, model.modelLines.Count,
-                index => {
-                    MyLine myLine = model.modelLines.ElementAt(index);
-                    MyLine newMyLine = null;
-                    Model tempModel = model.DeepCopy(myLine, out newMyLine);
-                    tempModel.MoveLine(moveDistance, newMyLine);
-                    double[] costs = tempModel.CalculateCost();
-                    double summary = costs[0];
-                    double areacost = costs[1];
-                    double layoutcost = costs[2];
-                    lock (locker) {
-                        Actions.Add(new Move(myLine, summary, areacost, layoutcost, moveDistance));
-                    }
-                });
-            Parallel.For(0, model.modelLines.Count,
-                index => {
-                    MyLine myLine = model.modelLines.ElementAt(index);
-                    MyLine newMyLine = null;
-                    Model tempModel = model.DeepCopy(myLine, out newMyLine);
-                    tempModel.MoveLine(-moveDistance, newMyLine);
-                    double[] costs = tempModel.CalculateCost();
-                    double summary = costs[0];
-                    double areacost = costs[1];
-                    double layoutcost = costs[2];
-                    lock (locker) {
-                        Actions.Add(new Move(myLine, summary, areacost,layoutcost, -moveDistance));
-                    }
-                });
+            //Parallel.For(0, model.modelLines.Count,
+            //    index => {
+            for (int index = 0; index < model.modelLines.Count; index++) {
+
+                MyLine myLine = model.modelLines.ElementAt(index);
+                MyLine newMyLine = null;
+                Model tempModel = model.DeepCopy(myLine, out newMyLine);
+                tempModel.MoveLine(moveDistance, newMyLine);
+                double[] costs = tempModel.CalculateCost();
+                double summary = costs[0];
+                double areacost = costs[1];
+                double layoutcost = costs[2];
+                lock (locker) {
+                    Actions.Add(new Move(myLine, summary, areacost, layoutcost, moveDistance));
+                }
+            }
+            //});
+            //Parallel.For(0, model.modelLines.Count,
+            //    index => {
+            for (int index = 0; index < model.modelLines.Count; index++) {
+
+                MyLine myLine = model.modelLines.ElementAt(index);
+                MyLine newMyLine = null;
+                Model tempModel = model.DeepCopy(myLine, out newMyLine);
+                tempModel.MoveLine(-moveDistance, newMyLine);
+                double[] costs = tempModel.CalculateCost();
+                double summary = costs[0];
+                double areacost = costs[1];
+                double layoutcost = costs[2];
+                lock (locker) {
+                    Actions.Add(new Move(myLine, summary, areacost, layoutcost, -moveDistance));
+                }
+            }
+            //});
         }
 
         public void SaveState() {
             modelCopyHistory.Add(model.DeepCopy());
         }
-        public void LoadState(Model m)
-        {
+        public void LoadState(Model m) {
             model = m;
         }
 
@@ -145,8 +151,9 @@ namespace WindowsFormsApp1.Simulation {
         }
 
         private Action FindStep() {
-            Action a = Actions.OrderBy(i => i.cost).FirstOrDefault();
-            if (actualCost > a.cost) {
+            List<Action> sorted = Actions.OrderBy(i => i.cost).ToList();
+            Action a = sorted.FirstOrDefault();
+            if (actualCost >= a.cost) {
                 actualCost = a.cost;
                 actualAreaCost = a.areacost;
                 actualLayoutCost = a.layoutcost;
@@ -155,8 +162,7 @@ namespace WindowsFormsApp1.Simulation {
             return null;
         }
 
-        public void Split(int splitPercentage, MyLine lineGridSelectedItem)
-        {
+        public void Split(int splitPercentage, MyLine lineGridSelectedItem) {
             Action a = new Split(splitPercentage, lineGridSelectedItem);
             a.Step(model);
             double[] costs = model.CalculateCost();
@@ -180,8 +186,8 @@ namespace WindowsFormsApp1.Simulation {
     public class ProgressEventArgs : EventArgs {
         public Model model { get; private set; }
         public double cost { get; private set; }
-        public double areacost { get;  set; }
-        public double layoutcost { get;  set; }
+        public double areacost { get; set; }
+        public double layoutcost { get; set; }
 
         public int simIndex { get; private set; }
         public ProgressEventArgs(Model status, double actualcost, int index) {
@@ -196,14 +202,16 @@ namespace WindowsFormsApp1.Simulation {
         public double cost;
         public double areacost;
         public double layoutcost;
+        public override string ToString() {
+            return this.GetType() + "-" + cost.ToString();
+        }
     }
     public class Move : Action {
         private MyLine myLine;
         private int moveDistance;
         private double summary;
 
-        public Move(MyLine myLine, int moveDistance)
-        {
+        public Move(MyLine myLine, int moveDistance) {
             this.myLine = myLine;
             this.moveDistance = moveDistance;
         }
@@ -228,8 +236,7 @@ namespace WindowsFormsApp1.Simulation {
     public class Split : Action {
         private MyLine myLine;
         private int split;
-        public Split(int splitPercentage, MyLine lineGridSelectedItem)
-        {
+        public Split(int splitPercentage, MyLine lineGridSelectedItem) {
             split = splitPercentage;
             myLine = lineGridSelectedItem;
         }

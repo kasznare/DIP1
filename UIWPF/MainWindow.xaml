@@ -24,7 +24,7 @@
     <Menu DockPanel.Dock="Top">
       <MenuItem Name="Simulation" Height="20" Header="_Simulation">
         <MenuItem Header="_Start" Click="StartSimulationClick"></MenuItem>
-        <MenuItem Header="_Restart" Click="StartSimulationClick"></MenuItem>
+        <MenuItem Header="_Restart" Click="ReStartSimulationClick"></MenuItem>
         <MenuItem Header="_Load selected state" Click="LoadSelectedClick"></MenuItem>
         <MenuItem Header="_Make one step"></MenuItem>
 
@@ -38,14 +38,18 @@
     </Menu>
     <Grid>
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="600" />
-        <ColumnDefinition Width="200*" />
+        <ColumnDefinition Width="600*" />
+        <ColumnDefinition Width="300*" />
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
-        <RowDefinition MinHeight='50' Height="400*"></RowDefinition>
-        <RowDefinition MinHeight='200' Height="200"></RowDefinition>
+        <RowDefinition MinHeight='50' />
+        <RowDefinition MinHeight='50' Height="50"></RowDefinition>
       </Grid.RowDefinitions>
-
+<WrapPanel Grid.Row="1" Grid.Column="0">
+  <Button Content="Move + " Click="MoveWallClick"></Button>
+  <Button Content="Move - " Click="MoveWallClick2"></Button>
+  <Button Content="Split" Click="SplitWallClick"></Button>
+</WrapPanel>
       <ScrollViewer Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Canvas Name="testcanvas" RenderTransformOrigin="0.5,0.4">
           <Canvas.RenderTransform>
@@ -55,6 +59,7 @@
           </Canvas.RenderTransform>
         </Canvas>
       </ScrollViewer>
+      
       <StackPanel Grid.Row="0" Grid.Column="1" Margin="10" Grid.RowSpan="2">
         <StackPanel.Resources>
           <Style TargetType="{x:Type DataGrid}">
@@ -67,6 +72,7 @@
         </StackPanel.Resources>
 
         <TabControl MinHeight="300">
+          
           <TabItem Name="PointGridItem" Header="Points">
             <DataGrid Name="PointGrid" ItemsSource="{Binding Points, IsAsync=True, Mode=OneWay}" />
 
@@ -100,8 +106,12 @@
 
           </TabItem>
           <TabItem Name="LineGridItem" Header="LineGrid" Visibility="Visible" IsEnabled="True" IsSelected="True">
-            <DataGrid Name="LineGrid" ItemsSource="{Binding model.modelLines, IsAsync=True, Mode=TwoWay, UpdateSourceTrigger=Explicit}" CurrentCellChanged="LineGrid_OnCurrentCellChanged" SelectionChanged="LineGrid_OnSelectionChanged" SelectionMode="Single" SelectionUnit="FullRow">
+            <DataGrid Name="LineGrid" ItemsSource="{Binding Lines, IsAsync=True, Mode=TwoWay, UpdateSourceTrigger=Explicit}" CurrentCellChanged="LineGrid_OnCurrentCellChanged" SelectionChanged="LineGrid_OnSelectionChanged" SelectionMode="Single" SelectionUnit="FullRow">
             </DataGrid>
+
+          </TabItem>
+          <TabItem Name="RoomTypes" Header="RoomTypes">
+            <DataGrid Name="RoomTypesGrid" ItemsSource="{Binding roomtypes, IsAsync=True, Mode=OneWay}" />
 
           </TabItem>
         </TabControl>
@@ -109,65 +119,65 @@
         <TabControl MinHeight="300">
           <TabItem Header="costgrid">
 
-        <DataGrid x:Name="CostGrid" ItemsSource="{Binding SimulationCosts, IsAsync=True, Mode=OneWay}" AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible" MaxHeight='280' SelectionChanged='CostGrid_SelectionChanged' MouseDoubleClick="CostGrid_OnMouseDoubleClick" Height='200' Margin='0,0,0,0'>
-          <DataGrid.Columns>
-            <DataGridTemplateColumn Header="Index" Width="40">
-              <DataGridTemplateColumn.CellTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding Index}" TextWrapping="Wrap" />
-                </DataTemplate>
-              </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="Summary" Width="60">
-              <DataGridTemplateColumn.CellTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding SummaryCost}" TextWrapping="Wrap" />
-                </DataTemplate>
-              </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="AreaCost" Width="60">
-              <DataGridTemplateColumn.CellTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding AreaCost}" TextWrapping="Wrap" />
-                </DataTemplate>
-              </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="LayoutCost" Width="60">
-              <DataGridTemplateColumn.CellTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding LayoutCost}" TextWrapping="Wrap" />
-                </DataTemplate>
-              </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-          </DataGrid.Columns>
-        </DataGrid>
+            <DataGrid x:Name="CostGrid" ItemsSource="{Binding SimulationCosts, IsAsync=True, Mode=OneWay}" AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible" MaxHeight='280' SelectionChanged='CostGrid_SelectionChanged' MouseDoubleClick="CostGrid_OnMouseDoubleClick" Height='200' Margin='0,0,0,0'>
+              <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Index" Width="40">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding Index}" TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Summary" Width="60">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding SummaryCost}" TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="AreaCost" Width="60">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding AreaCost}" TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="LayoutCost" Width="60">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding LayoutCost}" TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+              </DataGrid.Columns>
+            </DataGrid>
           </TabItem>
           <TabItem Header="costgrid2">
-        <DataGrid x:Name="CostGrid2" ItemsSource="{Binding LineAndCostActualStep, IsAsync=True, Mode=OneWay}" AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible" MaxHeight='280' Height='200' Margin='0,0,0,0'>
-          <DataGrid.Columns>
-            <DataGridTemplateColumn Header="Index" Width="40">
-              <DataGridTemplateColumn.CellTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding index}" TextWrapping="Wrap" />
-                </DataTemplate>
-              </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="line" Width="120">
-              <DataGridTemplateColumn.CellTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding line}" TextWrapping="Wrap" />
-                </DataTemplate>
-              </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-            <DataGridTemplateColumn Header="cost" Width="40">
-              <DataGridTemplateColumn.CellTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding cost}" TextWrapping="Wrap" />
-                </DataTemplate>
-              </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-          </DataGrid.Columns>
-        </DataGrid>
+            <DataGrid x:Name="CostGrid2" ItemsSource="{Binding LineAndCostActualStep, IsAsync=True, Mode=OneWay}" AutoGenerateColumns="False" VerticalScrollBarVisibility="Visible" MaxHeight='280' Height='200' Margin='0,0,0,0'>
+              <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Index" Width="40">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding index}" TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="line" Width="120">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding line}" TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="cost" Width="40">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding cost}" TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+              </DataGrid.Columns>
+            </DataGrid>
 
           </TabItem>
         </TabControl>

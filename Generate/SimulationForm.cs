@@ -12,7 +12,7 @@ namespace WindowsFormsApp1 {
         private Graphics g;
         public SimulationForm() {
             InitializeComponent();
-            model.InitModel();
+            model.InitSimpleModel();
             g = this.CreateGraphics();
         }
 
@@ -135,7 +135,7 @@ namespace WindowsFormsApp1 {
 
         private void initButton_Click(object sender, EventArgs e) {
             model = new Model();
-            model.InitModel();
+            model.InitSimpleModel();
             Invalidate();
         }
 

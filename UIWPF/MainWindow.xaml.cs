@@ -36,6 +36,7 @@ namespace UIWPF {
         public Simulate s = new Simulate();
         public ObservableCollection<LineAndCost> LineAndCostActualStep { get; set; }
 
+        //public ObservableCollection<RoomType> roomtypes { get; set; }
         public int LineGridSelectedIndex { get; set; }
         private int actualSimulationThreshold = 0;
         private int MaxSimulationThreshold = 5;
@@ -49,7 +50,13 @@ namespace UIWPF {
             Rooms = new ObservableCollection<Room>();
             SimulationCosts = new ObservableCollection<Costs>();
             LineAndCostActualStep = new ObservableCollection<LineAndCost>();
-            model.InitModel();
+
+            //roomtypes.Add(RoomType.BedRoom);
+            //roomtypes.Add(RoomType.LivingRoom);
+            //roomtypes.Add(RoomType.RestRoom);
+            //roomtypes.Add(RoomType.Kitchen);
+            //model.InitSimpleModel();
+            model.InitNormalModel();
             DataContext = this;
             InitializeComponent();
             Paint();
@@ -269,18 +276,28 @@ namespace UIWPF {
             //else {
             //    MessageBox.Show("Simulation threshold exit. Optimum reached.");
             //}
-            s.Move(LineGrid.SelectedItem as MyLine,10);
+            s.Move(LineGrid.SelectedItem as MyLine, 10);
             //model.MoveLine(10, LineGrid.SelectedItem as MyLine);
             //Paint();
         }
         private void MoveWallClick2(object sender, RoutedEventArgs e) {
-            s.Move(LineGrid.SelectedItem as MyLine,10);
+            s.Move(LineGrid.SelectedItem as MyLine, -10);
             //model.MoveLine(-10, LineGrid.SelectedItem as MyLine);
             //Paint();
         }
         private void StartSimulationClick(object sender, RoutedEventArgs e) {
             //model = new Model();
-            //model.InitModel();
+            //model.InitSimpleModel();
+            s.model = model;
+            Paint();
+
+            Thread t = new Thread(s.run);
+            t.Start();
+
+        }
+        private void ReStartSimulationClick(object sender, RoutedEventArgs e) {
+            model = new Model();
+            model.InitSimpleModel();
             s.model = model;
             Paint();
 
@@ -289,7 +306,6 @@ namespace UIWPF {
 
         }
 
-
         private void SplitWallClick(object sender, RoutedEventArgs e) {
             int splitPercentage = int.Parse("50");
             //model.SplitEdge(splitPercentage, model.GetRandomLine());
@@ -297,7 +313,6 @@ namespace UIWPF {
             //int index = LineGrid.SelectedIndex;
             //model.SplitEdge(splitPercentage, LineGrid.SelectedItem as MyLine);
             //Paint();
-            //LineGrid.GetBindingExpression().UpdateTarget();
         }
         private void SwitchRoomClick(object sender, RoutedEventArgs e) {
             SimulationStepSwitch();
