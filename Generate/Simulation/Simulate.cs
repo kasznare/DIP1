@@ -12,11 +12,11 @@ namespace WindowsFormsApp1.Simulation {
         public delegate void StatusUpdateHandler(object sender, ProgressEventArgs e);
 
         public Model model;
-        public Action a;
+        public Action ActualAction;
         public event StatusUpdateHandler ModelChanged;
         readonly object locker = new object();
         private int actualSimulationThreshold = 0;
-        private int MaxSimulationThreshold = 5;
+        private int MaxSimulationThreshold = 50;
         public int actualSimulationIndex = 0;
         public int moveDistance = 10;
         bool isFinished = false;
@@ -65,6 +65,7 @@ namespace WindowsFormsApp1.Simulation {
             ProgressEventArgs args = new ProgressEventArgs(model, actualCost, actualSimulationIndex);
             args.areacost = actualAreaCost;
             args.layoutcost = actualLayoutCost;
+            args.stepAction = ActualAction;
             ModelChanged(this, args);
         }
 
@@ -95,7 +96,7 @@ namespace WindowsFormsApp1.Simulation {
                     });
                 });
         }
-        private void CalculateMoveCosts()  {
+        private void CalculateMoveCosts() {
 
             //Parallel.For(0, model.modelLines.Count,
             //    index => {
@@ -152,12 +153,15 @@ namespace WindowsFormsApp1.Simulation {
 
         private Action FindStep() {
             List<Action> sorted = Actions.OrderBy(i => i.cost).ToList();
-            Action a = sorted.FirstOrDefault();
-            if (actualCost >= a.cost) {
-                actualCost = a.cost;
-                actualAreaCost = a.areacost;
-                actualLayoutCost = a.layoutcost;
-                return a;
+            //Action a = sorted.FirstOrDefault();
+            Random r = new Random();
+            int j = r.Next(0, sorted.Count);
+            ActualAction = sorted.ElementAt(j);
+            if (actualCost >= ActualAction.cost) {
+                actualCost = ActualAction.cost;
+                actualAreaCost = ActualAction.areacost;
+                actualLayoutCost = ActualAction.layoutcost;
+                return ActualAction;
             }
             return null;
         }
@@ -185,6 +189,7 @@ namespace WindowsFormsApp1.Simulation {
     }
     public class ProgressEventArgs : EventArgs {
         public Model model { get; private set; }
+        public Action stepAction { get; set; }
         public double cost { get; private set; }
         public double areacost { get; set; }
         public double layoutcost { get; set; }

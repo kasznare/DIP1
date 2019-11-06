@@ -15,13 +15,17 @@ namespace WindowsFormsApp1.GeometryModel {
 
         public double ConstaintCost { get; set; }
 
-        public Costs(int index, double summary, double areacost, double layoutcost, double constaintcost )
+        public Simulation.Action lastAction { get; set; }
+
+        public Costs(int index, double summary, double areacost, double layoutcost, double constaintcost, Simulation.Action a=null)
         {
             this.Index = index;
             this.SummaryCost = summary;
             AreaCost = areacost;
             LayoutCost = layoutcost;
             ConstaintCost = constaintcost;
+            lastAction = a;
         }
+
     }
 }

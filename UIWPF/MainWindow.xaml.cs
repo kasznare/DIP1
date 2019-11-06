@@ -71,7 +71,8 @@ namespace UIWPF {
                 lock (locker) {
 
                     model = e.model;
-                    SimulationCosts.Add(new Costs(e.simIndex, e.cost, e.areacost, e.layoutcost, 0));
+                    SimulationCosts.Add(new Costs(e.simIndex, e.cost, e.areacost, e.layoutcost, 0, e.stepAction));
+                    LoadDataFromModel();
                     Paint();
 
                 }
@@ -198,7 +199,7 @@ namespace UIWPF {
         private bool isPainting = false;
         private void Paint() {
             isPainting = true;
-            LoadDataFromModel();
+            //LoadDataFromModel();
             testcanvas.Children.Clear();
             Logger.WriteLog("paint started");
             for (var i = 0; i < model.modelLines.Count; i++) {
@@ -247,26 +248,59 @@ namespace UIWPF {
         }
 
         private void LoadDataFromModel() {
-            Points.Clear();
-            Lines.Clear();
-            Rooms.Clear();
-            Points.Clear();
-            Lines.Clear();
-            Rooms.Clear();
-            foreach (MyPoint point in model.ModelPoints) {
+            //Points.Clear();
+            //Lines.Clear();
+            //Rooms.Clear();
+            //Points.Clear();
+            //Lines.Clear();
+            //Rooms.Clear();
+
+
+            List<MyPoint> common = Points.Intersect(model.ModelPoints).ToList();
+            List<MyPoint> diff = model.ModelPoints.Except(common).ToList();
+            List<MyPoint> diffBAD = Points.Except(model.ModelPoints).ToList();
+
+            foreach (MyPoint point in diffBAD) {
+                Points.Remove(point);
+            }
+            foreach (MyPoint point in diff) {
                 Points.Add(point);
             }
 
-            foreach (MyLine line in model.modelLines) {
+            List<MyLine> commonL = Lines.Intersect(model.modelLines).ToList();
+            List<MyLine> diffL = model.modelLines.ToList().Except(commonL).ToList();
+            List<MyLine> diffLBAD = Lines.Except(model.modelLines).ToList();
+
+            foreach (MyLine line in diffLBAD) {
+                Lines.Remove(line);
+
+            }
+            foreach (MyLine line in diffL) {
                 Lines.Add(line);
             }
 
-            foreach (Room room in model.modelRooms) {
+            List<Room> commonR = Rooms.Intersect(model.modelRooms).ToList();
+            List<Room> diffR = model.modelRooms.ToList().Except(commonR).ToList();
+            List<Room> diffRBAD = Rooms.Except(model.modelRooms).ToList();
+
+            foreach (Room room in diffRBAD) {
+                Rooms.Remove(room);
+            }
+
+            foreach (Room room in diffR) {
                 Rooms.Add(room);
             }
+
+            //foreach (MyLine line in model.modelLines) {
+            //    Lines.Add(line);
+            //}
+
+            //foreach (Room room in model.modelRooms) {
+            //    Rooms.Add(room);
+            //}
         }
 
-        
+
 
         private void MoveWallClick(object sender, RoutedEventArgs e) {
             //if (actualSimulationThreshold < MaxSimulationThreshold) {
@@ -340,27 +374,24 @@ namespace UIWPF {
             //MessageBox.Show("selectionchanged" + selectedLineIndex.ToString());
         }
 
-        private void CostGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        private void CostGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
 
         }
 
-        private void CostGrid_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
+        private void CostGrid_OnMouseDoubleClick(object sender, MouseButtonEventArgs e) {
             int actualCostIndex = CostGrid.SelectedIndex;
             Model requested = s.modelCopyHistory.ElementAt(actualCostIndex);
             model = requested;
             Paint();
         }
 
-        private void LoadSelectedClick(object sender, RoutedEventArgs e)
-        {
+        private void LoadSelectedClick(object sender, RoutedEventArgs e) {
             int actualCostIndex = CostGrid.SelectedIndex;
             Model requested = s.modelCopyHistory.ElementAt(actualCostIndex);
             model = requested;
             Paint();
         }
 
-       
+
     }
 }

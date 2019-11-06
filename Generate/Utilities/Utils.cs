@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -20,7 +21,7 @@ namespace WindowsFormsApp1.Utilities {
         }
     }
 
-    public class SmartList<T> : List<T>, INotifyPropertyChanged
+    public class SmartList<T> : ObservableCollection<T>, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

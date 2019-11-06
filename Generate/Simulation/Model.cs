@@ -10,7 +10,8 @@ using ONLAB2;
 //still todo
 //TODO: branchelés - model operáció sorrend invariáns? akkor lehet őket osszevonogatni
 //TODO: a hurok esetben nem kapunk jó eredményt
-//TODO: volt egy darab pont duplikálva
+//TODO: implementláni kell az új bool propertyt
+//TODO: volt egy darab pont duplikálva - még mindig. - lehet, hogy több vonal van a rendszerben
 
 
 //done
