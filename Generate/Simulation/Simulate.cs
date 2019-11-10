@@ -35,7 +35,9 @@ namespace WindowsFormsApp1.Simulation {
             st.Start();
             while (true && !isFinished && !isTimeout && !isTreshold) {
                 Actions.Clear();
+
                 SaveState();
+                actualCost = model.CalculateCost().ElementAt(0);
                 CalculateCostsForState();
                 MakeAStepByTheCalculatedCosts();
                 HandleModelChangeUpdate();
@@ -151,11 +153,11 @@ namespace WindowsFormsApp1.Simulation {
             }
         }
 
+            Random r = new Random(30);
         private Action FindStep() {
             List<Action> sorted = Actions.OrderBy(i => i.cost).ToList();
             //Action a = sorted.FirstOrDefault();
-            Random r = new Random();
-            int j = r.Next(0, sorted.Count);
+            int j = r.Next(0, Math.Min(5, sorted.Count));
             ActualAction = sorted.ElementAt(j);
             if (actualCost >= ActualAction.cost) {
                 actualCost = ActualAction.cost;

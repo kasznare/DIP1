@@ -36,7 +36,7 @@ namespace UIWPF {
         public Simulate s = new Simulate();
         public ObservableCollection<LineAndCost> LineAndCostActualStep { get; set; }
 
-        //public ObservableCollection<RoomType> roomtypes { get; set; }
+        public ObservableCollection<RoomType> roomtypes { get; set; }
         public int LineGridSelectedIndex { get; set; }
         private int actualSimulationThreshold = 0;
         private int MaxSimulationThreshold = 5;
@@ -51,17 +51,22 @@ namespace UIWPF {
             SimulationCosts = new ObservableCollection<Costs>();
             LineAndCostActualStep = new ObservableCollection<LineAndCost>();
 
-            //roomtypes.Add(RoomType.BedRoom);
-            //roomtypes.Add(RoomType.LivingRoom);
-            //roomtypes.Add(RoomType.RestRoom);
-            //roomtypes.Add(RoomType.Kitchen);
-            //model.InitSimpleModel();
+            InitRoomTypes();
             model.InitNormalModel();
             DataContext = this;
             InitializeComponent();
             Paint();
             s.model = model;
             s.ModelChanged += ModelChangeHandler;
+        }
+
+        private void InitRoomTypes()
+        {
+            roomtypes = new ObservableCollection<RoomType>();
+            roomtypes.Add(RoomType.BedRoom);
+            roomtypes.Add(RoomType.LivingRoom);
+            roomtypes.Add(RoomType.RestRoom);
+            roomtypes.Add(RoomType.Kitchen);
         }
 
         private void ModelChangeHandler(object sender, ProgressEventArgs e) {
@@ -235,8 +240,8 @@ namespace UIWPF {
             foreach (Room room in model.modelRooms) {
                 List<MyPoint> boundaries = room.GetBoundaryPointsSorted();
                 if (!boundaries.Any()) continue;
-
-                List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
+                
+                List<Point> convertedPoints = boundaries.Select(i => i==null? new Point(0,0):new Point(i.X, i.Y)).ToList();
                 Polygon p = new Polygon();
                 p.Points = new PointCollection(convertedPoints);
                 p.Fill = new SolidColorBrush(room.type.fillColor.ToMediaColor());
@@ -393,5 +398,14 @@ namespace UIWPF {
         }
 
 
+        private void LoadSimpleModelClick(object sender, RoutedEventArgs e)
+        {
+            s.model.InitSimpleModel();
+        }
+
+        private void LoadNormalModelClick(object sender, RoutedEventArgs e)
+        {
+            s.model.InitNormalModel();
+        }
     }
 }

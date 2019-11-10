@@ -5,17 +5,17 @@ namespace WindowsFormsApp1 {
         /// <summary>
         /// number of openings on room walls
         /// </summary>
-        public int MaxDegree { get; set; }
+        //public int MaxDegree { get; set; }
 
         public int typeid;
-        public string roomname;
+        public string roomname { get; set; }
         public bool entrance;
         public int privacy;
-        public double areamin;
-        public double areamax;
-        public double proportion;
+        public double areamin { get; set; }
+        public double areamax { get; set; }
+        public double proportion { get; set; }
         public bool visualCommection;
-        public Color fillColor;
+        public Color fillColor { get; set; }
 
         //public static RoomType LivingRoom { get { return new RoomType(1, "LivingRoom",
         //    1.5, true, 1, 20, 20, true, Color.DarkOliveGreen); } }

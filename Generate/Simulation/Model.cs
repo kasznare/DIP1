@@ -43,14 +43,12 @@ namespace WindowsFormsApp1 {
         }
         //TODO: set this in the move/split/switch 
         public bool IsInInvalidState { get; set; }
-        public string Save()
-        {
+        public string Save() {
             string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(this);
             return jsonString;
         }
 
-        public void Load(string jsonString)
-        {
+        public void Load(string jsonString) {
             Model obj = Newtonsoft.Json.JsonConvert.DeserializeObject<Model>(jsonString);
             modelLines = obj.modelLines;
             modelRooms = obj.modelRooms;
@@ -60,10 +58,8 @@ namespace WindowsFormsApp1 {
         public ObservableCollection<Room> modelRooms = new ObservableCollection<Room>();
         Random rand = new Random(10);
 
-        public List<MyPoint> ModelPoints
-        {
-            get
-            {
+        public List<MyPoint> ModelPoints {
+            get {
                 List<MyPoint> starts = modelLines.Select(i => i.StartMyPoint).ToList();
                 List<MyPoint> ends = modelLines.Select(i => i.EndMyPoint).ToList();
                 starts.AddRange(ends);
@@ -299,7 +295,7 @@ namespace WindowsFormsApp1 {
             double length = selectedEdge.GetLength();
             if (length < 1) return;
 
-            Logger.WriteLog("Selected: "+selectedEdge+ " rooms: " + String.Join(",",selectedEdge.relatedRooms.Select(i=> i.Name).ToArray()));
+            Logger.WriteLog("Selected: " + selectedEdge + " rooms: " + String.Join(",", selectedEdge.relatedRooms.Select(i => i.Name).ToArray()));
             List<Room> selectedEdgeRelatedRooms = selectedEdge.relatedRooms;
             modelLines.Remove(selectedEdge);
             selectedEdge.StartMyPoint.RelatedLines.Remove(selectedEdge);
@@ -309,14 +305,13 @@ namespace WindowsFormsApp1 {
             MyLine a = new MyLine(selectedEdge.StartMyPoint, splitMyPoint);
             a.relatedRooms.AddRange(selectedEdgeRelatedRooms);
             modelLines.Add(a);
-            Logger.WriteLog("Added instead: "+a+ " rooms: " + String.Join(",",selectedEdge.relatedRooms.Select(i=> i.Name).ToArray()));
+            Logger.WriteLog("Added instead: " + a + " rooms: " + String.Join(",", selectedEdge.relatedRooms.Select(i => i.Name).ToArray()));
             MyLine b = new MyLine(splitMyPoint, selectedEdge.EndMyPoint);
             b.relatedRooms.AddRange(selectedEdgeRelatedRooms);
             modelLines.Add(b);
-            Logger.WriteLog("Added instead: "+b+ " rooms: " + String.Join(",",selectedEdge.relatedRooms.Select(i=> i.Name).ToArray()));
+            Logger.WriteLog("Added instead: " + b + " rooms: " + String.Join(",", selectedEdge.relatedRooms.Select(i => i.Name).ToArray()));
 
-            foreach (Room edgeRelatedRoom in selectedEdgeRelatedRooms)
-            {
+            foreach (Room edgeRelatedRoom in selectedEdgeRelatedRooms) {
                 try {
                     edgeRelatedRoom.BoundaryLines.Remove(selectedEdge);
                     edgeRelatedRoom.BoundaryLines.Add(a);
@@ -327,8 +322,8 @@ namespace WindowsFormsApp1 {
                     Logger.WriteLog("Error: there is something wrong with the split. Check it out.");
                 }
             }
-            
-            Logger.WriteLog($"Lines to that room {selectedEdge.relatedRooms.First()}: {String.Join(",",selectedEdge.relatedRooms.First().BoundaryLines.Select(i=>i))}");
+
+            Logger.WriteLog($"Lines to that room {selectedEdge.relatedRooms.First()}: {String.Join(",", selectedEdge.relatedRooms.First().BoundaryLines.Select(i => i))}");
         }
         public void HandleOpening(MyLine l) {
             if (l.relatedRooms.Count == 1) return; //külső fal
@@ -344,8 +339,7 @@ namespace WindowsFormsApp1 {
         public int ReachableRooms() {
             return 0;
         }
-        public void SwitchRooms(ref Room room1, ref Room room2)
-        {
+        public void SwitchRooms(ref Room room1, ref Room room2) {
             Room temp1 = room1.GetCopy();
             Room temp2 = room2.GetCopy();
             Room.ChangeAllParams(ref room1, temp2);
@@ -640,9 +634,9 @@ namespace WindowsFormsApp1 {
             double constaintcost = 0.0;
 
             try {
-                 areacost = CalculateParameterCost();
-                 layoutcost = CalculateLayoutCost();
-                 constaintcost = CalculateConstraintCost();
+                areacost = CalculateParameterCost();
+                layoutcost = CalculateLayoutCost();
+                constaintcost = CalculateConstraintCost();
                 summary = areacost + layoutcost + constaintcost;
                 Logger.WriteLog("területköltség: " + areacost);
                 Logger.WriteLog("kerületköltség: " + layoutcost);
@@ -667,18 +661,22 @@ namespace WindowsFormsApp1 {
 
                         RoomType type = room.type;
                         if (actualarea < type.areamin) {
-                            summary += Math.Abs(type.areamin - actualarea);
+                            summary += Math.Pow(2, type.areamin - actualarea);
                         }
                         else if (actualarea > type.areamax) {
-                            summary += Math.Abs(type.areamax - actualarea);
+                            summary += Math.Pow(2, type.areamax - actualarea);
                         }
 
                         double actualprop = room.CalculateProportion();
-                        if (actualprop > type.proportion)
-                        {
+                        if (actualprop > type.proportion) {
                             summary += Math.Pow(2, actualprop - type.proportion);
                         }
 
+                        double countCost = room.BoundaryPoints.Count;
+                        if (countCost > 6)
+                        {
+                            summary += Math.Pow(2, countCost - 6);
+                        }
 
                     }
                     catch (Exception e) {
@@ -700,15 +698,12 @@ namespace WindowsFormsApp1 {
         }
         private double CalculateLayoutCost() {
             double wallLength = 0.0;
-            foreach (MyLine seg in this.modelLines)
-            {
-                if (seg.relatedRooms.Count > 1)
-                {
-                    wallLength += Math.Sqrt((seg.GetLength() / 100))/10;
+            foreach (MyLine seg in this.modelLines) {
+                if (seg.relatedRooms.Count > 1) {
+                    wallLength += Math.Sqrt((seg.GetLength() / 100)) / 10;
                 }
-                else
-                {
-                    wallLength += Math.Sqrt((seg.GetLength() / 100)) *3;
+                else {
+                    wallLength += Math.Sqrt((seg.GetLength() / 100)) * 3;
 
                 }
             }
