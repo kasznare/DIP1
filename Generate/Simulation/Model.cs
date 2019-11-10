@@ -487,6 +487,7 @@ namespace WindowsFormsApp1 {
             catch (Exception e) {
                 Logger.WriteLog("Not legal move " + e.Message);
                 Logger.WriteLog(e);
+                IsInInvalidState = true;
                 //MessageBox.Show();
             }
 

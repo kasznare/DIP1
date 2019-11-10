@@ -18,6 +18,7 @@ using WindowsFormsApp1.GeometryModel;
 using WindowsFormsApp1.Simulation;
 using WindowsFormsApp1.Utilities;
 using Action = System.Action;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using Logger = WindowsFormsApp1.Logger;
 using MessageBox = System.Windows.MessageBox;
 using ShapeEllipse = System.Windows.Shapes.Ellipse;
@@ -52,16 +53,16 @@ namespace UIWPF {
             LineAndCostActualStep = new ObservableCollection<LineAndCost>();
 
             InitRoomTypes();
-            model.InitNormalModel();
+            model.InitSimpleModel();
+            s.model = model;
+            s.ModelChanged += ModelChangeHandler;
             DataContext = this;
             InitializeComponent();
             Paint();
-            s.model = model;
-            s.ModelChanged += ModelChangeHandler;
+            LoadDataFromModel();
         }
 
-        private void InitRoomTypes()
-        {
+        private void InitRoomTypes() {
             roomtypes = new ObservableCollection<RoomType>();
             roomtypes.Add(RoomType.BedRoom);
             roomtypes.Add(RoomType.LivingRoom);
@@ -85,6 +86,8 @@ namespace UIWPF {
 
 
         }
+
+
 
         private void SimulationStepMove() {
 
@@ -203,6 +206,7 @@ namespace UIWPF {
 
         private bool isPainting = false;
         private void Paint() {
+            AutoScrollCosts();
             isPainting = true;
             //LoadDataFromModel();
             testcanvas.Children.Clear();
@@ -240,8 +244,8 @@ namespace UIWPF {
             foreach (Room room in model.modelRooms) {
                 List<MyPoint> boundaries = room.GetBoundaryPointsSorted();
                 if (!boundaries.Any()) continue;
-                
-                List<Point> convertedPoints = boundaries.Select(i => i==null? new Point(0,0):new Point(i.X, i.Y)).ToList();
+
+                List<Point> convertedPoints = boundaries.Select(i => i == null ? new Point(0, 0) : new Point(i.X, i.Y)).ToList();
                 Polygon p = new Polygon();
                 p.Points = new PointCollection(convertedPoints);
                 p.Fill = new SolidColorBrush(room.type.fillColor.ToMediaColor());
@@ -305,7 +309,15 @@ namespace UIWPF {
             //}
         }
 
-
+        private void AutoScrollCosts() {
+            if (CostGrid.Items.Count > 0) {
+                var border = VisualTreeHelper.GetChild(CostGrid, 0) as Decorator;
+                if (border != null) {
+                    var scroll = border.Child as ScrollViewer;
+                    if (scroll != null) scroll.ScrollToEnd();
+                }
+            }
+        }
 
         private void MoveWallClick(object sender, RoutedEventArgs e) {
             //if (actualSimulationThreshold < MaxSimulationThreshold) {
@@ -316,13 +328,14 @@ namespace UIWPF {
             //    MessageBox.Show("Simulation threshold exit. Optimum reached.");
             //}
             s.Move(LineGrid.SelectedItem as MyLine, 10);
+            Paint();
             //model.MoveLine(10, LineGrid.SelectedItem as MyLine);
             //Paint();
         }
         private void MoveWallClick2(object sender, RoutedEventArgs e) {
             s.Move(LineGrid.SelectedItem as MyLine, -10);
             //model.MoveLine(-10, LineGrid.SelectedItem as MyLine);
-            //Paint();
+            Paint();
         }
         private void StartSimulationClick(object sender, RoutedEventArgs e) {
             //model = new Model();
@@ -397,15 +410,25 @@ namespace UIWPF {
             Paint();
         }
 
-
-        private void LoadSimpleModelClick(object sender, RoutedEventArgs e)
-        {
+        private void LoadSimpleModelClick(object sender, RoutedEventArgs e) {
             s.model.InitSimpleModel();
         }
 
-        private void LoadNormalModelClick(object sender, RoutedEventArgs e)
-        {
+        private void LoadNormalModelClick(object sender, RoutedEventArgs e) {
             s.model.InitNormalModel();
+        }
+
+        private void MainWindow_OnPreviewKeyDown(object sender, KeyEventArgs e) {
+            if (e.Key == Key.Escape) {
+                this.Close();
+            }
+
+            if (e.Key == Key.F10) {
+                s.Move(LineGrid.SelectedItem as MyLine, 10);
+            }
+            if (e.Key == Key.F11) {
+                s.Move(LineGrid.SelectedItem as MyLine, -10);
+            }
         }
     }
 }

@@ -91,9 +91,11 @@ namespace WindowsFormsApp1.Simulation {
                         Room r2target = null;
                         Model tempModel = model.DeepCopy(r1, r2, out r1target, out r2target);
                         tempModel.SwitchRooms(ref r1target, ref r2target);
-                        double cost = tempModel.CalculateCost().First();
-                        lock (locker) {
-                            Actions.Add(new Switch(r1, r2, cost));
+                        if (!tempModel.IsInInvalidState) {
+                            double cost = tempModel.CalculateCost().First();
+                            lock (locker) {
+                                Actions.Add(new Switch(r1, r2, cost));
+                            }
                         }
                     });
                 });
@@ -108,6 +110,8 @@ namespace WindowsFormsApp1.Simulation {
                 MyLine newMyLine = null;
                 Model tempModel = model.DeepCopy(myLine, out newMyLine);
                 tempModel.MoveLine(moveDistance, newMyLine);
+                if (tempModel.IsInInvalidState) continue;
+
                 double[] costs = tempModel.CalculateCost();
                 double summary = costs[0];
                 double areacost = costs[1];
@@ -125,6 +129,7 @@ namespace WindowsFormsApp1.Simulation {
                 MyLine newMyLine = null;
                 Model tempModel = model.DeepCopy(myLine, out newMyLine);
                 tempModel.MoveLine(-moveDistance, newMyLine);
+                if (tempModel.IsInInvalidState) continue;
                 double[] costs = tempModel.CalculateCost();
                 double summary = costs[0];
                 double areacost = costs[1];
@@ -153,7 +158,7 @@ namespace WindowsFormsApp1.Simulation {
             }
         }
 
-            Random r = new Random(30);
+        Random r = new Random(30);
         private Action FindStep() {
             List<Action> sorted = Actions.OrderBy(i => i.cost).ToList();
             //Action a = sorted.FirstOrDefault();
