@@ -30,10 +30,12 @@ namespace WindowsFormsApp1.Simulation {
         //public Dictionary<Action, double> ActionsByCosts = new Dictionary<Action, double>();
         public List<Action> Actions = new List<Action>();
         public List<Dictionary<Action, double>> history = new List<Dictionary<Action, double>>();
+        public bool IsStopped { get; set; }
+
         public void run() {
             Stopwatch st = new Stopwatch();
             st.Start();
-            while (true && !isFinished && !isTimeout && !isTreshold) {
+            while (true && !isFinished && !isTimeout && !isTreshold && !IsStopped) {
                 Actions.Clear();
 
                 SaveState();
@@ -54,12 +56,13 @@ namespace WindowsFormsApp1.Simulation {
                 }
             }
 
-            MessageBox.Show($"Run Ended. Finished: {isFinished} , Timeout: {isTimeout}, Treshold: {isTreshold}");
+            MessageBox.Show($"Run Ended.\nFinished: {isFinished}\nTimeout: {isTimeout}\nTreshold: {isTreshold}\nStopped manually: {IsStopped}");
             //actualSimulationIndex = 0;
             actualSimulationThreshold = 0;
             isFinished = false;
             isTimeout = false;
             isTreshold = false;
+            IsStopped = false;
         }
 
         private void HandleModelChangeUpdate() {

@@ -656,8 +656,6 @@ namespace WindowsFormsApp1 {
             try {
                 foreach (Room room in this.modelRooms) {
                     try {
-                        //string roomTypeId = room.Number;
-
                         double actualarea = room.CalculateArea();
 
                         RoomType type = room.type;
@@ -673,6 +671,7 @@ namespace WindowsFormsApp1 {
                             summary += Math.Pow(2, actualprop - type.proportion);
                         }
 
+                        //punish more edges
                         double countCost = room.BoundaryPoints.Count;
                         if (countCost > 6)
                         {

@@ -70,7 +70,7 @@
         <MenuItem Header="_Load Simple model" Click="LoadSimpleModelClick"></MenuItem>
         <MenuItem Header="_Load Normal model" Click="LoadNormalModelClick"></MenuItem>
         <MenuItem Header="_Load selected state" Click="LoadSelectedClick"></MenuItem>
-        <MenuItem Header="_Make one step"></MenuItem>
+        <MenuItem Header="_Stop simulation" Click="StopClick"></MenuItem>
 
       </MenuItem>
       <MenuItem Name="EditSelected" Height="20" Header="_Edit">
@@ -98,7 +98,7 @@
         <Canvas Name="testcanvas" RenderTransformOrigin="0.5,0.4">
           <Canvas.RenderTransform>
             <TransformGroup>
-              <ScaleTransform ScaleY="-0.7" ScaleX="0.7" />
+              <ScaleTransform ScaleY="-0.6" ScaleX="0.6" />
             </TransformGroup>
           </Canvas.RenderTransform>
         </Canvas>

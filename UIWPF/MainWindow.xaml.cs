@@ -430,5 +430,12 @@ namespace UIWPF {
                 s.Move(LineGrid.SelectedItem as MyLine, -10);
             }
         }
+
+        private bool isStopped = false;
+        private void StopClick(object sender, RoutedEventArgs e) {
+            isStopped = !isStopped;
+            s.IsStopped = isStopped;
+
+        }
     }
 }
