@@ -165,7 +165,7 @@ namespace WindowsFormsApp1.Simulation {
         private Action FindStep() {
             List<Action> sorted = Actions.OrderBy(i => i.cost).ToList();
             //Action a = sorted.FirstOrDefault();
-            int j = r.Next(0, Math.Min(5, sorted.Count));
+            int j = r.Next(0, Math.Min(0, sorted.Count));
             ActualAction = sorted.ElementAt(j);
             if (actualCost >= ActualAction.cost) {
                 actualCost = ActualAction.cost;

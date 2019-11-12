@@ -418,6 +418,10 @@ namespace UIWPF {
             s.model.InitNormalModel();
         }
 
+        private void LoadSkewedModelClick(object sender, RoutedEventArgs e) {
+            s.model.InitSkewedModel();
+        }
+
         private void MainWindow_OnPreviewKeyDown(object sender, KeyEventArgs e) {
             if (e.Key == Key.Escape) {
                 this.Close();
