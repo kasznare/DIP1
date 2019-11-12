@@ -87,7 +87,7 @@ namespace UIWPF {
 
         }
 
-
+        
 
         private void SimulationStepMove() {
 
@@ -367,7 +367,16 @@ namespace UIWPF {
             //Paint();
         }
         private void SwitchRoomClick(object sender, RoutedEventArgs e) {
-            SimulationStepSwitch();
+            //SimulationStepSwitch();
+            int roomcount = s.model.modelRooms.Count;
+            if (roomcount>=2)
+            {
+                Random r = new Random(10);
+                Room r1 = s.model.modelRooms.ElementAt(r.Next(s.model.modelRooms.Count));
+                Room r2 = s.model.modelRooms.ElementAt(r.Next(s.model.modelRooms.Count));
+
+                s.model.SwitchRooms(ref r1,ref r2);
+            }
             Paint();
         }
 
