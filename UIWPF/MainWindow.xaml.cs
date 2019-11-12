@@ -244,8 +244,8 @@ namespace UIWPF {
             foreach (Room room in model.modelRooms) {
                 List<MyPoint> boundaries = room.GetBoundaryPointsSorted();
                 if (!boundaries.Any()) continue;
-
-                List<Point> convertedPoints = boundaries.Select(i => i == null ? new Point(0, 0) : new Point(i.X, i.Y)).ToList();
+                boundaries.RemoveAll(item => item == null); //this is error handling, but I would need to figure out why nulls exist
+                List<Point> convertedPoints = boundaries.Select(i =>new Point(i.X, i.Y)).ToList();
                 Polygon p = new Polygon();
                 p.Points = new PointCollection(convertedPoints);
                 p.Fill = new SolidColorBrush(room.type.fillColor.ToMediaColor());
