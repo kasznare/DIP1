@@ -73,7 +73,6 @@
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\Utils.cs" />
     <None Include="packages.config" />
-    <None Include="_testcomman.cs" />
     <EmbeddedResource Include="SimulationForm.resx">
       <DependentUpon>SimulationForm.cs</DependentUpon>
     </EmbeddedResource>

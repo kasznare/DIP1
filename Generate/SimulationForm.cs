@@ -106,7 +106,6 @@ namespace WindowsFormsApp1 {
             //make threadpool like - room pool
             //fix number of modells, (number of threads) move elemnet, calculate cost
 
-            //todo: make parallel
             //https://docs.microsoft.com/en-us/dotnet/standard/parallel-programming/how-to-write-a-simple-parallel-foreach-loop
 
             double actualCost = model.CalculateCost().First();

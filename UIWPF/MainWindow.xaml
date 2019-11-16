@@ -67,6 +67,7 @@
     <Menu DockPanel.Dock="Top">
       <MenuItem Name="Simulation" Height="20" Header="_Simulation">
         <MenuItem Header="_Start" Click="StartSimulationClick"></MenuItem>
+        <MenuItem Header="_Load Simplest model" Click="LoadSimplestModelClick"></MenuItem>
         <MenuItem Header="_Load Simple model" Click="LoadSimpleModelClick"></MenuItem>
         <MenuItem Header="_Load Normal model" Click="LoadNormalModelClick"></MenuItem>
         <MenuItem Header="_Load Skewed model" Click="LoadSkewedModelClick"></MenuItem>
@@ -99,7 +100,7 @@
         <Canvas Name="testcanvas" RenderTransformOrigin="0.5,0.4">
           <Canvas.RenderTransform>
             <TransformGroup>
-              <ScaleTransform ScaleY="-0.6" ScaleX="0.6" />
+              <ScaleTransform ScaleY="-0.5" ScaleX="0.5" />
             </TransformGroup>
           </Canvas.RenderTransform>
         </Canvas>

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIWPF", "UIWPF\UIWPF.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generate", "Generate\Generate.csproj", "{3674FF68-AFEC-405C-8E09-52E3F7E51B0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateTest", "GenerateTest\GenerateTest.csproj", "{4C14C388-80F1-4DFE-8927-D73835CD9843}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3674FF68-AFEC-405C-8E09-52E3F7E51B0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3674FF68-AFEC-405C-8E09-52E3F7E51B0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3674FF68-AFEC-405C-8E09-52E3F7E51B0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C14C388-80F1-4DFE-8927-D73835CD9843}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C14C388-80F1-4DFE-8927-D73835CD9843}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C14C388-80F1-4DFE-8927-D73835CD9843}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C14C388-80F1-4DFE-8927-D73835CD9843}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

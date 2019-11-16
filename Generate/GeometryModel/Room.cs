@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
+using WindowsFormsApp1.Utilities;
 using ONLAB2;
 
 namespace WindowsFormsApp1 {
@@ -45,6 +46,10 @@ namespace WindowsFormsApp1 {
         public List<MyLine> BoundaryLines {
             get => boundaryLines;
             set {
+                if (value == null || value.Count==0)
+                {
+                    Logger.WriteLog("someone set to null");
+                }
                 boundaryLines = value;
                 isBoundaryLinesPossiblyUnsorted = true;
             }
@@ -61,6 +66,10 @@ namespace WindowsFormsApp1 {
             List<MyLine> orderedLines = new List<MyLine>();
 
             int actualIndex = 0;
+            if (BoundaryLines.Count==0)
+            {
+                Logger.WriteLog("boundary is null, this is bad");
+            }
             int boundCount = BoundaryLines.Count;
             for (int i = 0; i < boundCount; i++) {
                 if (actualIndex >= boundCount) {
@@ -100,6 +109,10 @@ namespace WindowsFormsApp1 {
                 }
             }
 
+            if (orderedLines.Count == 0)
+            {
+                Logger.WriteLog("this is bad");
+            }
             BoundaryLines = orderedLines;
             isBoundaryLinesPossiblyUnsorted = false;
         }
@@ -114,6 +127,11 @@ namespace WindowsFormsApp1 {
         public List<MyPoint> GetBoundaryPointsSorted() {
             if (isBoundaryPointsPossiblyUnsorted || true) {
                 SortBoundaryPoints();
+            }
+
+            if (boundaryPoints.Count==0)
+            {
+                throw new Exception("Ordering failed");
             }
             return BoundaryPoints;
         }
@@ -130,6 +148,11 @@ namespace WindowsFormsApp1 {
                 MyPoint commonMyPoint = FindCommonPointOnTwoLines(firstMyLine, nextMyLine);
                 boundaryPoints.Add(commonMyPoint);
             }
+
+            //if (_boundaryPoints.Count)
+            //{
+                
+            //}
         }
 
         private static MyPoint FindCommonPointOnTwoLines(MyLine firstMyLine, MyLine nextMyLine) {

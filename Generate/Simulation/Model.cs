@@ -10,12 +10,13 @@ using ONLAB2;
 //still todo
 //TODO: branchelés - model operáció sorrend invariáns? akkor lehet őket osszevonogatni
 //TODO: a hurok esetben nem kapunk jó eredményt
-//TODO: implementláni kell az új bool propertyt
 //TODO: volt egy darab pont duplikálva - még mindig. - lehet, hogy több vonal van a rendszerben
-
+//TODO: switch nem működik jól
+//TODO: make tests and handle failures - find step that fails and corerct there
 
 //done
 //kézi léptetést engedjen - intuitívabb lenne a kolstegfüggvény tervezése
+//implementláni kell az új bool propertyt
 //a listában kijelölt vonalnak látszódnia kéne az UI-on
 //a léptetés negatív irányban nem működik jól
 //közvetlen következő teendő az, hogy a mozgatás és a split kiírja a költségeket is
@@ -66,6 +67,33 @@ namespace WindowsFormsApp1 {
                 starts = starts.OrderBy(x => x.Guid).ToList();
                 return starts;
             }
+        }
+
+        public void InitSimplestModel() {
+            modelLines = new ObservableCollection<MyLine>();
+            modelRooms = new ObservableCollection<Room>();
+            MyPoint p1 = new MyPoint(100, 100);
+            MyPoint p2 = new MyPoint(400, 100);
+            MyPoint p3 = new MyPoint(400, 400);
+            MyPoint p4 = new MyPoint(100, 400);
+            MyLine line1 = new MyLine(p1, p2);
+            modelLines.Add(line1);
+            MyLine line2 = new MyLine(p2, p3);
+            modelLines.Add(line2);
+            MyLine line3 = new MyLine(p3, p4);
+            modelLines.Add(line3);
+            MyLine line4 = new MyLine(p4, p1);
+            modelLines.Add(line4);
+
+            Room first = new Room("FirstRoom", "1", RoomType.Kitchen);
+
+            foreach (MyLine modelLine in new List<MyLine>() { line1, line2, line3, line4 }) {
+                modelLine.relatedRooms.Add(first);
+            }
+
+
+            CalculateRooms();
+            Logger.WriteLog("InitSimplestModel() finished");
         }
 
         /// <summary>
@@ -347,6 +375,19 @@ namespace WindowsFormsApp1 {
                         oldNewRooms.Add(room, r);
                     }
                     l.relatedRooms.Add(r);
+                }
+            }
+
+            foreach (KeyValuePair<Room, Room> oldNew in oldNewRooms)
+            {
+                Room oldRoom = oldNew.Key;
+                Room newRoom = oldNew.Value;
+
+                foreach (MyLine oldLine in oldRoom.BoundaryLines)
+                {
+                    //TODO: some line is already registered to the room
+                    newRoom.BoundaryLines.Add(oldNewLines[oldLine]);
+                    
                 }
             }
 
@@ -726,6 +767,7 @@ namespace WindowsFormsApp1 {
             try {
                 foreach (Room room in this.modelRooms) {
                     try {
+                        //TODO: this fails when switched with simulation
                         double actualarea = room.CalculateArea();
 
                         RoomType type = room.type;

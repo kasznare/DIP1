@@ -56,7 +56,7 @@ namespace WindowsFormsApp1.Simulation {
                 }
             }
 
-            MessageBox.Show($"Run Ended.\nFinished: {isFinished}\nTimeout: {isTimeout}\nTreshold: {isTreshold}\nStopped manually: {IsStopped}");
+            Logger.WriteLog($"Run Ended.\nFinished: {isFinished}\nTimeout: {isTimeout}\nTreshold: {isTreshold}\nStopped manually: {IsStopped}");
             //actualSimulationIndex = 0;
             actualSimulationThreshold = 0;
             isFinished = false;
@@ -76,7 +76,9 @@ namespace WindowsFormsApp1.Simulation {
 
         private void CalculateCostsForState() {
             //ActionsByCosts = new Dictionary<Action, double>();
+
             CalculateMoveCosts();
+
             //CalculateSplitCosts();
             CalculateSwitchCosts();
         }
@@ -85,23 +87,26 @@ namespace WindowsFormsApp1.Simulation {
         }
         private void CalculateSwitchCosts() {
             int rooms = model.modelRooms.Count;
-            Parallel.For(0, rooms,
-                index => {
-                    Parallel.For(index + 1, rooms, secondindex => {
-                        Room r1 = model.modelRooms.ElementAt(index);
-                        Room r2 = model.modelRooms.ElementAt(secondindex);
-                        Room r1target = null;
-                        Room r2target = null;
-                        Model tempModel = model.DeepCopy(r1, r2, out r1target, out r2target);
-                        tempModel.SwitchRooms(ref r1target, ref r2target);
-                        if (!tempModel.IsInInvalidState) {
-                            double cost = tempModel.CalculateCost().First();
-                            lock (locker) {
-                                Actions.Add(new Switch(r1, r2, cost));
-                            }
+            //Parallel.For(0, rooms, index => {
+            for (int index = 0; index < rooms; index++) {
+                for (int secondindex = index + 1; secondindex < rooms; secondindex++) {
+                    //Parallel.For(index + 1, rooms, secondindex => {
+                    Room r1 = model.modelRooms.ElementAt(index);
+                    Room r2 = model.modelRooms.ElementAt(secondindex);
+                    Room r1target = null;
+                    Room r2target = null;
+                    Model tempModel = model.DeepCopy(r1, r2, out r1target, out r2target);
+                    tempModel.SwitchRooms(ref r1target, ref r2target);
+                    if (!tempModel.IsInInvalidState) {
+                        double cost = tempModel.CalculateCost().First();
+                        lock (locker) {
+                            Actions.Add(new Switch(ref r1, ref r2, cost));
                         }
-                    });
-                });
+                    }
+                    //});
+                }
+            }
+            //});
         }
         private void CalculateMoveCosts() {
 
@@ -196,6 +201,17 @@ namespace WindowsFormsApp1.Simulation {
             actualLayoutCost = costs[2];
             HandleModelChangeUpdate();
         }
+
+        public void SwitchRoom(ref Room r1, ref Room r2) {
+            Action a = new Switch(ref r1, ref r2);
+            a.Step(model);
+            double[] costs = model.CalculateCost();
+
+            actualCost = costs[0];
+            actualAreaCost = costs[1];
+            actualLayoutCost = costs[2];
+            HandleModelChangeUpdate();
+        }
     }
     public class ProgressEventArgs : EventArgs {
         public Model model { get; private set; }
@@ -264,11 +280,17 @@ namespace WindowsFormsApp1.Simulation {
         private Room r1;
         private Room r2;
 
-        public Switch(Room r1, Room r2, double cost) {
+        public Switch(ref Room r1, ref Room r2, double cost) {
             this.r1 = r1;
             this.r2 = r2;
             this.cost = cost;
         }
+
+        public Switch(ref Room r1, ref Room r2) {
+            this.r1 = r1;
+            this.r2 = r2;
+        }
+
         public override void Step(Model m) {
             m.SwitchRooms(ref r1, ref r2);
         }

@@ -372,10 +372,10 @@ namespace UIWPF {
             if (roomcount>=2)
             {
                 Random r = new Random(10);
-                Room r1 = s.model.modelRooms.ElementAt(r.Next(s.model.modelRooms.Count));
-                Room r2 = s.model.modelRooms.ElementAt(r.Next(s.model.modelRooms.Count));
+                Room r1 = s.model.modelRooms.ElementAt(0);//r.Next(s.model.modelRooms.Count));
+                Room r2 = s.model.modelRooms.ElementAt(1);//r.Next(s.model.modelRooms.Count));
 
-                s.model.SwitchRooms(ref r1,ref r2);
+                s.SwitchRoom(ref r1,ref r2);
             }
             Paint();
         }
@@ -435,7 +435,6 @@ namespace UIWPF {
             if (e.Key == Key.Escape) {
                 this.Close();
             }
-
             if (e.Key == Key.F10) {
                 s.Move(LineGrid.SelectedItem as MyLine, 10);
             }
@@ -449,6 +448,11 @@ namespace UIWPF {
             isStopped = !isStopped;
             s.IsStopped = isStopped;
 
+        }
+
+        private void LoadSimplestModelClick(object sender, RoutedEventArgs e)
+        {
+            s.model.InitSimplestModel();
         }
     }
 }
