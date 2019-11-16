@@ -454,5 +454,10 @@ namespace UIWPF {
         {
             s.model.InitSimplestModel();
         }
+
+        private void LoadAdvancedModelClick(object sender, RoutedEventArgs e)
+        {
+            s.model.InitAdvancedModel();
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -7,14 +8,15 @@ using System.Windows.Forms;
 using WindowsFormsApp1.Utilities;
 using ONLAB2;
 
-//still todo
+//still todos
 //TODO: branchelés - model operáció sorrend invariáns? akkor lehet őket osszevonogatni
 //TODO: a hurok esetben nem kapunk jó eredményt
-//TODO: volt egy darab pont duplikálva - még mindig. - lehet, hogy több vonal van a rendszerben
-//TODO: switch nem működik jól
-//TODO: make tests and handle failures - find step that fails and corerct there
+//TODO: make tests and handle failures - find step that fails and correct there
+//TODO: handle openings
 
 //done
+//volt egy darab pont duplikálva - még mindig. - lehet, hogy több vonal van a rendszerben
+//switch nem működik jól
 //kézi léptetést engedjen - intuitívabb lenne a kolstegfüggvény tervezése
 //implementláni kell az új bool propertyt
 //a listában kijelölt vonalnak látszódnia kéne az UI-on
@@ -36,7 +38,7 @@ namespace WindowsFormsApp1 {
     public class Model {
         public Model(List<MyLine> lines = null, List<Room> rooms = null) {
             if (lines != null) {
-                this.modelLines = new ObservableCollection<MyLine>(lines);
+                modelLines = new ObservableCollection<MyLine>(lines);
             }
             if (rooms != null) {
                 modelRooms = new ObservableCollection<Room>(rooms);
@@ -44,12 +46,11 @@ namespace WindowsFormsApp1 {
         }
         //TODO: set this in the move/split/switch 
         public bool IsInInvalidState { get; set; }
-        public string Save() {
+        public string SaveToString() {
             string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(this);
             return jsonString;
         }
-
-        public void Load(string jsonString) {
+        public void LoadStateFromString(string jsonString) {
             Model obj = Newtonsoft.Json.JsonConvert.DeserializeObject<Model>(jsonString);
             modelLines = obj.modelLines;
             modelRooms = obj.modelRooms;
@@ -68,7 +69,6 @@ namespace WindowsFormsApp1 {
                 return starts;
             }
         }
-
         public void InitSimplestModel() {
             modelLines = new ObservableCollection<MyLine>();
             modelRooms = new ObservableCollection<Room>();
@@ -90,16 +90,9 @@ namespace WindowsFormsApp1 {
             foreach (MyLine modelLine in new List<MyLine>() { line1, line2, line3, line4 }) {
                 modelLine.relatedRooms.Add(first);
             }
-
-
             CalculateRooms();
             Logger.WriteLog("InitSimplestModel() finished");
         }
-
-        /// <summary>
-        /// create new model
-        /// </summary>
-        /// <returns></returns>
         public void InitSimpleModel() {
             modelLines = new ObservableCollection<MyLine>();
             modelRooms = new ObservableCollection<Room>();
@@ -207,7 +200,6 @@ namespace WindowsFormsApp1 {
             CalculateRooms();
             Logger.WriteLog("InitSimpleModel() finished");
         }
-
         public void InitSkewedModel() {
             modelLines = new ObservableCollection<MyLine>();
             modelRooms = new ObservableCollection<Room>();
@@ -275,14 +267,149 @@ namespace WindowsFormsApp1 {
 
 
             CalculateRooms();
-            Logger.WriteLog("InitSimpleModel() finished");
+            Logger.WriteLog("InitSkewedModel() finished");
         }
-        public Model DeepCopy() {
-            Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
-            Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
-            Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
+        public void InitAdvancedModel() {
+            modelLines = new ObservableCollection<MyLine>();
+            modelRooms = new ObservableCollection<Room>();
+            MyPoint a1 = new MyPoint(0, 0);
+            MyPoint a2 = new MyPoint(200, 0);
+            MyPoint a3 = new MyPoint(200, 200);
+            MyPoint a4 = new MyPoint(0, 200);
+
+            MyPoint a5 = new MyPoint(200, 400);
+            MyPoint a6 = new MyPoint(0, 400);
+
+            MyPoint a7 = new MyPoint(400, 0);
+            MyPoint a8 = new MyPoint(400, 200);
+
+            MyPoint a9 = new MyPoint(400, 400);
+
+            MyLine l12 = new MyLine(a1, a2);
+            MyLine l23 = new MyLine(a2, a3);
+            MyLine l34 = new MyLine(a3, a4);
+            MyLine l41 = new MyLine(a4, a1);
+
+            MyLine l35 = new MyLine(a3, a5);
+            MyLine l56 = new MyLine(a5, a6);
+            MyLine l64 = new MyLine(a6, a4);
+
+            MyLine l27 = new MyLine(a2, a7);
+            MyLine l78 = new MyLine(a7, a8);
+            MyLine l83 = new MyLine(a8, a3);
+
+            MyLine l89 = new MyLine(a8, a9);
+            MyLine l95 = new MyLine(a9, a5);
+
+            modelLines.Add(l41);
+            modelLines.Add(l34);
+            modelLines.Add(l23);
+            modelLines.Add(l12);
+            modelLines.Add(l35);
+            modelLines.Add(l56);
+            modelLines.Add(l64);
+            modelLines.Add(l27);
+            modelLines.Add(l78);
+            modelLines.Add(l83);
+            modelLines.Add(l89);
+            modelLines.Add(l95);
 
 
+            Room first = new Room("FirstRoom", "1", RoomType.Kitchen);
+            Room second = new Room("SecondRoom", "2", RoomType.LivingRoom);
+            Room third = new Room("ThirdRoom", "3", RoomType.BedRoom);
+            Room fourth = new Room("FourthRoom", "4", RoomType.RestRoom);
+
+            foreach (MyLine modelLine in new List<MyLine>() { l12, l23, l34, l41 }) {
+                modelLine.relatedRooms.Add(first);
+            }
+
+            foreach (MyLine modelLine in new List<MyLine>() { l35, l56, l64, l34 }) {
+                modelLine.relatedRooms.Add(second);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { l23, l27, l78, l83 }) {
+                modelLine.relatedRooms.Add(third);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { l83, l89, l95, l35 }) {
+                modelLine.relatedRooms.Add(fourth);
+            }
+
+
+            MyPoint _a1 = new MyPoint(-000, -000);
+            MyPoint _a2 = new MyPoint(-300, -000);
+            MyPoint _a3 = new MyPoint(-300, -300);
+            MyPoint _a4 = new MyPoint(-000, -300);
+            MyPoint _a5 = new MyPoint(-300, -400);
+            MyPoint _a6 = new MyPoint(-000, -400);
+            MyPoint _a7 = new MyPoint(-400, -000);
+            MyPoint _a8 = new MyPoint(-400, -300);
+            MyPoint _a9 = new MyPoint(-400, -400);
+
+            MyLine _l12 = new MyLine(_a1, _a2);
+            MyLine _l23 = new MyLine(_a2, _a3);
+            MyLine _l34 = new MyLine(_a3, _a4);
+            MyLine _l41 = new MyLine(_a4, _a1);
+            MyLine _l35 = new MyLine(_a3, _a5);
+            MyLine _l56 = new MyLine(_a5, _a6);
+            MyLine _l64 = new MyLine(_a6, _a4);
+            MyLine _l27 = new MyLine(_a2, _a7);
+            MyLine _l78 = new MyLine(_a7, _a8);
+            MyLine _l83 = new MyLine(_a8, _a3);
+            MyLine _l89 = new MyLine(_a8, _a9);
+            MyLine _l95 = new MyLine(_a9, _a5);
+
+            modelLines.Add(_l41);
+            modelLines.Add(_l34);
+            modelLines.Add(_l23);
+            modelLines.Add(_l12);
+            modelLines.Add(_l35);
+            modelLines.Add(_l56);
+            modelLines.Add(_l64);
+            modelLines.Add(_l27);
+            modelLines.Add(_l78);
+            modelLines.Add(_l83);
+            modelLines.Add(_l89);
+            modelLines.Add(_l95);
+
+
+            Room _first = new Room("_FirstRoom", "1", RoomType.Kitchen);
+            Room _second = new Room("_SecondRoom", "2", RoomType.LivingRoom);
+            Room _third = new Room("_ThirdRoom", "3", RoomType.BedRoom);
+            Room _fourth = new Room("_FourthRoom", "4", RoomType.RestRoom);
+
+            foreach (MyLine modelLine in new List<MyLine>() { _l12, _l23, _l34, _l41 }) {
+                modelLine.relatedRooms.Add(_first);
+            }
+
+            foreach (MyLine modelLine in new List<MyLine>() { _l35, _l56, _l64, _l34 }) {
+                modelLine.relatedRooms.Add(_second);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { _l23, _l27, _l78, _l83 }) {
+                modelLine.relatedRooms.Add(_third);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { _l83, _l89, _l95, _l35 }) {
+                modelLine.relatedRooms.Add(_fourth);
+            }
+
+
+            CalculateRooms();
+            Repair();
+            Logger.WriteLog("Advanced model initialized");
+        }
+
+
+        /// <summary>
+        /// Base deepcopy with no other returning parameters
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
+        private Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
+        private Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
+
+        public void LoadData() {
+            oldNewRooms = new Dictionary<Room, Room>();
+            oldNewPoints = new Dictionary<MyPoint, MyPoint>();
+            oldNewLines = new Dictionary<MyLine, MyLine>();
             foreach (MyLine line in modelLines) {
                 MyPoint p1 = null;
                 MyPoint p2 = null;
@@ -297,6 +424,9 @@ namespace WindowsFormsApp1 {
                     oldNewPoints.Add(line.EndMyPoint, p2);
                 }
                 MyLine l = new MyLine(p1, p2);
+                if (p1 == null || p2 == null) {
+                    throw new Exception("this cant be null");
+                }
                 oldNewLines.Add(line, l);
 
                 foreach (Room room in line.relatedRooms) {
@@ -309,93 +439,133 @@ namespace WindowsFormsApp1 {
                 }
             }
 
+            foreach (KeyValuePair<Room, Room> oldNew in oldNewRooms) {
+                Room oldRoom = oldNew.Key;
+                Room newRoom = oldNew.Value;
+
+                foreach (MyLine oldLine in oldRoom.BoundaryLines) {
+                    //TODO: some line is already registered to the room
+                    newRoom.BoundaryLines.Add(oldNewLines[oldLine]);
+                }
+            }
+        }
+        public Model DeepCopy() {
+            LoadData();
             return new Model(oldNewLines.Values.ToList(), oldNewRooms.Values.ToList());
         }
         public Model DeepCopy(MyLine oldMyLine, out MyLine newMyLine) {
-            Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
-            Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
-            Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
+            //Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
+            //Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
+            //Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
+            LoadData();
 
-
-            foreach (MyLine line in modelLines) {
-                MyPoint p1 = null;
-                MyPoint p2 = null;
-
-                if (!oldNewPoints.TryGetValue(line.StartMyPoint, out p1)) {
-                    p1 = line.StartMyPoint.GetCopy();
-                    oldNewPoints.Add(line.StartMyPoint, p1);
-                }
-
-                if (!oldNewPoints.TryGetValue(line.EndMyPoint, out p2)) {
-                    p2 = line.EndMyPoint.GetCopy();
-                    oldNewPoints.Add(line.EndMyPoint, p2);
-                }
-                MyLine l = new MyLine(p1, p2);
-                oldNewLines.Add(line, l);
-
-                foreach (Room room in line.relatedRooms) {
-                    Room r = null;
-                    if (!oldNewRooms.TryGetValue(room, out r)) {
-                        r = room.GetCopy();
-                        oldNewRooms.Add(room, r);
-                    }
-                    l.relatedRooms.Add(r);
-                }
-            }
+            //foreach (MyLine line in modelLines) {
+            //    MyPoint p1 = null;
+            //    MyPoint p2 = null;
+            //    if (!oldNewPoints.TryGetValue(line.StartMyPoint, out p1)) {
+            //        p1 = line.StartMyPoint.GetCopy();
+            //        oldNewPoints.Add(line.StartMyPoint, p1);
+            //    }
+            //    if (!oldNewPoints.TryGetValue(line.EndMyPoint, out p2)) {
+            //        p2 = line.EndMyPoint.GetCopy();
+            //        oldNewPoints.Add(line.EndMyPoint, p2);
+            //    }
+            //    MyLine l = new MyLine(p1, p2);
+            //    oldNewLines.Add(line, l);
+            //    foreach (Room room in line.relatedRooms) {
+            //        Room r = null;
+            //        if (!oldNewRooms.TryGetValue(room, out r)) {
+            //            r = room.GetCopy();
+            //            oldNewRooms.Add(room, r);
+            //        }
+            //        l.relatedRooms.Add(r);
+            //    }
+            //}
+            //foreach (KeyValuePair<Room, Room> oldNew in oldNewRooms) {
+            //    Room oldRoom = oldNew.Key;
+            //    Room newRoom = oldNew.Value;
+            //    foreach (MyLine oldLine in oldRoom.BoundaryLines) {
+            //        //TODO: some line is already registered to the room
+            //        newRoom.BoundaryLines.Add(oldNewLines[oldLine]);
+            //    }
+            //}
 
             newMyLine = oldNewLines[oldMyLine];
 
             return new Model(oldNewLines.Values.ToList(), oldNewRooms.Values.ToList());
         }
         public Model DeepCopy(Room oldMyRoom1, Room oldMyRoom2, out Room newMyRoom1, out Room newMyRoom2) {
-            Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
-            Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
-            Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
+            //Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
+            //Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
+            //Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
+            LoadData();
+            //foreach (MyLine line in modelLines) {
+            //    MyPoint p1 = null;
+            //    MyPoint p2 = null;
 
-            foreach (MyLine line in modelLines) {
-                MyPoint p1 = null;
-                MyPoint p2 = null;
+            //    if (!oldNewPoints.TryGetValue(line.StartMyPoint, out p1)) {
+            //        p1 = line.StartMyPoint.GetCopy();
+            //        oldNewPoints.Add(line.StartMyPoint, p1);
+            //    }
 
-                if (!oldNewPoints.TryGetValue(line.StartMyPoint, out p1)) {
-                    p1 = line.StartMyPoint.GetCopy();
-                    oldNewPoints.Add(line.StartMyPoint, p1);
-                }
+            //    if (!oldNewPoints.TryGetValue(line.EndMyPoint, out p2)) {
+            //        p2 = line.EndMyPoint.GetCopy();
+            //        oldNewPoints.Add(line.EndMyPoint, p2);
+            //    }
+            //    MyLine l = new MyLine(p1, p2);
+            //    oldNewLines.Add(line, l);
 
-                if (!oldNewPoints.TryGetValue(line.EndMyPoint, out p2)) {
-                    p2 = line.EndMyPoint.GetCopy();
-                    oldNewPoints.Add(line.EndMyPoint, p2);
-                }
-                MyLine l = new MyLine(p1, p2);
-                oldNewLines.Add(line, l);
+            //    foreach (Room room in line.relatedRooms) {
+            //        Room r = null;
+            //        if (!oldNewRooms.TryGetValue(room, out r)) {
+            //            r = room.GetCopy();
+            //            oldNewRooms.Add(room, r);
+            //        }
+            //        l.relatedRooms.Add(r);
+            //    }
+            //}
 
-                foreach (Room room in line.relatedRooms) {
-                    Room r = null;
-                    if (!oldNewRooms.TryGetValue(room, out r)) {
-                        r = room.GetCopy();
-                        oldNewRooms.Add(room, r);
-                    }
-                    l.relatedRooms.Add(r);
-                }
-            }
+            //foreach (KeyValuePair<Room, Room> oldNew in oldNewRooms) {
+            //    Room oldRoom = oldNew.Key;
+            //    Room newRoom = oldNew.Value;
 
-            foreach (KeyValuePair<Room, Room> oldNew in oldNewRooms)
-            {
-                Room oldRoom = oldNew.Key;
-                Room newRoom = oldNew.Value;
+            //    foreach (MyLine oldLine in oldRoom.BoundaryLines) {
+            //        //TODO: some line is already registered to the room
+            //        //try {
 
-                foreach (MyLine oldLine in oldRoom.BoundaryLines)
-                {
-                    //TODO: some line is already registered to the room
-                    newRoom.BoundaryLines.Add(oldNewLines[oldLine]);
-                    
-                }
-            }
+            //        newRoom.BoundaryLines.Add(oldNewLines[oldLine]);
+            //        //}
+            //        //catch (Exception ex) {
+            //        //    Logger.WriteLog(ex);
+            //        //}
+
+            //    }
+            //}
 
             newMyRoom1 = oldNewRooms[oldMyRoom1];
             newMyRoom2 = oldNewRooms[oldMyRoom2];
 
             return new Model(oldNewLines.Values.ToList(), oldNewRooms.Values.ToList());
         }
+
+        public void Repair() {
+            List<MyPoint> allPoints = new List<MyPoint>();
+            allPoints.AddRange(modelLines.Select(i => i.StartMyPoint));
+            allPoints.AddRange(modelLines.Select(i => i.EndMyPoint));
+            foreach (MyLine modelLine in modelLines) {
+                List<MyPoint> asd = allPoints.Where(i => i.Equals(modelLine.StartMyPoint)).OrderBy(i => i.Guid).ToList();
+                List<MyPoint> asd2 = allPoints.Where(i => i.Equals(modelLine.EndMyPoint)).OrderBy(i => i.Guid).ToList();
+                if (asd.Count() > 1) {
+                    modelLine.StartMyPoint = asd.First();
+                }
+                if (asd2.Count() > 1) {
+                    modelLine.EndMyPoint = asd2.First();
+                }
+            }
+
+
+        }
+
         public MyLine GetRandomLine() {
             int randint = rand.Next(0, modelLines.Count);
             return modelLines.ElementAt(randint);
@@ -785,8 +955,7 @@ namespace WindowsFormsApp1 {
 
                         //punish more edges
                         double countCost = room.BoundaryPoints.Count;
-                        if (countCost > 6)
-                        {
+                        if (countCost > 6) {
                             summary += Math.Pow(2, countCost - 6);
                         }
 

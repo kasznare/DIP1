@@ -58,12 +58,12 @@
     <Compile Include="Utilities\MyInterlockedExchangeExampleClass.cs" />
     <Compile Include="Utilities\ImageSaver.cs" />
     <Compile Include="GeometryModel\RoomType.cs" />
-    <Compile Include="SimulationForm.cs">
+    <None Include="SimulationForm.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SimulationForm.Designer.cs">
+    </None>
+    <None Include="SimulationForm.Designer.cs">
       <DependentUpon>SimulationForm.cs</DependentUpon>
-    </Compile>
+    </None>
     <Compile Include="GeometryModel\MyLine.cs" />
     <Compile Include="Simulation\Model.cs" />
     <Compile Include="GeometryModel\MyPoint.cs" />

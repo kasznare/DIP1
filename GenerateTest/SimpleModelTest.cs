@@ -16,6 +16,17 @@ namespace GenerateTest {
             s.model.InitSimpleModel();
 
         }
+        //the test should be to try every single move and see if there is an error
+        //if there is an error...
+        //so hopefully there is no error, and this is a black box stress test
+        //the test should log the process, and keep some history, because otherwise there is no way we can tell later what went wrong.
+        //it needs to store the last model state
+        //the test should save every model state
+        //should the model store every model state in a text file? I guess so, why not? every line is a new model state... or every file?
+
+        //or! I implement the state change logging but do not keep successful logs
+
+
         //the goal of the tests are to avoid exceptions, if there is an exception, it fails.
         [Test]
         public void FullSimulation() {

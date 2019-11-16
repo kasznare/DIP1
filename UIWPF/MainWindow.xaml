@@ -71,6 +71,7 @@
         <MenuItem Header="_Load Simple model" Click="LoadSimpleModelClick"></MenuItem>
         <MenuItem Header="_Load Normal model" Click="LoadNormalModelClick"></MenuItem>
         <MenuItem Header="_Load Skewed model" Click="LoadSkewedModelClick"></MenuItem>
+        <MenuItem Header="_Load Advanced model" Click="LoadAdvancedModelClick"></MenuItem>
         <MenuItem Header="_Load selected state" Click="LoadSelectedClick"></MenuItem>
         <MenuItem Header="_Stop simulation" Click="StopClick"></MenuItem>
 
