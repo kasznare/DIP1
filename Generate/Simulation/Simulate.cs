@@ -47,6 +47,7 @@ namespace WindowsFormsApp1.Simulation {
                 actualSimulationIndex++;
                 if (actualSimulationIndex > 1000) {
                     isFinished = true;
+                    
                 }
                 if (st.ElapsedMilliseconds > 10000) {
                     isTimeout = true;
@@ -54,6 +55,7 @@ namespace WindowsFormsApp1.Simulation {
                 if (actualSimulationThreshold >= MaxSimulationThreshold) {
                     isTreshold = true;
                 }
+                
             }
 
             Logger.WriteLog($"Run Ended.\nFinished: {isFinished}\nTimeout: {isTimeout}\nTreshold: {isTreshold}\nStopped manually: {IsStopped}");

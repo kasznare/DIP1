@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using WindowsFormsApp1;
@@ -44,7 +47,9 @@ namespace UIWPF {
         public int actualSimulationIndex = 0;
         readonly object locker = new object();
         public int moveDistance = 10;
+        public string runPath = "";
         public MainWindow() {
+            //CreateRunFolderAndInitPath();
             model = new Model();
             Points = new ObservableCollection<MyPoint>();
             Lines = new ObservableCollection<MyLine>();
@@ -62,6 +67,16 @@ namespace UIWPF {
             LoadDataFromModel();
         }
 
+        private void CreateRunFolderAndInitPath() {
+            runPath = $@"C:\Users\andras.kasznar\Documents\DIP1\Screens\{DateTime.Now:yy-MM-dd-hh-ss}_{model.loadedModelType}\";
+            try {
+                Directory.CreateDirectory(runPath);
+            }
+            catch (Exception e) {
+                Logger.WriteLog("Directory can not be created, it already exists");
+            }
+        }
+
         private void InitRoomTypes() {
             roomtypes = new ObservableCollection<RoomType>();
             roomtypes.Add(RoomType.BedRoom);
@@ -76,18 +91,19 @@ namespace UIWPF {
 
                 lock (locker) {
 
+                    SaveStateToPng();
                     model = e.model;
                     SimulationCosts.Add(new Costs(e.simIndex, e.cost, e.areacost, e.layoutcost, 0, e.stepAction));
                     LoadDataFromModel();
                     Paint();
 
+
                 }
             }), DispatcherPriority.SystemIdle);
 
-
         }
 
-        
+
 
         private void SimulationStepMove() {
 
@@ -245,7 +261,7 @@ namespace UIWPF {
                 List<MyPoint> boundaries = room.GetBoundaryPointsSorted();
                 if (!boundaries.Any()) continue;
                 boundaries.RemoveAll(item => item == null); //this is error handling, but I would need to figure out why nulls exist
-                List<Point> convertedPoints = boundaries.Select(i =>new Point(i.X, i.Y)).ToList();
+                List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
                 Polygon p = new Polygon();
                 p.Points = new PointCollection(convertedPoints);
                 p.Fill = new SolidColorBrush(room.type.fillColor.ToMediaColor());
@@ -369,13 +385,12 @@ namespace UIWPF {
         private void SwitchRoomClick(object sender, RoutedEventArgs e) {
             //SimulationStepSwitch();
             int roomcount = s.model.modelRooms.Count;
-            if (roomcount>=2)
-            {
+            if (roomcount >= 2) {
                 Random r = new Random(10);
                 Room r1 = s.model.modelRooms.ElementAt(0);//r.Next(s.model.modelRooms.Count));
                 Room r2 = s.model.modelRooms.ElementAt(1);//r.Next(s.model.modelRooms.Count));
 
-                s.SwitchRoom(ref r1,ref r2);
+                s.SwitchRoom(ref r1, ref r2);
             }
             Paint();
         }
@@ -450,14 +465,102 @@ namespace UIWPF {
 
         }
 
-        private void LoadSimplestModelClick(object sender, RoutedEventArgs e)
-        {
+        private void LoadSimplestModelClick(object sender, RoutedEventArgs e) {
             s.model.InitSimplestModel();
         }
 
-        private void LoadAdvancedModelClick(object sender, RoutedEventArgs e)
-        {
+        private void LoadAdvancedModelClick(object sender, RoutedEventArgs e) {
             s.model.InitAdvancedModel();
         }
+
+
+
+        private void SaveStateToPng() {
+            RenderTargetBitmap rtb = new RenderTargetBitmap((int)MainFormWindow.RenderSize.Width,
+                (int)MainFormWindow.RenderSize.Height, 96d, 96d, System.Windows.Media.PixelFormats.Default);
+            rtb.Render(MainFormWindow);
+
+            //var crop = new CroppedBitmap(rtb, new Int32Rect(50, 50, 250, 250));
+
+            BitmapEncoder pngEncoder = new PngBitmapEncoder();
+            pngEncoder.Frames.Add(BitmapFrame.Create(rtb));
+            if (runPath=="")
+            {
+                CreateRunFolderAndInitPath();
+            }
+            var path = runPath + DateTime.Now.ToString("HH_mm_ss_fff") + ".png";
+            using (var fs = System.IO.File.OpenWrite(path)) {
+                pngEncoder.Save(fs);
+            }
+        }
+
+
+
+
+
+        /// <summary>
+        /// Take screenshot of a Window.
+        /// </summary>
+        /// <remarks>
+        /// - Usage example: screenshot icon in every window header.                
+        /// - Keep well away from any Windows Forms based methods that involve screen pixels. You will run into scaling issues at different
+        ///   monitor DPI values. Quote: "Keep in mind though that WPF units aren't pixels, they're device-independent @ 96DPI
+        ///   "pixelish-units"; so really what you want, is the scale factor between 96DPI and the current screen DPI (so like 1.5 for
+        ///   144DPI) - Paul Betts."
+        /// </remarks>
+        public async Task<bool> TryScreenshotToClipboardAsync(FrameworkElement frameworkElement) {
+            frameworkElement.ClipToBounds = true; // Can remove if everything still works when the screen is maximised.
+
+            Rect relativeBounds = VisualTreeHelper.GetDescendantBounds(frameworkElement);
+            double areaWidth = frameworkElement.RenderSize.Width; // Cannot use relativeBounds.Width as this may be incorrect if a window is maximised.
+            double areaHeight = frameworkElement.RenderSize.Height; // Cannot use relativeBounds.Height for same reason.
+            double XLeft = relativeBounds.X;
+            double XRight = XLeft + areaWidth;
+            double YTop = relativeBounds.Y;
+            double YBottom = YTop + areaHeight;
+            var bitmap = new RenderTargetBitmap((int)Math.Round(XRight, MidpointRounding.AwayFromZero),
+                                                (int)Math.Round(YBottom, MidpointRounding.AwayFromZero),
+                                                96, 96, PixelFormats.Default);
+
+            // Render framework element to a bitmap. This works better than any screen-pixel-scraping methods which will pick up unwanted
+            // artifacts such as the taskbar or another window covering the current window.
+            var dv = new DrawingVisual();
+            using (DrawingContext ctx = dv.RenderOpen()) {
+                var vb = new VisualBrush(frameworkElement);
+                ctx.DrawRectangle(vb, null, new Rect(new Point(XLeft, YTop), new Point(XRight, YBottom)));
+            }
+            bitmap.Render(dv);
+            return await TryCopyBitmapToClipboard(bitmap);
+        }
+
+        private static async Task<bool> TryCopyBitmapToClipboard(BitmapSource bmpCopied) {
+            var tries = 3;
+            while (tries-- > 0) {
+                try {
+                    // This must be executed on the calling dispatcher.
+                    System.Windows.Clipboard.SetImage(bmpCopied);
+                    return true;
+                }
+                catch (COMException) {
+                    // Windows clipboard is optimistic concurrency. On fail (as in use by another process), retry.
+                    await Task.Delay(TimeSpan.FromMilliseconds(100));
+                }
+            }
+            return false;
+        }
+
+        private void SaveStateClick(object sender, RoutedEventArgs e) {
+            SaveStateToPng();
+        }
+
+        private void MainWindow_OnClosing(object sender, CancelEventArgs e)
+        {
+           
+        }
     }
+
+
+
+
+
 }
