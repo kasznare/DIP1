@@ -13,8 +13,6 @@ namespace GenerateTest {
         [SetUp]
         public void Setup() {
             s.model = new Model();
-            s.model.InitSimpleModel();
-
         }
         //the test should be to try every single move and see if there is an error
         //if there is an error...
@@ -29,14 +27,20 @@ namespace GenerateTest {
 
         //the goal of the tests are to avoid exceptions, if there is an exception, it fails.
         [Test]
+        public void SimpleModel() {
+            s.model.InitSimpleModel();
+            s.run();
+        }
+        [Test]
         public void FullSimulation() {
+            s.model.InitSimpleModel();
             s.run();
         }
 
-        [Test]
-        public void SwitchTest() {
-            Assert.AreEqual(10, 10);
-        }
+        //[Test]
+        //public void SwitchTest() {
+        //    Assert.AreEqual(10, 10);
+        //}
 
         [TearDown]
         public void Teardown() {

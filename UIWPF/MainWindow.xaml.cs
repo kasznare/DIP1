@@ -557,6 +557,11 @@ namespace UIWPF {
         {
            
         }
+
+        private void LoadFactoryModelClick(object sender, RoutedEventArgs e)
+        {
+            s.model.InitModelWithGivenRooms();
+        }
     }
 
 

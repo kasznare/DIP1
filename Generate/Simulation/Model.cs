@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
+using WindowsFormsApp1.GeometryModel;
 using WindowsFormsApp1.Utilities;
 using ONLAB2;
 
@@ -407,6 +408,57 @@ namespace WindowsFormsApp1 {
             Logger.WriteLog("Advanced model initialized");
         }
 
+        public void InitModelWithGivenRooms() {
+            loadedModelType = ModelType.Specified;
+            modelLines = new ObservableCollection<MyLine>();
+            modelRooms = new ObservableCollection<Room>();
+            List<Tuple<FactoryRoomType, int>> initList = new List<Tuple<FactoryRoomType, int>>();
+            initList.Add(Tuple.Create(FactoryRoomType.DobozosMagasraktar, 1));
+            initList.Add(Tuple.Create(FactoryRoomType.Trafo, 2));
+            initList.Add(Tuple.Create(FactoryRoomType.KapcsoloHelyiseg0_4kv, 2));
+            initList.Add(Tuple.Create(FactoryRoomType.KapcsoloHelyiseg20kv, 2));
+            initList.Add(Tuple.Create(FactoryRoomType.SprinklerHelyiseg, 1));
+            initList.Add(Tuple.Create(FactoryRoomType.GeneratorHelyiseg, 1));
+            initList.Add(Tuple.Create(FactoryRoomType.GepeszetiHelyiseg, 1));
+
+            List<Room> rooms = new List<Room>();
+            foreach (Tuple<FactoryRoomType, int> tuple in initList) {
+                for (int i = 0; i < tuple.Item2; i++) {
+                    Room r = new Room(tuple.Item1.roomname + i, i.ToString(), tuple.Item1);
+                    rooms.Add(r);
+                }
+            }
+
+            int x0 = 0;
+            int y0 = 0;
+            int side_length = 200;
+            foreach (Room room in rooms)
+            {
+                MyPoint p1 = new MyPoint(x0,y0);
+                MyPoint p2 = new MyPoint(x0+side_length,y0);
+                MyPoint p3 = new MyPoint(x0+side_length,y0+side_length);
+                MyPoint p4 = new MyPoint(x0,y0+side_length);
+
+                MyLine line1 = new MyLine(p1, p2);
+                MyLine line2 = new MyLine(p2, p3);
+                MyLine line3 = new MyLine(p3, p4);
+                MyLine line4 = new MyLine(p4, p1);
+                modelLines.Add(line1);
+                modelLines.Add(line2);
+                modelLines.Add(line3);
+                modelLines.Add(line4);
+
+                foreach (MyLine modelLine in new List<MyLine>() { line1, line2, line3, line4 }) {
+                    modelLine.relatedRooms.Add(room);
+                }
+                modelRooms.Add(room);
+                x0 += 200;
+            }
+            CalculateRooms();
+            Repair();
+            CalculateRooms();
+
+        }
         private Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
         private Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
         private Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
@@ -563,6 +615,11 @@ namespace WindowsFormsApp1 {
             List<MyPoint> allPoints = new List<MyPoint>();
             allPoints.AddRange(modelLines.Select(i => i.StartMyPoint));
             allPoints.AddRange(modelLines.Select(i => i.EndMyPoint));
+            //ha teljes vonalat ki tudok cserélni, akkor cseréljem is ki.
+            List<List<MyLine>> linestoreplace = new List<List<MyLine>>();
+            
+
+
             foreach (MyLine modelLine in modelLines) {
                 List<MyPoint> asd = allPoints.Where(i => i.Equals(modelLine.StartMyPoint)).OrderBy(i => i.Guid).ToList();
                 List<MyPoint> asd2 = allPoints.Where(i => i.Equals(modelLine.EndMyPoint)).OrderBy(i => i.Guid).ToList();
@@ -1019,6 +1076,10 @@ namespace WindowsFormsApp1 {
 
 
             }
+            Dictionary<RoomType, Dictionary<RoomType, int>> asd = new Dictionary<RoomType, Dictionary<RoomType, int>>();
+            asd.Add(RoomType.LivingRoom, new Dictionary<RoomType, int>(){{RoomType.Kitchen, 1000}});
+            asd.Add(RoomType.Kitchen, new Dictionary<RoomType, int>(){{RoomType.LivingRoom, 1000}});
+
 
             double layoutcost = 0.0;
             foreach (MyLine modelLine in modelLines) {
@@ -1029,14 +1090,24 @@ namespace WindowsFormsApp1 {
                         for (int i = index + 1; i < count; i++) {
                             //TODO: make a 2D grid and choose based on the combination. I dont know the solution
                             Room r2 = modelLine.relatedRooms[i];
-                            bool b = r1.type.roomname == RoomType.Kitchen.roomname;
-                            bool b1 = r2.type.roomname == RoomType.LivingRoom.roomname;
-                            bool b2 = r2.type.roomname == RoomType.Kitchen.roomname;
-                            bool b3 = r1.type.roomname == RoomType.LivingRoom.roomname;
-                            if (b && b1 ||
-                                b2 && b3) {
-                                layoutcost += 1000;
+                            //bool b = r1.type.roomname == RoomType.Kitchen.roomname;
+                            //bool b1 = r2.type.roomname == RoomType.LivingRoom.roomname;
+                            //bool b2 = r2.type.roomname == RoomType.Kitchen.roomname;
+                            //bool b3 = r1.type.roomname == RoomType.LivingRoom.roomname;
+                            //if (b && b1 ||
+                            //    b2 && b3) {
+                            //    layoutcost += 1000;
+                            //}
+                            Dictionary<RoomType,int> asd2 = new Dictionary<RoomType, int>();
+                            bool isIn = asd.TryGetValue(r1.type, out asd2);
+
+                            if (isIn)
+                            {
+                                int value = 0;
+                                bool isInOther = asd2.TryGetValue(r2.type, out value);
+                                layoutcost += value;
                             }
+
                         }
                     }
 
@@ -1063,6 +1134,7 @@ namespace WindowsFormsApp1 {
         Simple,
         Normal,
         Skewed,
-        Advanced
+        Advanced,
+        Specified
     }
 }

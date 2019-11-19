@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeometryModel\Costs.cs" />
+    <Compile Include="GeometryModel\FactoryRoomType.cs" />
     <Compile Include="GeometryModel\IGeometry.cs" />
     <Compile Include="GeometryModel\LineAndCost.cs" />
     <Compile Include="Properties\Annotations.cs" />
