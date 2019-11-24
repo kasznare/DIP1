@@ -48,7 +48,7 @@ namespace WindowsFormsApp1 {
             set {
                 if (value == null || value.Count==0)
                 {
-                    Logger.WriteLog("someone set to null");
+                    //Logger.WriteLog("someone set to null");
                 }
                 boundaryLines = value;
                 isBoundaryLinesPossiblyUnsorted = true;
@@ -213,7 +213,10 @@ namespace WindowsFormsApp1 {
 
         public double CalculateArea() {
             List<MyPoint> bp = GetBoundaryPointsSorted();
-
+            if (bp.Count==0)
+            {
+                throw new Exception("area is null");
+            }
             double[] X = bp.Select(i => i.X).ToArray();
             double[] Y = bp.Select(i => i.Y).ToArray();
             double area = PolygonArea(X, Y, bp.Count);

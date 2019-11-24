@@ -37,7 +37,12 @@ using ONLAB2;
 //hogyan változik a loss
 namespace WindowsFormsApp1 {
     public class Model {
-        Random rand = new Random(10);
+        Random rand = new Random(10); //this random integer ensures that the simulation keeps the same
+        /// <summary>
+        /// nullable constructor
+        /// </summary>
+        /// <param name="lines"></param>
+        /// <param name="rooms"></param>
         public Model(List<MyLine> lines = null, List<Room> rooms = null) {
             if (lines != null) {
                 modelLines = new ObservableCollection<MyLine>(lines);
@@ -47,7 +52,7 @@ namespace WindowsFormsApp1 {
             }
         }
         //TODO: set this in the move/split/switch 
-        public bool IsInInvalidState { get; set; }
+        public bool IsInInvalidState { get; set; } //when a move makes the model invalid, we set this switch
         public string SaveStateToString() {
             string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(this);
             return jsonString;
@@ -57,7 +62,6 @@ namespace WindowsFormsApp1 {
             modelLines = obj.modelLines;
             modelRooms = obj.modelRooms;
         }
-
         public ModelType loadedModelType { get; set; }
         public ObservableCollection<MyLine> modelLines { get; set; } = new ObservableCollection<MyLine>();
         public ObservableCollection<Room> modelRooms { get; set; } = new ObservableCollection<Room>();
@@ -74,6 +78,9 @@ namespace WindowsFormsApp1 {
                 return starts;
             }
         }
+
+
+
         public void InitSimplestModel() {
             loadedModelType = ModelType.Simplest;
             modelLines = new ObservableCollection<MyLine>();
@@ -96,7 +103,7 @@ namespace WindowsFormsApp1 {
             foreach (MyLine modelLine in new List<MyLine>() { line1, line2, line3, line4 }) {
                 modelLine.relatedRooms.Add(first);
             }
-            CalculateRooms();
+            CalculateAllRooms();
             Logger.WriteLog("InitSimplestModel() finished");
         }
         public void InitSimpleModel() {
@@ -136,7 +143,7 @@ namespace WindowsFormsApp1 {
                 modelLine.relatedRooms.Add(second);
             }
 
-            CalculateRooms();
+            CalculateAllRooms();
             Logger.WriteLog("InitSimpleModel() finished");
         }
         public void InitNormalModel() {
@@ -206,7 +213,7 @@ namespace WindowsFormsApp1 {
             }
 
 
-            CalculateRooms();
+            CalculateAllRooms();
             Logger.WriteLog("InitSimpleModel() finished");
         }
         public void InitSkewedModel() {
@@ -276,7 +283,7 @@ namespace WindowsFormsApp1 {
             }
 
 
-            CalculateRooms();
+            CalculateAllRooms();
             Logger.WriteLog("InitSkewedModel() finished");
         }
         public void InitAdvancedModel() {
@@ -403,11 +410,10 @@ namespace WindowsFormsApp1 {
             }
 
 
-            CalculateRooms();
+            CalculateAllRooms();
             Repair();
             Logger.WriteLog("Advanced model initialized");
         }
-
         public void InitModelWithGivenRooms() {
             loadedModelType = ModelType.Specified;
             modelLines = new ObservableCollection<MyLine>();
@@ -432,12 +438,11 @@ namespace WindowsFormsApp1 {
             int x0 = 0;
             int y0 = 0;
             int side_length = 200;
-            foreach (Room room in rooms)
-            {
-                MyPoint p1 = new MyPoint(x0,y0);
-                MyPoint p2 = new MyPoint(x0+side_length,y0);
-                MyPoint p3 = new MyPoint(x0+side_length,y0+side_length);
-                MyPoint p4 = new MyPoint(x0,y0+side_length);
+            foreach (Room room in rooms) {
+                MyPoint p1 = new MyPoint(x0, y0);
+                MyPoint p2 = new MyPoint(x0 + side_length, y0);
+                MyPoint p3 = new MyPoint(x0 + side_length, y0 + side_length);
+                MyPoint p4 = new MyPoint(x0, y0 + side_length);
 
                 MyLine line1 = new MyLine(p1, p2);
                 MyLine line2 = new MyLine(p2, p3);
@@ -454,15 +459,17 @@ namespace WindowsFormsApp1 {
                 modelRooms.Add(room);
                 x0 += 200;
             }
-            CalculateRooms();
+            CalculateAllRooms();
             Repair();
-            CalculateRooms();
+            CalculateAllRooms();
 
         }
+
+
+
         private Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
         private Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
         private Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
-
         /// <summary>
         /// Base deepcopy with no other returning parameters
         /// </summary>
@@ -611,29 +618,67 @@ namespace WindowsFormsApp1 {
             return new Model(oldNewLines.Values.ToList(), oldNewRooms.Values.ToList());
         }
 
+
+
         public void Repair() {
             List<MyPoint> allPoints = new List<MyPoint>();
             allPoints.AddRange(modelLines.Select(i => i.StartMyPoint));
             allPoints.AddRange(modelLines.Select(i => i.EndMyPoint));
+
+            CleanPoints(allPoints);
+
             //ha teljes vonalat ki tudok cserélni, akkor cseréljem is ki.
             List<List<MyLine>> linestoreplace = new List<List<MyLine>>();
-            
+
+            Dictionary<MyLine, List<MyLine>> linesToRemoveDict = new Dictionary<MyLine, List<MyLine>>();
+            List<MyLine> linesToRemove = new List<MyLine>();
+            foreach (MyLine modelLine in modelLines) {
+                if (linesToRemove.Contains(modelLine)) continue;
+
+                List<MyLine> mach = modelLines.Where(i => (modelLine.StartMyPoint.Equals(i.StartMyPoint) &&
+                                                          modelLine.EndMyPoint.Equals(i.EndMyPoint)) ||
+                                                          (modelLine.StartMyPoint.Equals(i.EndMyPoint) &&
+                                                           modelLine.EndMyPoint.Equals(i.StartMyPoint))
+                                                          ).ToList();
+
+                if (mach.Contains(modelLine)) {
+                    mach.Remove(modelLine);
+                }
+                if (mach.Count == 0) continue;
+                linesToRemove.AddRange(mach);
+                linesToRemoveDict.Add(modelLine, mach);
+            }
+
+            foreach (var myLine in linesToRemoveDict) {
+
+                foreach (MyLine line in myLine.Value) {
+
+                    foreach (Room lineRelatedRoom in line.relatedRooms) {
+                        lineRelatedRoom.BoundaryLines.Remove(line);
+                        lineRelatedRoom.BoundaryLines.Add(myLine.Key);
+                    }
+                    modelLines.Remove(line);
+
+                }
+
+            }
 
 
+
+        }
+        private void CleanPoints(List<MyPoint> allPoints) {
             foreach (MyLine modelLine in modelLines) {
                 List<MyPoint> asd = allPoints.Where(i => i.Equals(modelLine.StartMyPoint)).OrderBy(i => i.Guid).ToList();
                 List<MyPoint> asd2 = allPoints.Where(i => i.Equals(modelLine.EndMyPoint)).OrderBy(i => i.Guid).ToList();
                 if (asd.Count() > 1) {
                     modelLine.StartMyPoint = asd.First();
                 }
+
                 if (asd2.Count() > 1) {
                     modelLine.EndMyPoint = asd2.First();
                 }
             }
-
-
         }
-
         public MyLine GetRandomLine() {
             int randint = rand.Next(0, modelLines.Count);
             return modelLines.ElementAt(randint);
@@ -680,7 +725,6 @@ namespace WindowsFormsApp1 {
             ReachableRooms();
 
         }
-        //hierarchikus koltsegfuggveny
         /// <summary>
         /// calculate degree for all rooms starting from the starter room
         /// </summary>
@@ -881,14 +925,11 @@ namespace WindowsFormsApp1 {
             }
 
             //Rooms not handled, but calculaterooms might solve the issue
-            CalculateRooms();
+            CalculateAllRooms();
         }
 
         //TODO: this could be calculated for only the lines, that actually changed, this is huge resource waste
-        public void CalculateRooms() {
-            if (modelRooms == null)
-                modelRooms = new ObservableCollection<Room>();
-
+        public void CalculateAllRooms() {
             //itt kezelni lehet majd azt a kérdést, hogy van a line-hoz hozzárendelt olyan szoba is, ami nem létezik már
             //hol vannak kezelve az új vonalak?
             modelRooms.Clear();
@@ -903,13 +944,13 @@ namespace WindowsFormsApp1 {
                     //a room boundarylinejai kozott szerepel-e a myLine
                     if (!room.BoundaryLines.Contains(line)) {
                         room.BoundaryLines.Add(line);
-                        //Logger.WriteLog($"CalculateRooms for myLine {myLine} {room.Name} ");
+                        //Logger.WriteLog($"CalculateAllRooms for myLine {myLine} {room.Name} ");
                     }
                 }
                 // modelRooms.AddRange(myLine.relatedRooms);
             }
             modelRooms = new ObservableCollection<Room>(allRooms);//modelRooms.Distinct().ToList();
-            Logger.WriteLog(modelRooms.ToString());
+            //Logger.WriteLog(modelRooms.ToString());
             //TraceValues();
         }
         private List<List<MyLine>> CalculateContaining(MyLine line1, MyLine line2) {
@@ -943,9 +984,9 @@ namespace WindowsFormsApp1 {
             results.Add(addLines);
             results.Add(remLines);
 
+            //todo: include partial overlapping
             return results;
         }
-        //todo: include partial overlapping
         private bool LineIncludes(MyLine line1, MyLine line2) {
             if (IsOnLine(line2.StartMyPoint, line1) && IsOnLine(line2.EndMyPoint, line1)) {
                 return true;
@@ -994,6 +1035,9 @@ namespace WindowsFormsApp1 {
             return newMyLine;
         }
 
+
+
+
         public double[] CalculateCost() {
             double summary = 0.0;
             double areacost = 0.0;
@@ -1005,8 +1049,8 @@ namespace WindowsFormsApp1 {
                 layoutcost = CalculateLayoutCost();
                 constaintcost = CalculateConstraintCost();
                 summary = areacost + layoutcost + constaintcost;
-                Logger.WriteLog("területköltség: " + areacost);
-                Logger.WriteLog("kerületköltség: " + layoutcost);
+                //Logger.WriteLog("területköltség: " + areacost);
+                //Logger.WriteLog("kerületköltség: " + layoutcost);
             }
             catch (Exception ex) {
                 Logger.WriteLog("Error during cost calculation" + ex);
@@ -1019,41 +1063,42 @@ namespace WindowsFormsApp1 {
         }
         private double CalculateParameterCost() {
             double summary = 0.0;
-            try {
-                foreach (Room room in this.modelRooms) {
-                    try {
-                        //TODO: this fails when switched with simulation
-                        double actualarea = room.CalculateArea();
+            //try {
+            foreach (Room room in this.modelRooms) {
+                //try {
+                //TODO: this fails when switched with simulation
+                double actualarea = room.CalculateArea();
+                RoomType type = room.type;
+                if (Math.Abs(actualarea) < 0.01) {
 
-                        RoomType type = room.type;
-                        if (actualarea < type.areamin) {
-                            summary += Math.Pow(2, type.areamin - actualarea);
-                        }
-                        else if (actualarea > type.areamax) {
-                            summary += Math.Pow(2, type.areamax - actualarea);
-                        }
-
-                        double actualprop = room.CalculateProportion();
-                        if (actualprop > type.proportion) {
-                            summary += Math.Pow(2, actualprop - type.proportion);
-                        }
-
-                        //punish more edges
-                        double countCost = room.BoundaryPoints.Count;
-                        if (countCost > 6) {
-                            summary += Math.Pow(2, countCost - 6);
-                        }
-
+                    if (actualarea < type.areamin) {
+                        summary += Math.Pow(type.areamin - actualarea, 2);
                     }
-                    catch (Exception e) {
-                        Logger.WriteLog(e);
+                    else if (actualarea > type.areamax) {
+                        summary += Math.Pow(type.areamax - actualarea, 2);
                     }
                 }
+                double actualprop = room.CalculateProportion();
+                if (actualprop > type.proportion) {
+                    summary += Math.Pow(2, -type.proportion + actualprop);
+                }
+
+                //punish more edges
+                double countCost = room.BoundaryPoints.Count;
+                if (countCost > 6) {
+                    summary += Math.Pow(2, countCost - 6);
+                }
+
+                //}
+                //catch (Exception e) {
+                //    Logger.WriteLog(e);
+                //}
             }
-            catch (Exception e) {
-                summary = 10;
-                Logger.WriteLog("outer exc" + e);
-            }
+            //}
+            //catch (Exception e) {
+            //    summary = 10;
+            //    Logger.WriteLog("outer exc" + e);
+            //}
             //elemszintű megfelelés
             //minden helyiségre
             //megkeresni a helyiség kategóriát a táblázatból
@@ -1062,7 +1107,6 @@ namespace WindowsFormsApp1 {
             summary = Math.Round(summary, 2);
             return summary;
         }
-
         private double CalculateLayoutCost() {
             double wallLength = 0.0;
             foreach (MyLine seg in this.modelLines) {
@@ -1077,8 +1121,8 @@ namespace WindowsFormsApp1 {
 
             }
             Dictionary<RoomType, Dictionary<RoomType, int>> asd = new Dictionary<RoomType, Dictionary<RoomType, int>>();
-            asd.Add(RoomType.LivingRoom, new Dictionary<RoomType, int>(){{RoomType.Kitchen, 1000}});
-            asd.Add(RoomType.Kitchen, new Dictionary<RoomType, int>(){{RoomType.LivingRoom, 1000}});
+            asd.Add(RoomType.LivingRoom, new Dictionary<RoomType, int>() { { RoomType.Kitchen, 1000 } });
+            asd.Add(RoomType.Kitchen, new Dictionary<RoomType, int>() { { RoomType.LivingRoom, 1000 } });
 
 
             double layoutcost = 0.0;
@@ -1090,19 +1134,11 @@ namespace WindowsFormsApp1 {
                         for (int i = index + 1; i < count; i++) {
                             //TODO: make a 2D grid and choose based on the combination. I dont know the solution
                             Room r2 = modelLine.relatedRooms[i];
-                            //bool b = r1.type.roomname == RoomType.Kitchen.roomname;
-                            //bool b1 = r2.type.roomname == RoomType.LivingRoom.roomname;
-                            //bool b2 = r2.type.roomname == RoomType.Kitchen.roomname;
-                            //bool b3 = r1.type.roomname == RoomType.LivingRoom.roomname;
-                            //if (b && b1 ||
-                            //    b2 && b3) {
-                            //    layoutcost += 1000;
-                            //}
-                            Dictionary<RoomType,int> asd2 = new Dictionary<RoomType, int>();
+
+                            Dictionary<RoomType, int> asd2 = new Dictionary<RoomType, int>();
                             bool isIn = asd.TryGetValue(r1.type, out asd2);
 
-                            if (isIn)
-                            {
+                            if (isIn) {
                                 int value = 0;
                                 bool isInOther = asd2.TryGetValue(r2.type, out value);
                                 layoutcost += value;
@@ -1127,14 +1163,6 @@ namespace WindowsFormsApp1 {
             return summary;
         }
 
-    }
 
-    public enum ModelType {
-        Simplest,
-        Simple,
-        Normal,
-        Skewed,
-        Advanced,
-        Specified
     }
 }

@@ -263,7 +263,9 @@ namespace WindowsFormsApp1.Simulation {
         }
 
         public override void Step(Model m) {
+            Logger.WriteLog("Before transform"+myLine);
             m.MoveLine(moveDistance, myLine);
+            Logger.WriteLog("After transform"+myLine);
         }
     }
     public class Split : Action {
