@@ -17,6 +17,11 @@ namespace WindowsFormsApp1 {
         public bool visualCommection;
         public Color fillColor { get; set; }
 
+        public static RoomType CorridorRoom =
+            new RoomType(1, "CorridorRoom",
+                50, true, 1, 2, 200, true, Color.Wheat);
+
+
         public static RoomType LivingRoom =
             new RoomType(1, "LivingRoom",
                 1.5, true, 1, 20, 20, true, Color.DarkOliveGreen);

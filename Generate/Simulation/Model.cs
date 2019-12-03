@@ -13,9 +13,19 @@ using ONLAB2;
 //TODO: branchelés - model operáció sorrend invariáns? akkor lehet őket osszevonogatni
 //TODO: a hurok esetben nem kapunk jó eredményt
 //TODO: make tests and handle failures - find step that fails and correct there
+
+
+//felismerések:
+//csak UI szimuláció futtatás során jön elő, ha breakpointok vannak, nem
+//a szoba szétesés továbbra is probléma
+//hiába avan benne, hogy move esetén ha van ferde vonal, dobja el, akkor is végrehajta a mozgatást
+//a szoba eldobás probléma jó eséllyel azt mutatja, hogy nem adódik hozzá a megfelelő szoba
+//TODO: bejárhatóság mint split, legyen egy valid lépés opció
 //TODO: handle openings
+//TODO: közlekedő felvétele - szobatípus
 
 //done
+//conditional breakpoint at 22. simulation step before move
 //volt egy darab pont duplikálva - még mindig. - lehet, hogy több vonal van a rendszerben
 //switch nem működik jól
 //kézi léptetést engedjen - intuitívabb lenne a kolstegfüggvény tervezése
@@ -290,15 +300,15 @@ namespace WindowsFormsApp1 {
             loadedModelType = ModelType.Advanced;
             modelLines = new ObservableCollection<MyLine>();
             modelRooms = new ObservableCollection<Room>();
-            MyPoint a1 = new MyPoint(0, 0);
-            MyPoint a2 = new MyPoint(200, 0);
+            MyPoint a1 = new MyPoint(000, 000);
+            MyPoint a2 = new MyPoint(200, 000);
             MyPoint a3 = new MyPoint(200, 200);
-            MyPoint a4 = new MyPoint(0, 200);
+            MyPoint a4 = new MyPoint(000, 200);
 
             MyPoint a5 = new MyPoint(200, 400);
-            MyPoint a6 = new MyPoint(0, 400);
+            MyPoint a6 = new MyPoint(000, 400);
 
-            MyPoint a7 = new MyPoint(400, 0);
+            MyPoint a7 = new MyPoint(400, 000);
             MyPoint a8 = new MyPoint(400, 200);
 
             MyPoint a9 = new MyPoint(400, 400);
@@ -333,9 +343,9 @@ namespace WindowsFormsApp1 {
             modelLines.Add(l95);
 
 
-            Room first = new Room("FirstRoom", "1", RoomType.Kitchen);
-            Room second = new Room("SecondRoom", "2", RoomType.LivingRoom);
-            Room third = new Room("ThirdRoom", "3", RoomType.BedRoom);
+            Room first = new Room("FirstRoom", "1", RoomType.CorridorRoom);
+            Room second = new Room("SecondRoom", "2", RoomType.BedRoom);
+            Room third = new Room("ThirdRoom", "3", RoomType.CorridorRoom);
             Room fourth = new Room("FourthRoom", "4", RoomType.RestRoom);
 
             foreach (MyLine modelLine in new List<MyLine>() { l12, l23, l34, l41 }) {
@@ -363,10 +373,10 @@ namespace WindowsFormsApp1 {
             MyPoint _a8 = new MyPoint(-400, -300);
             MyPoint _a9 = new MyPoint(-400, -400);
 
-            MyLine _l12 = new MyLine(_a1, _a2);
+            MyLine _l12 = new MyLine(a1, _a2); //i modofied it from _a1
             MyLine _l23 = new MyLine(_a2, _a3);
             MyLine _l34 = new MyLine(_a3, _a4);
-            MyLine _l41 = new MyLine(_a4, _a1);
+            MyLine _l41 = new MyLine(_a4, a1); //i modofied it from _a1
             MyLine _l35 = new MyLine(_a3, _a5);
             MyLine _l56 = new MyLine(_a5, _a6);
             MyLine _l64 = new MyLine(_a6, _a4);
@@ -390,10 +400,10 @@ namespace WindowsFormsApp1 {
             modelLines.Add(_l95);
 
 
-            Room _first = new Room("_FirstRoom", "1", RoomType.Kitchen);
-            Room _second = new Room("_SecondRoom", "2", RoomType.LivingRoom);
-            Room _third = new Room("_ThirdRoom", "3", RoomType.BedRoom);
-            Room _fourth = new Room("_FourthRoom", "4", RoomType.RestRoom);
+            Room _first = new Room("_FirstRoom", "_1", RoomType.Kitchen);
+            Room _second = new Room("_SecondRoom", "_2", RoomType.LivingRoom);
+            Room _third = new Room("_ThirdRoom", "_3", RoomType.BedRoom);
+            Room _fourth = new Room("_FourthRoom", "_4", RoomType.RestRoom);
 
             foreach (MyLine modelLine in new List<MyLine>() { _l12, _l23, _l34, _l41 }) {
                 modelLine.relatedRooms.Add(_first);
@@ -409,9 +419,9 @@ namespace WindowsFormsApp1 {
                 modelLine.relatedRooms.Add(_fourth);
             }
 
-
+            //modelRooms = new ObservableCollection<Room>(new List<Room>(){first, second, third, fourth, _first, _second, _third, _fourth});
             CalculateAllRooms();
-            Repair();
+            //Repair();
             Logger.WriteLog("Advanced model initialized");
         }
         public void InitModelWithGivenRooms() {
@@ -619,7 +629,8 @@ namespace WindowsFormsApp1 {
         }
 
 
-
+        //the cause of all prolems is in this function.
+        //but it is not the function that is wrong, it makes the model in an invalid state, but that can happen on other functions aswell.
         public void Repair() {
             List<MyPoint> allPoints = new List<MyPoint>();
             allPoints.AddRange(modelLines.Select(i => i.StartMyPoint));
@@ -725,13 +736,15 @@ namespace WindowsFormsApp1 {
             ReachableRooms();
 
         }
+
+        private void ReachableRooms() {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// calculate degree for all rooms starting from the starter room
         /// </summary>
         /// <returns></returns>
-        public int ReachableRooms() {
-            return 0;
-        }
         public void SwitchRooms(ref Room room1, ref Room room2) {
             Room temp1 = room1.GetCopy();
             Room temp2 = room2.GetCopy();
@@ -743,83 +756,67 @@ namespace WindowsFormsApp1 {
             List<MyLine> referenceOfNewLinesIfCreated = new List<MyLine>();
 
             try {
-                MyPoint p1 = myLineToMove.StartMyPoint;
+                MyPoint oldStartPoint = myLineToMove.StartMyPoint;
+                MyPoint oldEndPoint = myLineToMove.EndMyPoint;
                 MyPoint lineToMoveNormal = myLineToMove.GetNV(true);
                 #region MoveOrCopyStartPoint
 
-                MyPoint p3 = p1 + lineToMoveNormal * offsetDistance;
-                MyPoint p2 = myLineToMove.EndMyPoint;
-                MyPoint p4 = p2 + lineToMoveNormal * offsetDistance;
+                MyPoint movedStartPoint = oldStartPoint + lineToMoveNormal * offsetDistance;
+                MyPoint movedEndPoint = oldEndPoint + lineToMoveNormal * offsetDistance;
 
-                #region exception checking
-                foreach (MyLine relatedLine in p1.RelatedLines) {
-                    if (!relatedLine.Equals(myLineToMove) && (!relatedLine.GetNV(true).Equals(lineToMoveNormal)
-                         || !relatedLine.GetNV(true).Equals(lineToMoveNormal * (-1)))) {
-                        if (relatedLine.GetLength() < offsetDistance) {
-                            throw new Exception("Vonalhossz hiba: " + relatedLine.GetLength());
-                        }
-                    }
-                }
-                foreach (MyLine relatedLine in p2.RelatedLines) {
-                    if (!relatedLine.Equals(myLineToMove) && (!relatedLine.GetNV(true).Equals(lineToMoveNormal)
-                                                      || !relatedLine.GetNV(true).Equals(lineToMoveNormal * (-1)))) {
-                        if (relatedLine.GetLength() < offsetDistance) {
-                            throw new Exception("Hiba");
-                        }
-                    }
-                }
-                #endregion
-                bool copyp1 = false;
-                MyLine parallelMyLine = null;
+                //this ensures, that if the point already exists in the model, we dont create a new.
+                bool doesStartPointAlreadyExist = CheckModel(ref movedStartPoint);
+                bool doesEndPointAlreadyExist = CheckModel(ref movedEndPoint);
 
-                foreach (MyLine relatedLine in p1.RelatedLines) {
+                ExceptionChecking(offsetDistance, myLineToMove, oldStartPoint, lineToMoveNormal, oldEndPoint);
+
+                bool isStartPointCopied = false;
+
+                foreach (MyLine relatedLine in oldStartPoint.RelatedLines) {
                     //ha van olyan vonal, ami miatt másolni kell:
-                    if (!relatedLine.Equals(myLineToMove) && (relatedLine.GetNV(true).Equals(lineToMoveNormal)
-                                                      || relatedLine.GetNV(true).Equals(lineToMoveNormal * (-1)))) {
-                        copyp1 = true;
-                        parallelMyLine = relatedLine;
+                    if (!relatedLine.Equals(myLineToMove) && (relatedLine.GetNV(true).Equals(lineToMoveNormal) 
+                                                              || relatedLine.GetNV(true).Equals(lineToMoveNormal * (-1)))) {
+                        isStartPointCopied = true;
                         break;
                     }
                 }
-                if (!copyp1) //then relocate, this is easy
+                if (!isStartPointCopied) //then relocate, this is easy //itt szoba alapesetben nem változik, kivéve ha már létezik a 
                 {
-                    p1.X = p3.X;
-                    p1.Y = p3.Y;
-                    //itt szoba nem változik
+                    oldStartPoint.X = movedStartPoint.X;
+                    oldStartPoint.Y = movedStartPoint.Y;
                 }
                 else {
                     MyLine myLineInMoveDirection = null;
-                    foreach (MyLine relatedLine in p1.RelatedLines) {
+                    foreach (MyLine relatedLine in oldStartPoint.RelatedLines) {
                         //ha a mozgatás irányába van vonal
-                        bool on = IsOnLine(p3, relatedLine);
+                        bool on = IsOnLine(movedStartPoint, relatedLine);
                         if (on) {
-                            //nem kéne itt copy-t készíteni?
                             myLineInMoveDirection = relatedLine;
                             break;
                         }
                     }
                     if (myLineInMoveDirection != null) {
-                        if (myLineInMoveDirection.StartMyPoint.Equals(p1)) {
-                            myLineInMoveDirection.StartMyPoint = p3;
+                        if (myLineInMoveDirection.StartMyPoint.Equals(oldStartPoint)) {
+                            myLineInMoveDirection.StartMyPoint = movedStartPoint;
 
                         }
                         else {
-                            myLineInMoveDirection.EndMyPoint = p3;
+                            myLineInMoveDirection.EndMyPoint = movedStartPoint;
                         }
-                        p3.RelatedLines.Add(myLineInMoveDirection);
-                        p1.RelatedLines.Remove(myLineInMoveDirection);
+                        movedStartPoint.RelatedLines.Add(myLineInMoveDirection);
+                        oldStartPoint.RelatedLines.Remove(myLineInMoveDirection);
                     }
 
-                    myLineToMove.StartMyPoint = p3;
-                    p3.RelatedLines.Add(myLineToMove);
-                    p1.RelatedLines.Remove(myLineToMove);
+                    myLineToMove.StartMyPoint = movedStartPoint;
+                    movedStartPoint.RelatedLines.Add(myLineToMove);
+                    oldStartPoint.RelatedLines.Remove(myLineToMove);
 
-                    List<Room> p1Rooms = p1.RelatedRooms;
-                    List<Room> p3Rooms = p3.RelatedRooms;
+                    List<Room> p1Rooms = oldStartPoint.RelatedRooms;
+                    List<Room> p3Rooms = movedStartPoint.RelatedRooms;
 
                     List<Room> commonRooms = p1Rooms.Intersect(p3Rooms).ToList();
 
-                    MyLine newConnectionEdge1 = new MyLine(p1, p3);
+                    MyLine newConnectionEdge1 = new MyLine(oldStartPoint, movedStartPoint);
                     //TODO: add related modelRooms to this new myLine.
                     newConnectionEdge1.relatedRooms = commonRooms;
 
@@ -830,7 +827,7 @@ namespace WindowsFormsApp1 {
                 #region MoveOrCopyEndPoint
                 bool copyp2 = false;
                 MyLine parallelLine2 = null;
-                foreach (MyLine relatedLine in p2.RelatedLines) {
+                foreach (MyLine relatedLine in oldEndPoint.RelatedLines) {
                     if (!relatedLine.Equals(myLineToMove) &&
                         (relatedLine.GetNV(true).Equals(lineToMoveNormal) || relatedLine.GetNV(true).Equals(lineToMoveNormal * (-1)))) {
                         copyp2 = true;
@@ -839,40 +836,40 @@ namespace WindowsFormsApp1 {
                     }
                 }
                 if (!copyp2) {
-                    p2.X = p4.X;
-                    p2.Y = p4.Y;
+                    oldEndPoint.X = movedEndPoint.X;
+                    oldEndPoint.Y = movedEndPoint.Y;
                 }
                 else {
                     MyLine myLineInMoveDirection = null;
-                    foreach (MyLine relatedLine in p2.RelatedLines) {
-                        bool on = IsOnLine(p4, relatedLine);
+                    foreach (MyLine relatedLine in oldEndPoint.RelatedLines) {
+                        bool on = IsOnLine(movedEndPoint, relatedLine);
                         if (on) {
                             myLineInMoveDirection = relatedLine;
                             break;
                         }
                     }
                     if (myLineInMoveDirection != null) {
-                        if (myLineInMoveDirection.StartMyPoint.Equals(p2)) {
-                            myLineInMoveDirection.StartMyPoint = p4;
+                        if (myLineInMoveDirection.StartMyPoint.Equals(oldEndPoint)) {
+                            myLineInMoveDirection.StartMyPoint = movedEndPoint;
                         }
                         else {
-                            myLineInMoveDirection.EndMyPoint = p4;
+                            myLineInMoveDirection.EndMyPoint = movedEndPoint;
                         }
-                        p4.RelatedLines.Add(myLineInMoveDirection);
-                        p2.RelatedLines.Remove(myLineInMoveDirection);
+                        movedEndPoint.RelatedLines.Add(myLineInMoveDirection);
+                        oldEndPoint.RelatedLines.Remove(myLineInMoveDirection);
                     }
 
-                    myLineToMove.EndMyPoint = p4;
+                    myLineToMove.EndMyPoint = movedEndPoint;
 
-                    p4.RelatedLines.Add(myLineToMove);
-                    p2.RelatedLines.Remove(myLineToMove);
+                    movedEndPoint.RelatedLines.Add(myLineToMove);
+                    oldEndPoint.RelatedLines.Remove(myLineToMove);
 
-                    List<Room> p2Rooms = p2.RelatedRooms;
-                    List<Room> p4Rooms = p4.RelatedRooms;
+                    List<Room> p2Rooms = oldEndPoint.RelatedRooms;
+                    List<Room> p4Rooms = movedEndPoint.RelatedRooms;
 
                     List<Room> commonRooms = p2Rooms.Intersect(p4Rooms).ToList();
                     //the new lines related rooms are always handled
-                    MyLine newConnectionEdge2 = new MyLine(p2, p4);
+                    MyLine newConnectionEdge2 = new MyLine(oldEndPoint, movedEndPoint);
                     newConnectionEdge2.relatedRooms = commonRooms;
 
                     modelLines.Add(newConnectionEdge2);
@@ -881,33 +878,42 @@ namespace WindowsFormsApp1 {
                 #endregion
             }
             catch (Exception e) {
-                Logger.WriteLog("Not legal move " + e.Message);
+                Logger.WriteLog("Error : Not legal move " + e.Message);
                 Logger.WriteLog(e);
                 IsInInvalidState = true;
                 //MessageBox.Show();
             }
 
-            //i dont know what this block does
             List<MyLine> toremove = new List<MyLine>();
             foreach (MyLine line1 in modelLines) {
-                if (line1.StartMyPoint.Equals(line1.EndMyPoint) || Math.Abs(line1.GetLength()) < 0.01) {
-                    toremove.Add(line1);
-
+                if (line1.StartMyPoint.Equals(line1.EndMyPoint) || Math.Abs(line1.GetLength()) < 0.001) {
+                    //ha van olyan vonal, aminek a kezdőpontja az, mint a végpontja, vagy a hossza 0 (ami gyakorlatilag ugyanaz)
+                    toremove.Add(line1); //akkor el kell távolítsuk
+                    //de ennek az eltávolításnak még végig kell futnia a vonal kapcsolódó pontjain
+                    //az eltávolítandó vonal végpontjába futó pontokra megyünk rá most
                     foreach (MyLine endLine in line1.EndMyPoint.RelatedLines) {
+                        //értelemszerűen ki kell hagyni azt a vonalat, amit most eltávolítunk
                         if (endLine != line1) {
+                            //a vonal kezdőpontjához hozzáadjuk az új vonalakat, amik ugye belemennek
                             line1.StartMyPoint.RelatedLines.Add(endLine);
-                            if (endLine.StartMyPoint == line1.EndMyPoint) {
+                            //ezután pedig megpróbáljuk átkötni a vonalakat
+                            if (endLine.StartMyPoint == line1.EndMyPoint) { // ez az ág akkor fut le, ha a kezdőpontot kell cserélni
                                 endLine.StartMyPoint = line1.StartMyPoint;
 
                             }
-                            else if (endLine.EndMyPoint == line1.EndMyPoint) {
+                            else if (endLine.EndMyPoint == line1.EndMyPoint) { // ez az ág akkor fut le, ha a végpontot kell cserélni
                                 endLine.EndMyPoint = line1.StartMyPoint;
                             }
                         }
                     }
 
-                    line1.StartMyPoint.RelatedLines.Remove(line1);
-                    line1.EndMyPoint.RelatedLines.Clear();
+                    //ez nem kezeli egyelőre, hogy a vonal egy szoba tagja volt
+
+                    //a kezdőpontból eltávolítjuk a linet (és nem kéne hozzáadni az összes új vonalat?)
+                    line1.StartMyPoint.RelatedLines.AddRange(line1.EndMyPoint.RelatedLines);
+                    line1.StartMyPoint.RelatedLines.Remove(line1); //
+                    line1.StartMyPoint.RelatedLines.Remove(line1); //
+                    line1.EndMyPoint.RelatedLines.Clear();//ez meg csak biztonság
                 }
             }
 
@@ -926,32 +932,84 @@ namespace WindowsFormsApp1 {
 
             //Rooms not handled, but calculaterooms might solve the issue
             CalculateAllRooms();
+            CheckModelLinesVerticality();
+
         }
+
+        private void CheckModelLinesVerticality() {
+            foreach (MyLine line in modelLines)
+            {
+                if (!IsVerticalOrHorizontal(line))
+                {
+                    IsInInvalidState = true;
+                    break;
+                }
+            }
+        }
+
+        private bool IsVerticalOrHorizontal(MyLine line)
+        {
+            bool isVertical = (line.StartMyPoint.Y - line.EndMyPoint.Y) < 0.001;
+            bool isHorizontal = (line.StartMyPoint.X - line.EndMyPoint.X) < 0.001;
+
+            return isVertical || isHorizontal;
+        }
+        private bool CheckModel(ref MyPoint myPoint) {
+            MyPoint local = myPoint.GetCopy();
+            bool contains = ModelPoints.Contains(myPoint);
+            List<MyPoint> tempPoints = ModelPoints.Where(i => i.Equals(local)).ToList();
+            bool isSame = tempPoints.Any();
+
+            if (tempPoints.Count > 1) {
+                throw new Exception("The model state was not valid before check: two points at same place");
+            }
+
+            if (isSame) {
+                myPoint = tempPoints.FirstOrDefault();
+            }
+
+            return contains || isSame;
+        }
+        private static void ExceptionChecking(int offsetDistance, MyLine myLineToMove, MyPoint oldStartPoint,
+            MyPoint lineToMoveNormal, MyPoint oldEndPoint) {
+            foreach (MyLine relatedLine in oldStartPoint.RelatedLines) {
+                if (!relatedLine.Equals(myLineToMove) && (!relatedLine.GetNV(true).Equals(lineToMoveNormal)
+                                                          || !relatedLine.GetNV(true).Equals(lineToMoveNormal * (-1)))) {
+                    if (relatedLine.GetLength() < offsetDistance) {
+                        throw new Exception("Vonalhossz hiba: " + relatedLine.GetLength());
+                    }
+                }
+            }
+
+            foreach (MyLine relatedLine in oldEndPoint.RelatedLines) {
+                if (!relatedLine.Equals(myLineToMove) && (!relatedLine.GetNV(true).Equals(lineToMoveNormal)
+                                                          || !relatedLine.GetNV(true).Equals(lineToMoveNormal * (-1)))) {
+                    if (relatedLine.GetLength() < offsetDistance) {
+                        throw new Exception("Hiba");
+                    }
+                }
+            }
+        }
+
 
         //TODO: this could be calculated for only the lines, that actually changed, this is huge resource waste
         public void CalculateAllRooms() {
             //itt kezelni lehet majd azt a kérdést, hogy van a line-hoz hozzárendelt olyan szoba is, ami nem létezik már
-            //hol vannak kezelve az új vonalak?
             modelRooms.Clear();
             List<Room> allRooms = new List<Room>();
             foreach (MyLine line in modelLines) {
                 //minden modellinera megnézzük, hogy
+                //annak a hozzá tartozó relatedroomjaiban a room boundarylinejai kozott szerepel-e a myLine
                 foreach (Room room in line.relatedRooms) {
                     if (!allRooms.Contains(room)) {
                         allRooms.Add(room);
                     }
-                    //annak a hozzá tartozó relatedroomjaiban
-                    //a room boundarylinejai kozott szerepel-e a myLine
                     if (!room.BoundaryLines.Contains(line)) {
-                        room.BoundaryLines.Add(line);
-                        //Logger.WriteLog($"CalculateAllRooms for myLine {myLine} {room.Name} ");
+                        room.BoundaryLines.Add(line); //Logger.WriteLog($"CalculateAllRooms for myLine {myLine} {room.Name} ");
                     }
                 }
-                // modelRooms.AddRange(myLine.relatedRooms);
             }
             modelRooms = new ObservableCollection<Room>(allRooms);//modelRooms.Distinct().ToList();
-            //Logger.WriteLog(modelRooms.ToString());
-            //TraceValues();
         }
         private List<List<MyLine>> CalculateContaining(MyLine line1, MyLine line2) {
 
@@ -1035,133 +1093,6 @@ namespace WindowsFormsApp1 {
             return newMyLine;
         }
 
-
-
-
-        public double[] CalculateCost() {
-            double summary = 0.0;
-            double areacost = 0.0;
-            double layoutcost = 0.0;
-            double constaintcost = 0.0;
-
-            try {
-                areacost = CalculateParameterCost();
-                layoutcost = CalculateLayoutCost();
-                constaintcost = CalculateConstraintCost();
-                summary = areacost + layoutcost + constaintcost;
-                //Logger.WriteLog("területköltség: " + areacost);
-                //Logger.WriteLog("kerületköltség: " + layoutcost);
-            }
-            catch (Exception ex) {
-                Logger.WriteLog("Error during cost calculation" + ex);
-            }
-            return new double[] { summary, areacost, layoutcost, constaintcost };
-        }
-        private double CalculateConstraintCost() {
-            //muszáj teljesülne
-            return 0.0;
-        }
-        private double CalculateParameterCost() {
-            double summary = 0.0;
-            //try {
-            foreach (Room room in this.modelRooms) {
-                //try {
-                //TODO: this fails when switched with simulation
-                double actualarea = room.CalculateArea();
-                RoomType type = room.type;
-                if (Math.Abs(actualarea) < 0.01) {
-
-                    if (actualarea < type.areamin) {
-                        summary += Math.Pow(type.areamin - actualarea, 2);
-                    }
-                    else if (actualarea > type.areamax) {
-                        summary += Math.Pow(type.areamax - actualarea, 2);
-                    }
-                }
-                double actualprop = room.CalculateProportion();
-                if (actualprop > type.proportion) {
-                    summary += Math.Pow(2, -type.proportion + actualprop);
-                }
-
-                //punish more edges
-                double countCost = room.BoundaryPoints.Count;
-                if (countCost > 6) {
-                    summary += Math.Pow(2, countCost - 6);
-                }
-
-                //}
-                //catch (Exception e) {
-                //    Logger.WriteLog(e);
-                //}
-            }
-            //}
-            //catch (Exception e) {
-            //    summary = 10;
-            //    Logger.WriteLog("outer exc" + e);
-            //}
-            //elemszintű megfelelés
-            //minden helyiségre
-            //megkeresni a helyiség kategóriát a táblázatból
-            //számítani a megfelelést
-            //összegezni
-            summary = Math.Round(summary, 2);
-            return summary;
-        }
-        private double CalculateLayoutCost() {
-            double wallLength = 0.0;
-            foreach (MyLine seg in this.modelLines) {
-                if (seg.relatedRooms.Count > 1) {
-                    wallLength += Math.Sqrt((seg.GetLength() / 100)) / 10;
-                }
-                else {
-                    wallLength += Math.Sqrt((seg.GetLength() / 100)) * 3;
-
-                }
-
-
-            }
-            Dictionary<RoomType, Dictionary<RoomType, int>> asd = new Dictionary<RoomType, Dictionary<RoomType, int>>();
-            asd.Add(RoomType.LivingRoom, new Dictionary<RoomType, int>() { { RoomType.Kitchen, 1000 } });
-            asd.Add(RoomType.Kitchen, new Dictionary<RoomType, int>() { { RoomType.LivingRoom, 1000 } });
-
-
-            double layoutcost = 0.0;
-            foreach (MyLine modelLine in modelLines) {
-                var count = modelLine.relatedRooms.Count;
-                if (count > 1) {
-                    for (var index = 0; index < count; index++) {
-                        Room r1 = modelLine.relatedRooms[index];
-                        for (int i = index + 1; i < count; i++) {
-                            //TODO: make a 2D grid and choose based on the combination. I dont know the solution
-                            Room r2 = modelLine.relatedRooms[i];
-
-                            Dictionary<RoomType, int> asd2 = new Dictionary<RoomType, int>();
-                            bool isIn = asd.TryGetValue(r1.type, out asd2);
-
-                            if (isIn) {
-                                int value = 0;
-                                bool isInOther = asd2.TryGetValue(r2.type, out value);
-                                layoutcost += value;
-                            }
-
-                        }
-                    }
-
-                    //have linear 2fold combination of list, and calculate value based on the 2d array/datasheet
-                }
-            }
-            //Utils.WriteLog("Walllength: " + wallLength);
-            //elrendezésszintű
-            double passagewaycost = 0.0;
-            //ajtókat, nyílásokat letenni...(kérdés)
-            //bejárhatóság generálás
-            double privacygradientcost = 0.0;
-            //kerületszámítás
-            //minimális optimum kerület = sqrt(minden szoba area összege)*4
-            double summary = passagewaycost + privacygradientcost + wallLength + layoutcost;
-            summary = Math.Round(summary, 2);
-            return summary;
-        }
 
 
     }

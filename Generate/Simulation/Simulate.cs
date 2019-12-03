@@ -16,7 +16,7 @@ namespace WindowsFormsApp1.Simulation {
         public event StatusUpdateHandler ModelChanged;
         readonly object locker = new object();
         private int actualSimulationThreshold = 0;
-        private int MaxSimulationThreshold = 50;
+        private int MaxSimulationThreshold = 5;
         public int actualSimulationIndex = 0;
         public int moveDistance = 10;
         bool isFinished = false;
@@ -39,11 +39,11 @@ namespace WindowsFormsApp1.Simulation {
                 Actions.Clear();
 
                 SaveState();
-                actualCost = model.CalculateCost().ElementAt(0);
+                actualCost = CostCalculationService.CalculateCost(model).ElementAt(0);
                 CalculateCostsForState();
                 MakeAStepByTheCalculatedCosts();
                 HandleModelChangeUpdate();
-                Thread.Sleep(50);
+                Thread.Sleep(5);
                 actualSimulationIndex++;
                 if (actualSimulationIndex > 1000) {
                     isFinished = true;
@@ -100,7 +100,7 @@ namespace WindowsFormsApp1.Simulation {
                     Model tempModel = model.DeepCopy(r1, r2, out r1target, out r2target);
                     tempModel.SwitchRooms(ref r1target, ref r2target);
                     if (!tempModel.IsInInvalidState) {
-                        double cost = tempModel.CalculateCost().First();
+                        double cost = CostCalculationService.CalculateCost(tempModel).First();
                         lock (locker) {
                             Actions.Add(new Switch(ref r1, ref r2, cost));
                         }
@@ -122,7 +122,7 @@ namespace WindowsFormsApp1.Simulation {
                 tempModel.MoveLine(moveDistance, newMyLine);
                 if (tempModel.IsInInvalidState) continue;
 
-                double[] costs = tempModel.CalculateCost();
+                double[] costs = CostCalculationService.CalculateCost(tempModel);
                 double summary = costs[0];
                 double areacost = costs[1];
                 double layoutcost = costs[2];
@@ -140,7 +140,7 @@ namespace WindowsFormsApp1.Simulation {
                 Model tempModel = model.DeepCopy(myLine, out newMyLine);
                 tempModel.MoveLine(-moveDistance, newMyLine);
                 if (tempModel.IsInInvalidState) continue;
-                double[] costs = tempModel.CalculateCost();
+                double[] costs = CostCalculationService.CalculateCost(tempModel);
                 double summary = costs[0];
                 double areacost = costs[1];
                 double layoutcost = costs[2];
@@ -172,7 +172,7 @@ namespace WindowsFormsApp1.Simulation {
         private Action FindStep() {
             List<Action> sorted = Actions.OrderBy(i => i.cost).ToList();
             //Action a = sorted.FirstOrDefault();
-            int j = r.Next(0, Math.Min(0, sorted.Count));
+            int j = r.Next(0, Math.Min(5, sorted.Count));
             ActualAction = sorted.ElementAt(j);
             if (actualCost >= ActualAction.cost) {
                 actualCost = ActualAction.cost;
@@ -186,7 +186,7 @@ namespace WindowsFormsApp1.Simulation {
         public void Split(int splitPercentage, MyLine lineGridSelectedItem) {
             Action a = new Split(splitPercentage, lineGridSelectedItem);
             a.Step(model);
-            double[] costs = model.CalculateCost();
+            double[] costs = CostCalculationService.CalculateCost(model);
 
             actualCost = costs[0];
             actualAreaCost = costs[1];
@@ -196,7 +196,7 @@ namespace WindowsFormsApp1.Simulation {
         public void Move(MyLine lineGridSelectedItem, int movedistance) {
             Action a = new Move(lineGridSelectedItem, movedistance);
             a.Step(model);
-            double[] costs = model.CalculateCost();
+            double[] costs = CostCalculationService.CalculateCost(model);
 
             actualCost = costs[0];
             actualAreaCost = costs[1];
@@ -207,7 +207,7 @@ namespace WindowsFormsApp1.Simulation {
         public void SwitchRoom(ref Room r1, ref Room r2) {
             Action a = new Switch(ref r1, ref r2);
             a.Step(model);
-            double[] costs = model.CalculateCost();
+            double[] costs = CostCalculationService.CalculateCost(model);
 
             actualCost = costs[0];
             actualAreaCost = costs[1];

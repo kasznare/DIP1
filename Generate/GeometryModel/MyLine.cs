@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace WindowsFormsApp1 {
     public class MyLine : IGeometry {
@@ -94,7 +95,7 @@ namespace WindowsFormsApp1 {
         }
 
         public override string ToString() {
-            return $"MyLine from {StartMyPoint} to {EndMyPoint}";
+            return $"MyLine from {StartMyPoint} to {EndMyPoint} \nWith rooms: {String.Join(Environment.NewLine, relatedRooms.Select(i=>i.Name))}";
         }
     }
 }

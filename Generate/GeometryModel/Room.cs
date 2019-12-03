@@ -35,6 +35,8 @@ namespace WindowsFormsApp1 {
         public int Degree { get; set; }
         public bool isStartRoom { get; set; }
 
+        public List<Room> NeighboorRooms = new List<Room>();
+
         public string boundaryLineNames {
             get { return String.Join("\n", GetBoundaryLinesSorted().Select(i => i.ToString()).ToArray()); }
         }
@@ -46,8 +48,7 @@ namespace WindowsFormsApp1 {
         public List<MyLine> BoundaryLines {
             get => boundaryLines;
             set {
-                if (value == null || value.Count==0)
-                {
+                if (value == null || value.Count == 0) {
                     //Logger.WriteLog("someone set to null");
                 }
                 boundaryLines = value;
@@ -66,8 +67,7 @@ namespace WindowsFormsApp1 {
             List<MyLine> orderedLines = new List<MyLine>();
 
             int actualIndex = 0;
-            if (BoundaryLines.Count==0)
-            {
+            if (BoundaryLines.Count == 0) {
                 Logger.WriteLog("boundary is null, this is bad");
             }
             int boundCount = BoundaryLines.Count;
@@ -109,8 +109,7 @@ namespace WindowsFormsApp1 {
                 }
             }
 
-            if (orderedLines.Count == 0)
-            {
+            if (orderedLines.Count == 0) {
                 Logger.WriteLog("this is bad");
             }
             BoundaryLines = orderedLines;
@@ -129,8 +128,9 @@ namespace WindowsFormsApp1 {
                 SortBoundaryPoints();
             }
 
-            if (boundaryPoints.Count==0)
-            {
+            boundaryPoints.RemoveAll(item => item == null);
+
+            if (boundaryPoints.Count == 0) {
                 throw new Exception("Ordering failed");
             }
             return BoundaryPoints;
@@ -149,10 +149,6 @@ namespace WindowsFormsApp1 {
                 boundaryPoints.Add(commonMyPoint);
             }
 
-            //if (_boundaryPoints.Count)
-            //{
-                
-            //}
         }
 
         private static MyPoint FindCommonPointOnTwoLines(MyLine firstMyLine, MyLine nextMyLine) {
@@ -187,7 +183,7 @@ namespace WindowsFormsApp1 {
         }
 
         public double CalculateProportion() {
-                double proportion = 0.0;
+            double proportion = 0.0;
             try {
                 List<MyPoint> bp = GetBoundaryPointsSorted();
 
@@ -213,14 +209,21 @@ namespace WindowsFormsApp1 {
 
         public double CalculateArea() {
             List<MyPoint> bp = GetBoundaryPointsSorted();
-            if (bp.Count==0)
-            {
-                throw new Exception("area is null");
+
+            if (bp.Count == 0) {
+                throw new Exception("Area is null");
             }
+
             double[] X = bp.Select(i => i.X).ToArray();
             double[] Y = bp.Select(i => i.Y).ToArray();
             double area = PolygonArea(X, Y, bp.Count);
+
+            if (area < 0.01) {
+                throw new Exception("Area is too small: " + area);
+            }
+
             return area / 10000;
+
         }
         /// <summary>
         /// of a polygon using shoelace formula
@@ -248,6 +251,11 @@ namespace WindowsFormsApp1 {
 
             // Return absolute Value 
             return Math.Abs(area / 2.0);
+        }
+
+        public override string ToString()
+        {
+            return String.Join(Environment.NewLine,GetBoundaryLinesSorted().Select(i=>i.ToString()));
         }
     }
 }

@@ -58,7 +58,7 @@ namespace UIWPF {
             LineAndCostActualStep = new ObservableCollection<LineAndCost>();
 
             InitRoomTypes();
-            model.InitSimpleModel();
+            model.InitAdvancedModel();
             s.model = model;
             s.ModelChanged += ModelChangeHandler;
             DataContext = this;
@@ -110,7 +110,7 @@ namespace UIWPF {
             Dictionary<string, double> Costs = new Dictionary<string, double>();
             MyLine minline = null;
             int currentMoveDistance = moveDistance;
-            double actualCost = model.CalculateCost().First();
+            double actualCost = CostCalculationService.CalculateCost(model).First();
             double mincost = actualCost;
             Parallel.For(0, model.modelLines.Count,
                 index => {
@@ -119,7 +119,7 @@ namespace UIWPF {
                     Model tempModel = model.DeepCopy(myLine, out newMyLine);
                     tempModel.MoveLine(moveDistance, newMyLine);
 
-                    double cost = tempModel.CalculateCost().First();
+                    double cost = CostCalculationService.CalculateCost(tempModel).First();
                     lock (locker) {
                         Costs.Add("+" + myLine.ToString(), cost);
                         if (mincost > cost) {
@@ -137,7 +137,7 @@ namespace UIWPF {
                     Model tempModel = model.DeepCopy(myLine, out newMyLine);
                     tempModel.MoveLine(-moveDistance, newMyLine);
 
-                    double cost = tempModel.CalculateCost().First();
+                    double cost = CostCalculationService.CalculateCost(tempModel).First();
                     lock (locker) {
                         Costs.Add("-" + myLine.ToString(), cost);
                         if (mincost > cost) {
@@ -164,7 +164,7 @@ namespace UIWPF {
             //System.Windows.Forms.MessageBox.Show(mincost.ToString());
             //SimulationCosts.Add(new Costs(actualSimulationIndex, mincost));
 
-            double[] costArray = model.CalculateCost();
+            double[] costArray = CostCalculationService.CalculateCost(model);
             SimulationCosts.Add(new Costs(actualSimulationIndex, costArray[0], costArray[1], costArray[2], costArray[3]));
 
             actualSimulationIndex++;
@@ -172,7 +172,7 @@ namespace UIWPF {
         private void SimulationStepSwitch() {
             Dictionary<Room, double> RoomCosts = new Dictionary<Room, double>();
 
-            double actualCost = model.CalculateCost().First();
+            double actualCost = CostCalculationService.CalculateCost(model).First();
             double mincost = actualCost;
             int rooms = model.modelRooms.Count;
             Room switchThisRoomFrom = null;
@@ -188,7 +188,7 @@ namespace UIWPF {
                         Model tempModel = model.DeepCopy(r1, r2, out r1target, out r2target);
                         tempModel.SwitchRooms(ref r1target, ref r2target);
 
-                        double cost = tempModel.CalculateCost().First();
+                        double cost = CostCalculationService.CalculateCost(tempModel).First();
                         lock (locker) {
                             RoomCosts.Add(r1, cost);
                             if (mincost >= cost) {
@@ -214,13 +214,14 @@ namespace UIWPF {
                 MessageBox.Show("no room to switch");
             }
 
-            double[] costArray = model.CalculateCost();
+            double[] costArray = CostCalculationService.CalculateCost(model);
 
             SimulationCosts.Add(new Costs(actualSimulationIndex, costArray[0], costArray[1], costArray[2], costArray[3]));
             actualSimulationIndex++;
         }
 
         private bool isPainting = false;
+
         private void Paint() {
             AutoScrollCosts();
             isPainting = true;
@@ -230,42 +231,52 @@ namespace UIWPF {
             for (var i = 0; i < model.modelLines.Count; i++) {
                 MyLine line = model.modelLines[i];
                 ShapeLine myLine = new ShapeLine();
-                myLine.Stroke = System.Windows.Media.Brushes.Black;
+                Brush solidColorBrush = new SolidColorBrush(Color.FromArgb(95,0,0,0));
+                solidColorBrush.Opacity = 0.5;
                 if (i.Equals(selectedLineIndex)) {
-                    myLine.Stroke = Brushes.Yellow;
+                    solidColorBrush = Brushes.Yellow;
                 }
+
+                myLine.Stroke = solidColorBrush;
                 myLine.X1 = line.StartMyPoint.X;
                 myLine.X2 = line.EndMyPoint.X;
                 myLine.Y1 = line.StartMyPoint.Y;
                 myLine.Y2 = line.EndMyPoint.Y;
                 myLine.StrokeEndLineCap = PenLineCap.Triangle;
                 myLine.StrokeStartLineCap = PenLineCap.Round;
-                myLine.StrokeThickness = 5;
+                myLine.StrokeThickness = 10;
+                myLine.ToolTip = line.ToString();
                 testcanvas.Children.Add(myLine);
             }
 
             foreach (MyPoint point in model.ModelPoints) {
                 ShapeLine myLine = new ShapeLine();
-                myLine.Stroke = System.Windows.Media.Brushes.Red;
+
+                var solidColorBrush = new SolidColorBrush(Color.FromArgb(90, 255, 0, 0));
+                solidColorBrush.Opacity = 0.5;
+                myLine.Stroke = solidColorBrush;
                 myLine.X1 = point.X;
                 myLine.X2 = point.X + 1;
                 myLine.Y1 = point.Y;
                 myLine.Y2 = point.Y + 1;
                 myLine.StrokeStartLineCap = PenLineCap.Round;
                 myLine.StrokeEndLineCap = PenLineCap.Triangle;
-                myLine.StrokeThickness = 5;
+                myLine.StrokeThickness = 10;
+                myLine.ToolTip = point.ToString();
                 testcanvas.Children.Add(myLine);
             }
 
-            foreach (Room room in model.modelRooms) {
+            //foreach (Room room in model.modelRooms) {
+            foreach (Room room in Rooms) {
                 List<MyPoint> boundaries = room.GetBoundaryPointsSorted();
                 if (!boundaries.Any()) continue;
-                boundaries.RemoveAll(item => item == null); //this is error handling, but I would need to figure out why nulls exist
+                //boundaries.RemoveAll(item => item == null); //this is error handling, but I would need to figure out why nulls exist
                 List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
                 Polygon p = new Polygon();
                 p.Points = new PointCollection(convertedPoints);
                 p.Fill = new SolidColorBrush(room.type.fillColor.ToMediaColor());
-                p.Opacity = 0.5;
+                p.Opacity = 0.25;
+                p.ToolTip = room.ToString();
                 testcanvas.Children.Add(p);
             }
 
@@ -431,6 +442,7 @@ namespace UIWPF {
             int actualCostIndex = CostGrid.SelectedIndex;
             Model requested = s.modelCopyHistory.ElementAt(actualCostIndex);
             model = requested;
+            s.model = requested;
             Paint();
         }
 
@@ -484,8 +496,7 @@ namespace UIWPF {
 
             BitmapEncoder pngEncoder = new PngBitmapEncoder();
             pngEncoder.Frames.Add(BitmapFrame.Create(rtb));
-            if (runPath=="")
-            {
+            if (runPath == "") {
                 CreateRunFolderAndInitPath();
             }
             var path = runPath + DateTime.Now.ToString("HH_mm_ss_fff") + ".png";
@@ -553,13 +564,11 @@ namespace UIWPF {
             SaveStateToPng();
         }
 
-        private void MainWindow_OnClosing(object sender, CancelEventArgs e)
-        {
-           
+        private void MainWindow_OnClosing(object sender, CancelEventArgs e) {
+
         }
 
-        private void LoadFactoryModelClick(object sender, RoutedEventArgs e)
-        {
+        private void LoadFactoryModelClick(object sender, RoutedEventArgs e) {
             s.model.InitModelWithGivenRooms();
         }
     }
