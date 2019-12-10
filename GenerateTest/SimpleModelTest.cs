@@ -26,12 +26,12 @@ namespace GenerateTest {
 
 
         //the goal of the tests are to avoid exceptions, if there is an exception, it fails.
-        [Test]
+        //[Test]
         public void SimpleModel() {
             s.model.InitSimpleModel();
             s.run();
         }
-        [Test]
+        //[Test]
         public void FullSimulation() {
             s.model.InitSimpleModel();
             s.run();

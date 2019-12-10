@@ -89,6 +89,25 @@ namespace WindowsFormsApp1 {
             }
         }
 
+        public List<MyPoint> GetUniqueModelPoints() {
+            List<MyPoint> starts = ModelPoints;
+            //int nStep = 2;
+            //if (starts.Count % 2 != 0) {
+            //    throw new Exception("Model points should be doubled");
+            //}
+            //for (var i = 0; i < starts.Count; i += 2) {
+            //    MyPoint myPoint1 = starts[i];
+            //    MyPoint myPoint2 = starts[i + 1];
+            //    if (myPoint1.Guid != myPoint2.Guid) {
+            //        throw new Exception("Invalid model points");
+            //    }
+            //}
+            //starts = starts.Where((x, i) => i % nStep == 0).ToList();
+            starts = starts.Distinct().ToList();
+            return starts;
+        }
+
+
 
 
         public void InitSimplestModel() {
@@ -421,7 +440,7 @@ namespace WindowsFormsApp1 {
 
             //modelRooms = new ObservableCollection<Room>(new List<Room>(){first, second, third, fourth, _first, _second, _third, _fourth});
             CalculateAllRooms();
-            //Repair();
+            //RepairDuplicatePointsAndLines();
             Logger.WriteLog("Advanced model initialized");
         }
         public void InitModelWithGivenRooms() {
@@ -470,7 +489,8 @@ namespace WindowsFormsApp1 {
                 x0 += 200;
             }
             CalculateAllRooms();
-            Repair();
+            RepairDuplicatePointsAndLines();
+            //CleanDuplicatePoints();
             CalculateAllRooms();
 
         }
@@ -631,13 +651,13 @@ namespace WindowsFormsApp1 {
 
         //the cause of all prolems is in this function.
         //but it is not the function that is wrong, it makes the model in an invalid state, but that can happen on other functions aswell.
-        public void Repair() {
-            List<MyPoint> allPoints = new List<MyPoint>();
-            allPoints.AddRange(modelLines.Select(i => i.StartMyPoint));
-            allPoints.AddRange(modelLines.Select(i => i.EndMyPoint));
+        public void RepairDuplicatePointsAndLines() {
+            CleanDuplicatePoints();
+            CleanDuplicateLines();
+            CleanOverlappingLines();
+        }
 
-            CleanPoints(allPoints);
-
+        private void CleanDuplicateLines() {
             //ha teljes vonalat ki tudok cserélni, akkor cseréljem is ki.
             List<List<MyLine>> linestoreplace = new List<List<MyLine>>();
 
@@ -647,46 +667,142 @@ namespace WindowsFormsApp1 {
                 if (linesToRemove.Contains(modelLine)) continue;
 
                 List<MyLine> mach = modelLines.Where(i => (modelLine.StartMyPoint.Equals(i.StartMyPoint) &&
-                                                          modelLine.EndMyPoint.Equals(i.EndMyPoint)) ||
+                                                           modelLine.EndMyPoint.Equals(i.EndMyPoint)) ||
                                                           (modelLine.StartMyPoint.Equals(i.EndMyPoint) &&
                                                            modelLine.EndMyPoint.Equals(i.StartMyPoint))
-                                                          ).ToList();
+                ).ToList();
 
                 if (mach.Contains(modelLine)) {
                     mach.Remove(modelLine);
                 }
+
                 if (mach.Count == 0) continue;
                 linesToRemove.AddRange(mach);
                 linesToRemoveDict.Add(modelLine, mach);
             }
 
             foreach (var myLine in linesToRemoveDict) {
-
                 foreach (MyLine line in myLine.Value) {
-
                     foreach (Room lineRelatedRoom in line.relatedRooms) {
                         lineRelatedRoom.BoundaryLines.Remove(line);
                         lineRelatedRoom.BoundaryLines.Add(myLine.Key);
+                        myLine.Key.relatedRooms.Add(lineRelatedRoom);
                     }
+
                     modelLines.Remove(line);
+                }
+            }
+        }
+
+        private void CleanOverlappingLines() {
+            List<MyLine> linesToRemove = new List<MyLine>();
+            List<MyLine> linesModofied = new List<MyLine>();
+            foreach (MyLine testLineB in modelLines) {
+                foreach (MyLine lineA in modelLines) {
+                    if (testLineB == lineA) continue;
+                    if (linesToRemove.Contains(lineA)) continue;
+
+                    bool isStartPointOnMiddleLine = IsOnLine(testLineB.StartMyPoint, lineA);
+                    bool isStartPointAtEndLine = testLineB.StartMyPoint.Equals(lineA.StartMyPoint) ||
+                                                 testLineB.StartMyPoint.Equals(lineA.EndMyPoint);
+                    bool isEndPointOnMiddleLine = IsOnLine(testLineB.EndMyPoint, lineA);
+                    bool isEndPointAtEndLine = testLineB.EndMyPoint.Equals(lineA.StartMyPoint) ||
+                                               testLineB.EndMyPoint.Equals(lineA.EndMyPoint);
+
+
+                    if (isStartPointAtEndLine && isEndPointAtEndLine) {
+                        //then we pass, this is already handled (and should be moved here later)
+                    }
+                    //CASE 1 complete containing, one point match
+                    if (isStartPointAtEndLine && isStartPointOnMiddleLine && isEndPointOnMiddleLine && !isEndPointAtEndLine) {
+                        linesToRemove.Add(lineA);
+                        if (testLineB.StartMyPoint.Equals(lineA.StartMyPoint)) {
+                            testLineB.StartMyPoint.RelatedLines.AddRange(lineA.StartMyPoint.RelatedLines); //give up all the edges
+                            lineA.StartMyPoint = testLineB.EndMyPoint;
+                            foreach (Room room in testLineB.relatedRooms) {
+                                lineA.relatedRooms.Remove(room); //give up all the rooms
+                            }
+                        }
+                        if (testLineB.StartMyPoint.Equals(lineA.EndMyPoint)) {
+                            testLineB.StartMyPoint.RelatedLines.AddRange(lineA.EndMyPoint.RelatedLines); //give up all the edges
+                            lineA.EndMyPoint = testLineB.EndMyPoint;
+                            foreach (Room room in testLineB.relatedRooms) {
+                                lineA.relatedRooms.Remove(room); //give up all the rooms
+                            }
+                        }
+                    }
+                    //CASE 1 complete containing, one point match - REVERSE
+                    if (!isStartPointAtEndLine && isStartPointOnMiddleLine && isEndPointOnMiddleLine && isEndPointAtEndLine) {
+                        linesToRemove.Add(lineA);
+                        if (testLineB.EndMyPoint.Equals(lineA.StartMyPoint)) {
+                            testLineB.StartMyPoint.RelatedLines.AddRange(lineA.StartMyPoint.RelatedLines); //give up all the edges
+                            lineA.StartMyPoint = testLineB.EndMyPoint;
+                            foreach (Room room in testLineB.relatedRooms) {
+                                lineA.relatedRooms.Remove(room); //give up all the rooms
+                            }
+                        }
+                        if (testLineB.EndMyPoint.Equals(lineA.EndMyPoint)) {
+                            testLineB.StartMyPoint.RelatedLines.AddRange(lineA.EndMyPoint.RelatedLines); //give up all the edges
+                            lineA.EndMyPoint = testLineB.EndMyPoint;
+                            foreach (Room room in testLineB.relatedRooms) {
+                                lineA.relatedRooms.Remove(room); //give up all the rooms
+                            }
+                        }
+                    }
+
+                    //CASE 2 partial containg, no matching point
+                    if (!isStartPointAtEndLine && isStartPointOnMiddleLine &&!isEndPointOnMiddleLine && !isEndPointAtEndLine)
+                    {
+                        if (IsOnLine(lineA.StartMyPoint, testLineB)) //then we know it is really case 2
+                        {
+                            throw new Exception("lines overstepped, this should not happen");
+                        }
+
+                        if (IsOnLine(lineA.EndMyPoint, testLineB))
+                        {
+                            throw new Exception("lines overstepped, this should not happen");
+                            
+                        }
+                    }
+                    //CASE 2 partial containg, no matching point - REVERSE
+                    if (!isStartPointAtEndLine && !isStartPointOnMiddleLine && isEndPointOnMiddleLine && !isEndPointAtEndLine) {
+                        if (IsOnLine(lineA.StartMyPoint, testLineB)) //then we know it is really case 2
+                        {
+                            throw new Exception("lines overstepped, this should not happen");
+                        }
+
+                        if (IsOnLine(lineA.EndMyPoint, testLineB)) {
+                            throw new Exception("lines overstepped, this should not happen");
+
+                        }
+                    }
+                    
+
+                    //CASE 3 touching, this should be handled already.
+
 
                 }
 
             }
-
-
-
         }
-        private void CleanPoints(List<MyPoint> allPoints) {
+
+
+        private void CleanDuplicatePoints() {
             foreach (MyLine modelLine in modelLines) {
-                List<MyPoint> asd = allPoints.Where(i => i.Equals(modelLine.StartMyPoint)).OrderBy(i => i.Guid).ToList();
-                List<MyPoint> asd2 = allPoints.Where(i => i.Equals(modelLine.EndMyPoint)).OrderBy(i => i.Guid).ToList();
+                List<MyPoint> asd = ModelPoints.Where(i => i.Equals(modelLine.StartMyPoint)).OrderBy(i => i.Guid).ToList();
+                List<MyPoint> asd2 = ModelPoints.Where(i => i.Equals(modelLine.EndMyPoint)).OrderBy(i => i.Guid).ToList();
                 if (asd.Count() > 1) {
-                    modelLine.StartMyPoint = asd.First();
+                    MyPoint replaceTo = asd.First();
+                    replaceTo.RelatedLines.AddRange(modelLine.StartMyPoint.RelatedLines); //connect the lines
+                    replaceTo.RelatedLines = replaceTo.RelatedLines.Distinct().ToList();
+                    modelLine.StartMyPoint = replaceTo;
                 }
 
                 if (asd2.Count() > 1) {
-                    modelLine.EndMyPoint = asd2.First();
+                    MyPoint replaceTo = asd2.First();
+                    replaceTo.RelatedLines.AddRange(modelLine.EndMyPoint.RelatedLines); //connect the lines
+                    replaceTo.RelatedLines = replaceTo.RelatedLines.Distinct().ToList();
+                    modelLine.EndMyPoint = replaceTo;
                 }
             }
         }
@@ -753,70 +869,69 @@ namespace WindowsFormsApp1 {
             //make a constructor by another room, or preferably two rooms, and only copy the info of the second, and kepp the reference
         }
         public void MoveLine(int offsetDistance, MyLine myLineToMove) {
-            List<MyLine> referenceOfNewLinesIfCreated = new List<MyLine>();
-
             try {
-                MyPoint oldStartPoint = myLineToMove.StartMyPoint;
-                MyPoint oldEndPoint = myLineToMove.EndMyPoint;
-                MyPoint lineToMoveNormal = myLineToMove.GetNV(true);
+                MyPoint oldStart = myLineToMove.StartMyPoint;
+                MyPoint oldEnd = myLineToMove.EndMyPoint;
+                MyPoint lineNormal = myLineToMove.GetNV(true);
                 #region MoveOrCopyStartPoint
 
-                MyPoint movedStartPoint = oldStartPoint + lineToMoveNormal * offsetDistance;
-                MyPoint movedEndPoint = oldEndPoint + lineToMoveNormal * offsetDistance;
+                MyPoint movedStart = oldStart + lineNormal * offsetDistance;
+                MyPoint movedEnd = oldEnd + lineNormal * offsetDistance;
 
                 //this ensures, that if the point already exists in the model, we dont create a new.
-                bool doesStartPointAlreadyExist = CheckModel(ref movedStartPoint);
-                bool doesEndPointAlreadyExist = CheckModel(ref movedEndPoint);
+                MyPoint StartExisting = CheckIfPointIsAlreadyInModel(movedStart);
+                MyPoint EndPointExisting = CheckIfPointIsAlreadyInModel(movedEnd);
 
-                ExceptionChecking(offsetDistance, myLineToMove, oldStartPoint, lineToMoveNormal, oldEndPoint);
+                ExceptionChecking(offsetDistance, myLineToMove, oldStart, lineNormal, oldEnd);
 
                 bool isStartPointCopied = false;
 
-                foreach (MyLine relatedLine in oldStartPoint.RelatedLines) {
+                foreach (MyLine relatedLine in oldStart.RelatedLines) {
                     //ha van olyan vonal, ami miatt másolni kell:
-                    if (!relatedLine.Equals(myLineToMove) && (relatedLine.GetNV(true).Equals(lineToMoveNormal) 
-                                                              || relatedLine.GetNV(true).Equals(lineToMoveNormal * (-1)))) {
+                    if (!relatedLine.Equals(myLineToMove) && (relatedLine.GetNV(true).Equals(lineNormal)
+                                                              || relatedLine.GetNV(true).Equals(lineNormal * (-1)))) {
                         isStartPointCopied = true;
                         break;
                     }
                 }
                 if (!isStartPointCopied) //then relocate, this is easy //itt szoba alapesetben nem változik, kivéve ha már létezik a 
                 {
-                    oldStartPoint.X = movedStartPoint.X;
-                    oldStartPoint.Y = movedStartPoint.Y;
+                    oldStart.X = movedStart.X;
+                    oldStart.Y = movedStart.Y;
                 }
                 else {
                     MyLine myLineInMoveDirection = null;
-                    foreach (MyLine relatedLine in oldStartPoint.RelatedLines) {
+                    foreach (MyLine relatedLine in oldStart.RelatedLines) {
                         //ha a mozgatás irányába van vonal
-                        bool on = IsOnLine(movedStartPoint, relatedLine);
+                        bool on = IsOnLine(movedStart, relatedLine);
                         if (on) {
                             myLineInMoveDirection = relatedLine;
                             break;
                         }
                     }
                     if (myLineInMoveDirection != null) {
-                        if (myLineInMoveDirection.StartMyPoint.Equals(oldStartPoint)) {
-                            myLineInMoveDirection.StartMyPoint = movedStartPoint;
+                        if (myLineInMoveDirection.StartMyPoint.Equals(oldStart)) {
+                            myLineInMoveDirection.StartMyPoint = movedStart;
 
                         }
-                        else {
-                            myLineInMoveDirection.EndMyPoint = movedStartPoint;
+                        else if (myLineInMoveDirection.EndMyPoint.Equals(oldStart)) {
+                            myLineInMoveDirection.EndMyPoint = movedStart;
                         }
-                        movedStartPoint.RelatedLines.Add(myLineInMoveDirection);
-                        oldStartPoint.RelatedLines.Remove(myLineInMoveDirection);
+                        movedStart.RelatedLines.Add(myLineInMoveDirection);
+                        oldStart.RelatedLines.Remove(myLineInMoveDirection);
                     }
 
-                    myLineToMove.StartMyPoint = movedStartPoint;
-                    movedStartPoint.RelatedLines.Add(myLineToMove);
-                    oldStartPoint.RelatedLines.Remove(myLineToMove);
+                    myLineToMove.StartMyPoint = movedStart;
+                    movedStart.RelatedLines.Add(myLineToMove);
+                    oldStart.RelatedLines.Remove(myLineToMove);
 
-                    List<Room> p1Rooms = oldStartPoint.RelatedRooms;
-                    List<Room> p3Rooms = movedStartPoint.RelatedRooms;
+                    List<Room> p1Rooms = oldStart.RelatedRooms;
+                    List<Room> p3Rooms = movedStart.RelatedRooms;
 
+                    //this is not always good
                     List<Room> commonRooms = p1Rooms.Intersect(p3Rooms).ToList();
 
-                    MyLine newConnectionEdge1 = new MyLine(oldStartPoint, movedStartPoint);
+                    MyLine newConnectionEdge1 = new MyLine(oldStart, movedStart);
                     //TODO: add related modelRooms to this new myLine.
                     newConnectionEdge1.relatedRooms = commonRooms;
 
@@ -827,49 +942,49 @@ namespace WindowsFormsApp1 {
                 #region MoveOrCopyEndPoint
                 bool copyp2 = false;
                 MyLine parallelLine2 = null;
-                foreach (MyLine relatedLine in oldEndPoint.RelatedLines) {
+                foreach (MyLine relatedLine in oldEnd.RelatedLines) {
                     if (!relatedLine.Equals(myLineToMove) &&
-                        (relatedLine.GetNV(true).Equals(lineToMoveNormal) || relatedLine.GetNV(true).Equals(lineToMoveNormal * (-1)))) {
+                        (relatedLine.GetNV(true).Equals(lineNormal) || relatedLine.GetNV(true).Equals(lineNormal * (-1)))) {
                         copyp2 = true;
                         parallelLine2 = relatedLine;
                         break;
                     }
                 }
                 if (!copyp2) {
-                    oldEndPoint.X = movedEndPoint.X;
-                    oldEndPoint.Y = movedEndPoint.Y;
+                    oldEnd.X = movedEnd.X;
+                    oldEnd.Y = movedEnd.Y;
                 }
                 else {
                     MyLine myLineInMoveDirection = null;
-                    foreach (MyLine relatedLine in oldEndPoint.RelatedLines) {
-                        bool on = IsOnLine(movedEndPoint, relatedLine);
+                    foreach (MyLine relatedLine in oldEnd.RelatedLines) {
+                        bool on = IsOnLine(movedEnd, relatedLine);
                         if (on) {
                             myLineInMoveDirection = relatedLine;
                             break;
                         }
                     }
                     if (myLineInMoveDirection != null) {
-                        if (myLineInMoveDirection.StartMyPoint.Equals(oldEndPoint)) {
-                            myLineInMoveDirection.StartMyPoint = movedEndPoint;
+                        if (myLineInMoveDirection.StartMyPoint.Equals(oldEnd)) {
+                            myLineInMoveDirection.StartMyPoint = movedEnd;
                         }
                         else {
-                            myLineInMoveDirection.EndMyPoint = movedEndPoint;
+                            myLineInMoveDirection.EndMyPoint = movedEnd;
                         }
-                        movedEndPoint.RelatedLines.Add(myLineInMoveDirection);
-                        oldEndPoint.RelatedLines.Remove(myLineInMoveDirection);
+                        movedEnd.RelatedLines.Add(myLineInMoveDirection);
+                        oldEnd.RelatedLines.Remove(myLineInMoveDirection);
                     }
 
-                    myLineToMove.EndMyPoint = movedEndPoint;
+                    myLineToMove.EndMyPoint = movedEnd;
 
-                    movedEndPoint.RelatedLines.Add(myLineToMove);
-                    oldEndPoint.RelatedLines.Remove(myLineToMove);
+                    movedEnd.RelatedLines.Add(myLineToMove);
+                    oldEnd.RelatedLines.Remove(myLineToMove);
 
-                    List<Room> p2Rooms = oldEndPoint.RelatedRooms;
-                    List<Room> p4Rooms = movedEndPoint.RelatedRooms;
+                    List<Room> p2Rooms = oldEnd.RelatedRooms;
+                    List<Room> p4Rooms = movedEnd.RelatedRooms;
 
                     List<Room> commonRooms = p2Rooms.Intersect(p4Rooms).ToList();
                     //the new lines related rooms are always handled
-                    MyLine newConnectionEdge2 = new MyLine(oldEndPoint, movedEndPoint);
+                    MyLine newConnectionEdge2 = new MyLine(oldEnd, movedEnd);
                     newConnectionEdge2.relatedRooms = commonRooms;
 
                     modelLines.Add(newConnectionEdge2);
@@ -881,12 +996,22 @@ namespace WindowsFormsApp1 {
                 Logger.WriteLog("Error : Not legal move " + e.Message);
                 Logger.WriteLog(e);
                 IsInInvalidState = true;
+                throw new Exception("bad");
                 //MessageBox.Show();
             }
 
+            CleanupMove();
+
+            //Rooms not handled, but calculaterooms might solve the issue
+            CalculateAllRooms();
+            CheckModelLinesVerticality();
+            RepairDuplicatePointsAndLines();
+        }
+
+        private void CleanupMove() {
             List<MyLine> toremove = new List<MyLine>();
             foreach (MyLine line1 in modelLines) {
-                if (line1.StartMyPoint.Equals(line1.EndMyPoint) || Math.Abs(line1.GetLength()) < 0.001) {
+                if (line1.StartMyPoint.Equals(line1.EndMyPoint) || Math.Abs(line1.GetLength()) < 0.01) {
                     //ha van olyan vonal, aminek a kezdőpontja az, mint a végpontja, vagy a hossza 0 (ami gyakorlatilag ugyanaz)
                     toremove.Add(line1); //akkor el kell távolítsuk
                     //de ennek az eltávolításnak még végig kell futnia a vonal kapcsolódó pontjain
@@ -897,11 +1022,12 @@ namespace WindowsFormsApp1 {
                             //a vonal kezdőpontjához hozzáadjuk az új vonalakat, amik ugye belemennek
                             line1.StartMyPoint.RelatedLines.Add(endLine);
                             //ezután pedig megpróbáljuk átkötni a vonalakat
-                            if (endLine.StartMyPoint == line1.EndMyPoint) { // ez az ág akkor fut le, ha a kezdőpontot kell cserélni
+                            if (endLine.StartMyPoint == line1.EndMyPoint) {
+                                // ez az ág akkor fut le, ha a kezdőpontot kell cserélni
                                 endLine.StartMyPoint = line1.StartMyPoint;
-
                             }
-                            else if (endLine.EndMyPoint == line1.EndMyPoint) { // ez az ág akkor fut le, ha a végpontot kell cserélni
+                            else if (endLine.EndMyPoint == line1.EndMyPoint) {
+                                // ez az ág akkor fut le, ha a végpontot kell cserélni
                                 endLine.EndMyPoint = line1.StartMyPoint;
                             }
                         }
@@ -913,7 +1039,7 @@ namespace WindowsFormsApp1 {
                     line1.StartMyPoint.RelatedLines.AddRange(line1.EndMyPoint.RelatedLines);
                     line1.StartMyPoint.RelatedLines.Remove(line1); //
                     line1.StartMyPoint.RelatedLines.Remove(line1); //
-                    line1.EndMyPoint.RelatedLines.Clear();//ez meg csak biztonság
+                    line1.EndMyPoint.RelatedLines.Clear(); //ez meg csak biztonság
                 }
             }
 
@@ -929,35 +1055,27 @@ namespace WindowsFormsApp1 {
                     }
                 }
             }
-
-            //Rooms not handled, but calculaterooms might solve the issue
-            CalculateAllRooms();
-            CheckModelLinesVerticality();
-
         }
 
         private void CheckModelLinesVerticality() {
-            foreach (MyLine line in modelLines)
-            {
-                if (!IsVerticalOrHorizontal(line))
-                {
+            foreach (MyLine line in modelLines) {
+                if (!IsVerticalOrHorizontal(line)) {
                     IsInInvalidState = true;
                     break;
                 }
             }
         }
 
-        private bool IsVerticalOrHorizontal(MyLine line)
-        {
+        private bool IsVerticalOrHorizontal(MyLine line) {
             bool isVertical = (line.StartMyPoint.Y - line.EndMyPoint.Y) < 0.001;
             bool isHorizontal = (line.StartMyPoint.X - line.EndMyPoint.X) < 0.001;
 
             return isVertical || isHorizontal;
         }
-        private bool CheckModel(ref MyPoint myPoint) {
+        private MyPoint CheckIfPointIsAlreadyInModel(MyPoint myPoint) {
             MyPoint local = myPoint.GetCopy();
-            bool contains = ModelPoints.Contains(myPoint);
-            List<MyPoint> tempPoints = ModelPoints.Where(i => i.Equals(local)).ToList();
+            bool contains = GetUniqueModelPoints().Contains(myPoint);
+            List<MyPoint> tempPoints = GetUniqueModelPoints().Where(i => i.Equals(local)).ToList();
             bool isSame = tempPoints.Any();
 
             if (tempPoints.Count > 1) {
@@ -965,10 +1083,10 @@ namespace WindowsFormsApp1 {
             }
 
             if (isSame) {
-                myPoint = tempPoints.FirstOrDefault();
+                local = tempPoints.FirstOrDefault();
             }
 
-            return contains || isSame;
+            return local;
         }
         private static void ExceptionChecking(int offsetDistance, MyLine myLineToMove, MyPoint oldStartPoint,
             MyPoint lineToMoveNormal, MyPoint oldEndPoint) {
@@ -976,7 +1094,7 @@ namespace WindowsFormsApp1 {
                 if (!relatedLine.Equals(myLineToMove) && (!relatedLine.GetNV(true).Equals(lineToMoveNormal)
                                                           || !relatedLine.GetNV(true).Equals(lineToMoveNormal * (-1)))) {
                     if (relatedLine.GetLength() < offsetDistance) {
-                        throw new Exception("Vonalhossz hiba: " + relatedLine.GetLength());
+                        //throw new Exception("Vonalhossz hiba: " + relatedLine.GetLength());
                     }
                 }
             }
@@ -985,7 +1103,7 @@ namespace WindowsFormsApp1 {
                 if (!relatedLine.Equals(myLineToMove) && (!relatedLine.GetNV(true).Equals(lineToMoveNormal)
                                                           || !relatedLine.GetNV(true).Equals(lineToMoveNormal * (-1)))) {
                     if (relatedLine.GetLength() < offsetDistance) {
-                        throw new Exception("Hiba");
+                        //throw new Exception("Hiba");
                     }
                 }
             }

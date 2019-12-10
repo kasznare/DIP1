@@ -58,7 +58,7 @@ namespace UIWPF {
             LineAndCostActualStep = new ObservableCollection<LineAndCost>();
 
             InitRoomTypes();
-            model.InitAdvancedModel();
+            model.InitSimpleModel();
             s.model = model;
             s.ModelChanged += ModelChangeHandler;
             DataContext = this;
@@ -227,6 +227,8 @@ namespace UIWPF {
             isPainting = true;
             //LoadDataFromModel();
             testcanvas.Children.Clear();
+            DrawAxis(testcanvas);
+
             Logger.WriteLog("paint started");
             for (var i = 0; i < model.modelLines.Count; i++) {
                 MyLine line = model.modelLines[i];
@@ -249,11 +251,18 @@ namespace UIWPF {
                 testcanvas.Children.Add(myLine);
             }
 
-            foreach (MyPoint point in model.ModelPoints) {
+            for (var i = 0; i < model.ModelPoints.Count; i++)
+            {
+                MyPoint point = model.ModelPoints[i];
                 ShapeLine myLine = new ShapeLine();
 
                 var solidColorBrush = new SolidColorBrush(Color.FromArgb(90, 255, 0, 0));
                 solidColorBrush.Opacity = 0.5;
+                if (i.Equals(selectedPointIndex))
+                {
+                    solidColorBrush = Brushes.GreenYellow;
+                }
+
                 myLine.Stroke = solidColorBrush;
                 myLine.X1 = point.X;
                 myLine.X2 = point.X + 1;
@@ -281,6 +290,51 @@ namespace UIWPF {
             }
 
             isPainting = false;
+        }
+
+        private void DrawAxis(Canvas canvas)
+        {
+            Logger.WriteLog("paint started");
+            for (var i = -400; i < 401; i+=10) {
+                ShapeLine myLine = new ShapeLine();
+                Brush solidColorBrush = new SolidColorBrush(Color.FromArgb(95, 250, 250, 250));
+                if (i!=0)
+                {
+                    solidColorBrush.Opacity = 0.5;
+                    if (i % 100 == 0)
+                    {
+                        solidColorBrush.Opacity = 0.75;
+                    }
+                }
+                
+                myLine.Stroke = solidColorBrush;
+                myLine.X1 = 0+i;
+                myLine.X2 = 0+i;
+                myLine.Y1 = -400;
+                myLine.Y2 = 400;
+                myLine.StrokeThickness = 2;
+                myLine.ToolTip = i.ToString();
+                testcanvas.Children.Add(myLine);
+            }
+            for (var i = -400; i < 401; i += 10) {
+                ShapeLine myLine = new ShapeLine();
+                Brush solidColorBrush = new SolidColorBrush(Color.FromArgb(95, 250, 250, 250));
+                if (i != 0) {
+                    solidColorBrush.Opacity = 0.5;
+                    if (i % 100 == 0) {
+                        solidColorBrush.Opacity = 0.75;
+                    }
+                }
+
+                myLine.Stroke = solidColorBrush;
+                myLine.X1 = -400;
+                myLine.X2 = 400;
+                myLine.Y1 = 0 + i;
+                myLine.Y2 = 0 + i;
+                myLine.StrokeThickness = 2;
+                myLine.ToolTip = i.ToString();
+                testcanvas.Children.Add(myLine);
+            }
         }
 
         private void LoadDataFromModel() {
@@ -407,6 +461,7 @@ namespace UIWPF {
         }
 
         private int selectedLineIndex = -1;
+        private int selectedPointIndex = -1;
 
 
         private void LineGrid_OnCurrentCellChanged(object sender, EventArgs e) {
@@ -425,6 +480,13 @@ namespace UIWPF {
 
             //LineGrid.SelectedIndex = selectedLineIndex;
             //MessageBox.Show("selectionchanged" + selectedLineIndex.ToString());
+        }
+        private void PointGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (!isPainting) {
+                selectedPointIndex = PointGrid.SelectedIndex;
+                Paint();
+
+            }
         }
 
         private void CostGrid_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -571,6 +633,8 @@ namespace UIWPF {
         private void LoadFactoryModelClick(object sender, RoutedEventArgs e) {
             s.model.InitModelWithGivenRooms();
         }
+
+        
     }
 
 

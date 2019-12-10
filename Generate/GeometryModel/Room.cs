@@ -36,11 +36,9 @@ namespace WindowsFormsApp1 {
         public bool isStartRoom { get; set; }
 
         public List<Room> NeighboorRooms = new List<Room>();
-
         public string boundaryLineNames {
             get { return String.Join("\n", GetBoundaryLinesSorted().Select(i => i.ToString()).ToArray()); }
         }
-
         public RoomType type { get; set; }
         private bool isBoundaryLinesPossiblyUnsorted = false;
         private bool isBoundaryPointsPossiblyUnsorted = false;
@@ -131,7 +129,7 @@ namespace WindowsFormsApp1 {
             boundaryPoints.RemoveAll(item => item == null);
 
             if (boundaryPoints.Count == 0) {
-                throw new Exception("Ordering failed");
+                throw new Exception("Ordering not possible on no points");
             }
             return BoundaryPoints;
         }

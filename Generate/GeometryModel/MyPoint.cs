@@ -10,6 +10,11 @@ namespace WindowsFormsApp1 {
             RelatedLines = new List<MyLine>();
             Guid = Guid.NewGuid();
         }
+
+        static void CopyProperies(MyPoint replaceFrom, MyPoint replaceTo)
+        {
+            replaceTo.RelatedLines.AddRange(replaceFrom.RelatedLines);
+        }
         public double X { get; set; }
         public double Y { get; set; }
         public Guid Guid { get; set; }

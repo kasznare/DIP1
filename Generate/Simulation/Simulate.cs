@@ -18,6 +18,7 @@ namespace WindowsFormsApp1.Simulation {
         private int actualSimulationThreshold = 0;
         private int MaxSimulationThreshold = 5;
         public int actualSimulationIndex = 0;
+        public int MaxSimulationIndex = 5;
         public int moveDistance = 10;
         bool isFinished = false;
         bool isTimeout = false;
@@ -45,7 +46,7 @@ namespace WindowsFormsApp1.Simulation {
                 HandleModelChangeUpdate();
                 Thread.Sleep(5);
                 actualSimulationIndex++;
-                if (actualSimulationIndex > 1000) {
+                if (actualSimulationIndex > MaxSimulationIndex) {
                     isFinished = true;
                     
                 }

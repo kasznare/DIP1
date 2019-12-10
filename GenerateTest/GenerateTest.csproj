@@ -53,6 +53,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MoveCasesTest.cs" />
+    <Compile Include="SwitchRoomsTest.cs" />
+    <Compile Include="MoveAllModelLinesTest.cs" />
     <Compile Include="SimpleModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
