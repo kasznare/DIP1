@@ -227,7 +227,7 @@ namespace UIWPF {
             isPainting = true;
             //LoadDataFromModel();
             testcanvas.Children.Clear();
-            DrawAxis(testcanvas);
+            //DrawAxis(testcanvas);
 
             Logger.WriteLog("paint started");
             for (var i = 0; i < model.modelLines.Count; i++) {
@@ -312,7 +312,7 @@ namespace UIWPF {
                 myLine.X2 = 0+i;
                 myLine.Y1 = -400;
                 myLine.Y2 = 400;
-                myLine.StrokeThickness = 2;
+                myLine.StrokeThickness = 1;
                 myLine.ToolTip = i.ToString();
                 testcanvas.Children.Add(myLine);
             }
@@ -320,9 +320,9 @@ namespace UIWPF {
                 ShapeLine myLine = new ShapeLine();
                 Brush solidColorBrush = new SolidColorBrush(Color.FromArgb(95, 250, 250, 250));
                 if (i != 0) {
-                    solidColorBrush.Opacity = 0.5;
+                    solidColorBrush.Opacity = 0.15;
                     if (i % 100 == 0) {
-                        solidColorBrush.Opacity = 0.75;
+                        solidColorBrush.Opacity = 0.25;
                     }
                 }
 

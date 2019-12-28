@@ -16,9 +16,9 @@ namespace WindowsFormsApp1.Simulation {
         public event StatusUpdateHandler ModelChanged;
         readonly object locker = new object();
         private int actualSimulationThreshold = 0;
-        private int MaxSimulationThreshold = 5;
+        private int MaxSimulationThreshold = 20;
         public int actualSimulationIndex = 0;
-        public int MaxSimulationIndex = 5;
+        public int MaxSimulationIndex = 2000;
         public int moveDistance = 10;
         bool isFinished = false;
         bool isTimeout = false;
@@ -38,7 +38,6 @@ namespace WindowsFormsApp1.Simulation {
             st.Start();
             while (true && !isFinished && !isTimeout && !isTreshold && !IsStopped) {
                 Actions.Clear();
-
                 SaveState();
                 actualCost = CostCalculationService.CalculateCost(model).ElementAt(0);
                 CalculateCostsForState();
@@ -48,15 +47,13 @@ namespace WindowsFormsApp1.Simulation {
                 actualSimulationIndex++;
                 if (actualSimulationIndex > MaxSimulationIndex) {
                     isFinished = true;
-                    
                 }
-                if (st.ElapsedMilliseconds > 10000) {
+                if (st.ElapsedMilliseconds > 60000) {
                     isTimeout = true;
                 }
                 if (actualSimulationThreshold >= MaxSimulationThreshold) {
                     isTreshold = true;
                 }
-                
             }
 
             Logger.WriteLog($"Run Ended.\nFinished: {isFinished}\nTimeout: {isTimeout}\nTreshold: {isTreshold}\nStopped manually: {IsStopped}");
@@ -66,6 +63,8 @@ namespace WindowsFormsApp1.Simulation {
             isTimeout = false;
             isTreshold = false;
             IsStopped = false;
+            MaxSimulationIndex += MaxSimulationIndex;
+
         }
 
         private void HandleModelChangeUpdate() {

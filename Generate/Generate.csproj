@@ -62,6 +62,8 @@
     <Compile Include="Utilities\MyInterlockedExchangeExampleClass.cs" />
     <Compile Include="Utilities\ImageSaver.cs" />
     <Compile Include="GeometryModel\RoomType.cs" />
+    <None Include="Costs.cd" />
+    <None Include="SImulation.cd" />
     <None Include="SimulationForm.cs">
       <SubType>Form</SubType>
     </None>
@@ -90,7 +92,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="ClassDiagram.cd" />
+    <None Include="DataConnectionDiagram.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -217,7 +217,7 @@ namespace WindowsFormsApp1 {
             double area = PolygonArea(X, Y, bp.Count);
 
             if (area < 0.01) {
-                throw new Exception("Area is too small: " + area);
+                //throw new Exception("Area is too small: " + area);
             }
 
             return area / 10000;

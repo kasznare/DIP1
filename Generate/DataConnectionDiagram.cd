@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Alphabetical" MembersFormat="NameAndType">
+  <Class Name="WindowsFormsApp1.Room">
+    <Position X="12" Y="2.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>CAAIhAQAACAEAAUEAkUAAAcQAAABBAAgAAIQAAAAKAg=</HashCode>
+      <FileName>GeometryModel\Room.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="boundaryLines" />
+      <Field Name="boundaryPoints" />
+      <Field Name="NeighboorRooms" />
+      <Property Name="BoundaryLines" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="WindowsFormsApp1.MyPoint">
+    <Position X="8" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>CQAAAAAAAAAAAAAE4AAAAAAAAAAAJAAAAAAQAACAcAA=</HashCode>
+      <FileName>GeometryModel\MyPoint.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="RelatedLines" />
+      <Property Name="RelatedRooms" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="WindowsFormsApp1.MyLine">
+    <Position X="17" Y="0.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAwYAAAEVAAAAAAAAAIABAAAAAACAAgCEAQ=</HashCode>
+      <FileName>GeometryModel\MyLine.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="EndMyPoint" />
+      <Property Name="StartMyPoint" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="relatedRooms" />
+      <Property Name="relatedPoints" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

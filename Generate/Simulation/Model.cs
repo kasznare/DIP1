@@ -224,7 +224,7 @@ namespace WindowsFormsApp1 {
 
             Room first = new Room("FirstRoom", "1", RoomType.Kitchen);
             Room second = new Room("SecondRoom", "2", RoomType.LivingRoom);
-            Room third = new Room("ThirdRoom", "3", RoomType.BedRoom);
+            Room third = new Room("ThirdRoom", "3", RoomType.CorridorRoom);
             Room fourth = new Room("FourthRoom", "4", RoomType.RestRoom);
 
             foreach (MyLine modelLine in new List<MyLine>() { l12, l23, l34, l41 }) {
@@ -755,12 +755,12 @@ namespace WindowsFormsApp1 {
                     {
                         if (IsOnLine(lineA.StartMyPoint, testLineB)) //then we know it is really case 2
                         {
-                            throw new Exception("lines overstepped, this should not happen");
+                            //throw new Exception("lines overstepped, this should not happen");
                         }
 
                         if (IsOnLine(lineA.EndMyPoint, testLineB))
                         {
-                            throw new Exception("lines overstepped, this should not happen");
+                            //throw new Exception("lines overstepped, this should not happen");
                             
                         }
                     }
@@ -768,11 +768,11 @@ namespace WindowsFormsApp1 {
                     if (!isStartPointAtEndLine && !isStartPointOnMiddleLine && isEndPointOnMiddleLine && !isEndPointAtEndLine) {
                         if (IsOnLine(lineA.StartMyPoint, testLineB)) //then we know it is really case 2
                         {
-                            throw new Exception("lines overstepped, this should not happen");
+                            //throw new Exception("lines overstepped, this should not happen");
                         }
 
                         if (IsOnLine(lineA.EndMyPoint, testLineB)) {
-                            throw new Exception("lines overstepped, this should not happen");
+                            //throw new Exception("lines overstepped, this should not happen");
 
                         }
                     }
@@ -996,7 +996,7 @@ namespace WindowsFormsApp1 {
                 Logger.WriteLog("Error : Not legal move " + e.Message);
                 Logger.WriteLog(e);
                 IsInInvalidState = true;
-                throw new Exception("bad");
+                //throw new Exception("bad");
                 //MessageBox.Show();
             }
 
