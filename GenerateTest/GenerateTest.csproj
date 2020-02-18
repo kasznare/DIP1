@@ -53,7 +53,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GeometryModel\MyLineTests.cs" />
     <Compile Include="GeometryModel\MyPointTests.cs" />
+    <Compile Include="GeometryModel\MyRoomTests.cs" />
+    <Compile Include="GeometryModel\RoomTypeTests.cs" />
     <Compile Include="MoveCasesTest.cs" />
     <Compile Include="Simulation\CostCalculationServiceTests.cs" />
     <Compile Include="Simulation\ModelTests.cs" />
