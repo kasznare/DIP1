@@ -53,12 +53,12 @@ namespace WindowsFormsApp1 {
         /// </summary>
         /// <param name="lines"></param>
         /// <param name="rooms"></param>
-        public Model(List<MyLine> lines = null, List<Room> rooms = null) {
+        public Model(List<MyLine> lines = null, List<MyRoom> rooms = null) {
             if (lines != null) {
                 modelLines = new ObservableCollection<MyLine>(lines);
             }
             if (rooms != null) {
-                modelRooms = new ObservableCollection<Room>(rooms);
+                modelRooms = new ObservableCollection<MyRoom>(rooms);
             }
         }
         //TODO: set this in the move/split/switch 
@@ -74,7 +74,7 @@ namespace WindowsFormsApp1 {
         }
         public ModelType loadedModelType { get; set; }
         public ObservableCollection<MyLine> modelLines { get; set; } = new ObservableCollection<MyLine>();
-        public ObservableCollection<Room> modelRooms { get; set; } = new ObservableCollection<Room>();
+        public ObservableCollection<MyRoom> modelRooms { get; set; } = new ObservableCollection<MyRoom>();
 
         /// <summary>
         /// Returns the points of the model ordered by guid
@@ -113,7 +113,7 @@ namespace WindowsFormsApp1 {
         public void InitSimplestModel() {
             loadedModelType = ModelType.Simplest;
             modelLines = new ObservableCollection<MyLine>();
-            modelRooms = new ObservableCollection<Room>();
+            modelRooms = new ObservableCollection<MyRoom>();
             MyPoint p1 = new MyPoint(100, 100);
             MyPoint p2 = new MyPoint(400, 100);
             MyPoint p3 = new MyPoint(400, 400);
@@ -127,7 +127,7 @@ namespace WindowsFormsApp1 {
             MyLine line4 = new MyLine(p4, p1);
             modelLines.Add(line4);
 
-            Room first = new Room("FirstRoom", "1", RoomType.Kitchen);
+            MyRoom first = new MyRoom("FirstRoom", "1", RoomType.Kitchen);
 
             foreach (MyLine modelLine in new List<MyLine>() { line1, line2, line3, line4 }) {
                 modelLine.relatedRooms.Add(first);
@@ -139,7 +139,7 @@ namespace WindowsFormsApp1 {
             loadedModelType = ModelType.Simple;
 
             modelLines = new ObservableCollection<MyLine>();
-            modelRooms = new ObservableCollection<Room>();
+            modelRooms = new ObservableCollection<MyRoom>();
             MyPoint q1 = new MyPoint(100, 0);
             MyPoint q2 = new MyPoint(400, 0);
             MyPoint p1 = new MyPoint(100, 100);
@@ -161,8 +161,8 @@ namespace WindowsFormsApp1 {
             modelLines.Add(l2);
             modelLines.Add(l3);
 
-            Room first = new Room("FirstRoom", "1", RoomType.Kitchen);
-            Room second = new Room("SecondRoom", "2", RoomType.LivingRoom);
+            MyRoom first = new MyRoom("FirstRoom", "1", RoomType.Kitchen);
+            MyRoom second = new MyRoom("SecondRoom", "2", RoomType.LivingRoom);
 
             foreach (MyLine modelLine in new List<MyLine>() { line1, line2, line3, line4 }) {
                 modelLine.relatedRooms.Add(first);
@@ -178,7 +178,7 @@ namespace WindowsFormsApp1 {
         public void InitNormalModel() {
             loadedModelType = ModelType.Normal;
             modelLines = new ObservableCollection<MyLine>();
-            modelRooms = new ObservableCollection<Room>();
+            modelRooms = new ObservableCollection<MyRoom>();
             MyPoint a1 = new MyPoint(0, 0);
             MyPoint a2 = new MyPoint(200, 0);
             MyPoint a3 = new MyPoint(200, 200);
@@ -186,10 +186,8 @@ namespace WindowsFormsApp1 {
 
             MyPoint a5 = new MyPoint(200, 400);
             MyPoint a6 = new MyPoint(0, 400);
-
             MyPoint a7 = new MyPoint(400, 0);
             MyPoint a8 = new MyPoint(400, 200);
-
             MyPoint a9 = new MyPoint(400, 400);
 
             MyLine l12 = new MyLine(a1, a2);
@@ -222,10 +220,10 @@ namespace WindowsFormsApp1 {
             modelLines.Add(l95);
 
 
-            Room first = new Room("FirstRoom", "1", RoomType.Kitchen);
-            Room second = new Room("SecondRoom", "2", RoomType.LivingRoom);
-            Room third = new Room("ThirdRoom", "3", RoomType.CorridorRoom);
-            Room fourth = new Room("FourthRoom", "4", RoomType.RestRoom);
+            MyRoom first = new MyRoom("FirstRoom", "1", RoomType.Kitchen);
+            MyRoom second = new MyRoom("SecondRoom", "2", RoomType.LivingRoom);
+            MyRoom third = new MyRoom("ThirdRoom", "3", RoomType.CorridorRoom);
+            MyRoom fourth = new MyRoom("FourthRoom", "4", RoomType.RestRoom);
 
             foreach (MyLine modelLine in new List<MyLine>() { l12, l23, l34, l41 }) {
                 modelLine.relatedRooms.Add(first);
@@ -248,7 +246,7 @@ namespace WindowsFormsApp1 {
         public void InitSkewedModel() {
             loadedModelType = ModelType.Skewed;
             modelLines = new ObservableCollection<MyLine>();
-            modelRooms = new ObservableCollection<Room>();
+            modelRooms = new ObservableCollection<MyRoom>();
             MyPoint a1 = new MyPoint(0, 0);
             MyPoint a2 = new MyPoint(300, 0);
             MyPoint a3 = new MyPoint(300, 300);
@@ -292,10 +290,10 @@ namespace WindowsFormsApp1 {
             modelLines.Add(l95);
 
 
-            Room first = new Room("FirstRoom", "1", RoomType.Kitchen);
-            Room second = new Room("SecondRoom", "2", RoomType.LivingRoom);
-            Room third = new Room("ThirdRoom", "3", RoomType.BedRoom);
-            Room fourth = new Room("FourthRoom", "4", RoomType.RestRoom);
+            MyRoom first = new MyRoom("FirstRoom", "1", RoomType.Kitchen);
+            MyRoom second = new MyRoom("SecondRoom", "2", RoomType.LivingRoom);
+            MyRoom third = new MyRoom("ThirdRoom", "3", RoomType.BedRoom);
+            MyRoom fourth = new MyRoom("FourthRoom", "4", RoomType.RestRoom);
 
             foreach (MyLine modelLine in new List<MyLine>() { l12, l23, l34, l41 }) {
                 modelLine.relatedRooms.Add(first);
@@ -318,7 +316,7 @@ namespace WindowsFormsApp1 {
         public void InitAdvancedModel() {
             loadedModelType = ModelType.Advanced;
             modelLines = new ObservableCollection<MyLine>();
-            modelRooms = new ObservableCollection<Room>();
+            modelRooms = new ObservableCollection<MyRoom>();
             MyPoint a1 = new MyPoint(000, 000);
             MyPoint a2 = new MyPoint(200, 000);
             MyPoint a3 = new MyPoint(200, 200);
@@ -362,10 +360,10 @@ namespace WindowsFormsApp1 {
             modelLines.Add(l95);
 
 
-            Room first = new Room("FirstRoom", "1", RoomType.CorridorRoom);
-            Room second = new Room("SecondRoom", "2", RoomType.BedRoom);
-            Room third = new Room("ThirdRoom", "3", RoomType.CorridorRoom);
-            Room fourth = new Room("FourthRoom", "4", RoomType.RestRoom);
+            MyRoom first = new MyRoom("FirstRoom", "1", RoomType.CorridorRoom);
+            MyRoom second = new MyRoom("SecondRoom", "2", RoomType.BedRoom);
+            MyRoom third = new MyRoom("ThirdRoom", "3", RoomType.CorridorRoom);
+            MyRoom fourth = new MyRoom("FourthRoom", "4", RoomType.RestRoom);
 
             foreach (MyLine modelLine in new List<MyLine>() { l12, l23, l34, l41 }) {
                 modelLine.relatedRooms.Add(first);
@@ -419,10 +417,10 @@ namespace WindowsFormsApp1 {
             modelLines.Add(_l95);
 
 
-            Room _first = new Room("_FirstRoom", "_1", RoomType.Kitchen);
-            Room _second = new Room("_SecondRoom", "_2", RoomType.LivingRoom);
-            Room _third = new Room("_ThirdRoom", "_3", RoomType.BedRoom);
-            Room _fourth = new Room("_FourthRoom", "_4", RoomType.RestRoom);
+            MyRoom _first = new MyRoom("_FirstRoom", "_1", RoomType.Kitchen);
+            MyRoom _second = new MyRoom("_SecondRoom", "_2", RoomType.LivingRoom);
+            MyRoom _third = new MyRoom("_ThirdRoom", "_3", RoomType.BedRoom);
+            MyRoom _fourth = new MyRoom("_FourthRoom", "_4", RoomType.RestRoom);
 
             foreach (MyLine modelLine in new List<MyLine>() { _l12, _l23, _l34, _l41 }) {
                 modelLine.relatedRooms.Add(_first);
@@ -438,7 +436,7 @@ namespace WindowsFormsApp1 {
                 modelLine.relatedRooms.Add(_fourth);
             }
 
-            //modelRooms = new ObservableCollection<Room>(new List<Room>(){first, second, third, fourth, _first, _second, _third, _fourth});
+            //modelRooms = new ObservableCollection<MyRoom>(new List<MyRoom>(){first, second, third, fourth, _first, _second, _third, _fourth});
             CalculateAllRooms();
             //RepairDuplicatePointsAndLines();
             Logger.WriteLog("Advanced model initialized");
@@ -446,7 +444,7 @@ namespace WindowsFormsApp1 {
         public void InitModelWithGivenRooms() {
             loadedModelType = ModelType.Specified;
             modelLines = new ObservableCollection<MyLine>();
-            modelRooms = new ObservableCollection<Room>();
+            modelRooms = new ObservableCollection<MyRoom>();
             List<Tuple<FactoryRoomType, int>> initList = new List<Tuple<FactoryRoomType, int>>();
             initList.Add(Tuple.Create(FactoryRoomType.DobozosMagasraktar, 1));
             initList.Add(Tuple.Create(FactoryRoomType.Trafo, 2));
@@ -456,10 +454,10 @@ namespace WindowsFormsApp1 {
             initList.Add(Tuple.Create(FactoryRoomType.GeneratorHelyiseg, 1));
             initList.Add(Tuple.Create(FactoryRoomType.GepeszetiHelyiseg, 1));
 
-            List<Room> rooms = new List<Room>();
+            List<MyRoom> rooms = new List<MyRoom>();
             foreach (Tuple<FactoryRoomType, int> tuple in initList) {
                 for (int i = 0; i < tuple.Item2; i++) {
-                    Room r = new Room(tuple.Item1.roomname + i, i.ToString(), tuple.Item1);
+                    MyRoom r = new MyRoom(tuple.Item1.roomname + i, i.ToString(), tuple.Item1);
                     rooms.Add(r);
                 }
             }
@@ -467,7 +465,7 @@ namespace WindowsFormsApp1 {
             int x0 = 0;
             int y0 = 0;
             int side_length = 200;
-            foreach (Room room in rooms) {
+            foreach (MyRoom room in rooms) {
                 MyPoint p1 = new MyPoint(x0, y0);
                 MyPoint p2 = new MyPoint(x0 + side_length, y0);
                 MyPoint p3 = new MyPoint(x0 + side_length, y0 + side_length);
@@ -495,9 +493,140 @@ namespace WindowsFormsApp1 {
 
         }
 
+        public void InitTestModel()
+        {
+            loadedModelType = ModelType.Normal;
+            modelLines = new ObservableCollection<MyLine>();
+            modelRooms = new ObservableCollection<MyRoom>();
+            MyPoint a1 = new MyPoint(0, 0);
+            MyPoint a2 = new MyPoint(0, 100);
+            MyPoint a3 = new MyPoint(0, 200);
+            MyPoint a4 = new MyPoint(0, 300);
+
+            MyPoint a5 = new MyPoint(100, 0);
+            MyPoint a6 = new MyPoint(100, 100);
+            MyPoint a7 = new MyPoint(100, 200);
+            MyPoint a8 = new MyPoint(100, 300);
+
+            MyPoint a9  = new MyPoint(200, 0);
+            MyPoint a10 = new MyPoint(200, 100);
+            MyPoint a11 = new MyPoint(200, 200);
+            MyPoint a12 = new MyPoint(200, 300);
+
+            MyPoint a13 = new MyPoint(300, 0);
+            MyPoint a14 = new MyPoint(300, 100);
+            MyPoint a15 = new MyPoint(300, 200);
+            MyPoint a16 = new MyPoint(300, 300);
+
+           
+
+            MyLine l12 = new MyLine(a1, a2);
+            MyLine l23 = new MyLine(a2, a3);
+            MyLine l34 = new MyLine(a3, a4);
+
+            MyLine l56 = new MyLine(a5, a6);
+            MyLine l67 = new MyLine(a6, a7);
+            MyLine l78 = new MyLine(a7, a8);
+
+            MyLine l910 = new MyLine(a9, a10);
+            MyLine l1011 = new MyLine(a10, a11);
+            MyLine l1112 = new MyLine(a11, a12);
+
+            MyLine l1314 = new MyLine(a13, a14);
+            MyLine l1415 = new MyLine(a14, a15);
+            MyLine l1516 = new MyLine(a15, a16);
+
+            
+            MyLine l15 = new MyLine(a1, a5);
+            MyLine l59 = new MyLine(a5, a9);
+            MyLine l913 = new MyLine(a9, a13);
+
+            MyLine l26 = new MyLine(a2, a6);
+            MyLine l610 = new MyLine(a6, a10);
+            MyLine l1014 = new MyLine(a10, a14);
+
+            MyLine l37 = new MyLine(a3, a7);
+            MyLine l711 = new MyLine(a7, a11);
+            MyLine l1115 = new MyLine(a11, a15);
+
+            MyLine l48 = new MyLine(a4, a8);
+            MyLine l812 = new MyLine(a8, a12);
+            MyLine l1216 = new MyLine(a12, a16);
 
 
-        private Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
+            modelLines.Add(l12);
+            modelLines.Add(l23);
+            modelLines.Add(l34);
+            modelLines.Add(l56);
+            modelLines.Add(l67);
+            modelLines.Add(l78);
+            modelLines.Add(l910);
+            modelLines.Add(l1011);
+            modelLines.Add(l1112);
+            modelLines.Add(l1314);
+            modelLines.Add(l1415);
+            modelLines.Add(l1516);
+
+
+            modelLines.Add(l15);
+            modelLines.Add(l59);
+            modelLines.Add(l913);
+            modelLines.Add(l26);
+            modelLines.Add(l610);
+            modelLines.Add(l1014);
+            modelLines.Add(l37);
+            modelLines.Add(l711);
+            modelLines.Add(l1115);
+            modelLines.Add(l48);
+            modelLines.Add(l812);
+            modelLines.Add(l1216);
+
+            MyRoom first = new MyRoom("FirstRoom", "1", RoomType.Kitchen);
+            MyRoom second = new MyRoom("SecondRoom", "2", RoomType.LivingRoom);
+            MyRoom third = new MyRoom("ThirdRoom", "3", RoomType.CorridorRoom);
+            MyRoom fourth = new MyRoom("FourthRoom", "4", RoomType.RestRoom);
+            MyRoom fifth = new MyRoom("fifthRoom", "5", RoomType.BedRoom);
+            MyRoom sixth = new MyRoom("sixthRoom", "6", RoomType.BedRoom);
+            MyRoom seventh = new MyRoom("seventhRoom", "7", RoomType.BedRoom);
+            MyRoom eight = new MyRoom("eightRoom", "8", RoomType.BedRoom);
+            MyRoom nineth = new MyRoom("ninethRoom", "9", RoomType.BedRoom);
+
+            foreach (MyLine modelLine in new List<MyLine>() { l12, l26, l56, l15 }) {
+                modelLine.relatedRooms.Add(first);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { l23, l37, l67, l26 }) {
+                modelLine.relatedRooms.Add(second);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { l34, l48, l78, l37 }) {
+                modelLine.relatedRooms.Add(third);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { l56, l610, l910, l59 }) {
+                modelLine.relatedRooms.Add(fourth);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { l67, l711, l1011, l610 }) {
+                modelLine.relatedRooms.Add(fifth);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { l78, l812, l1112, l711 }) {
+                modelLine.relatedRooms.Add(sixth);
+            }
+
+            foreach (MyLine modelLine in new List<MyLine>() { l910, l1014, l1314, l913 }) {
+                modelLine.relatedRooms.Add(seventh);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { l1011, l1115, l1415, l1014 }) {
+                modelLine.relatedRooms.Add(eight);
+            }
+            foreach (MyLine modelLine in new List<MyLine>() { l1112, l1216, l1115, l1516 }) {
+                modelLine.relatedRooms.Add(nineth);
+            }
+
+
+            CalculateAllRooms();
+            Logger.WriteLog("InitSimpleModel() finished");
+        }
+
+
+        private Dictionary<MyRoom, MyRoom> oldNewRooms = new Dictionary<MyRoom, MyRoom>();
         private Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
         private Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
         /// <summary>
@@ -505,7 +634,7 @@ namespace WindowsFormsApp1 {
         /// </summary>
         /// <returns></returns>
         public void LoadData() {
-            oldNewRooms = new Dictionary<Room, Room>();
+            oldNewRooms = new Dictionary<MyRoom, MyRoom>();
             oldNewPoints = new Dictionary<MyPoint, MyPoint>();
             oldNewLines = new Dictionary<MyLine, MyLine>();
             foreach (MyLine line in modelLines) {
@@ -527,8 +656,8 @@ namespace WindowsFormsApp1 {
                 MyLine newline = new MyLine(p1, p2);
                 oldNewLines.Add(line, newline);
 
-                foreach (Room room in line.relatedRooms) {
-                    Room r = null;
+                foreach (MyRoom room in line.relatedRooms) {
+                    MyRoom r = null;
                     if (!oldNewRooms.TryGetValue(room, out r)) {
                         //TODO: this getcopy method might not return all good. check it.
                         r = room.GetCopy();
@@ -538,14 +667,14 @@ namespace WindowsFormsApp1 {
                 }
             }
 
-            foreach (KeyValuePair<Room, Room> oldNew in oldNewRooms) {
-                Room oldRoom = oldNew.Key;
-                Room newRoom = oldNew.Value;
-                newRoom.BoundaryLines.Clear();
-                foreach (MyLine oldLine in oldRoom.BoundaryLines) {
+            foreach (KeyValuePair<MyRoom, MyRoom> oldNew in oldNewRooms) {
+                MyRoom oldMyRoom = oldNew.Key;
+                MyRoom newMyRoom = oldNew.Value;
+                newMyRoom.BoundaryLines.Clear();
+                foreach (MyLine oldLine in oldMyRoom.BoundaryLines) {
                     //TODO: some line is already registered to the room
                     //the issue is line cancellation, when a line is gone, even in a simple move situation
-                    newRoom.BoundaryLines.Add(oldNewLines[oldLine]);
+                    newMyRoom.BoundaryLines.Add(oldNewLines[oldLine]);
                 }
             }
         }
@@ -554,7 +683,7 @@ namespace WindowsFormsApp1 {
             return new Model(oldNewLines.Values.ToList(), oldNewRooms.Values.ToList());
         }
         public Model DeepCopy(MyLine oldMyLine, out MyLine newMyLine) {
-            //Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
+            //Dictionary<MyRoom, MyRoom> oldNewRooms = new Dictionary<MyRoom, MyRoom>();
             //Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
             //Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
             LoadData();
@@ -572,8 +701,8 @@ namespace WindowsFormsApp1 {
             //    }
             //    MyLine l = new MyLine(p1, p2);
             //    oldNewLines.Add(line, l);
-            //    foreach (Room room in line.relatedRooms) {
-            //        Room r = null;
+            //    foreach (MyRoom room in line.relatedRooms) {
+            //        MyRoom r = null;
             //        if (!oldNewRooms.TryGetValue(room, out r)) {
             //            r = room.GetCopy();
             //            oldNewRooms.Add(room, r);
@@ -581,9 +710,9 @@ namespace WindowsFormsApp1 {
             //        l.relatedRooms.Add(r);
             //    }
             //}
-            //foreach (KeyValuePair<Room, Room> oldNew in oldNewRooms) {
-            //    Room oldRoom = oldNew.Key;
-            //    Room newRoom = oldNew.Value;
+            //foreach (KeyValuePair<MyRoom, MyRoom> oldNew in oldNewRooms) {
+            //    MyRoom oldRoom = oldNew.Key;
+            //    MyRoom newRoom = oldNew.Value;
             //    foreach (MyLine oldLine in oldRoom.BoundaryLines) {
             //        //TODO: some line is already registered to the room
             //        newRoom.BoundaryLines.Add(oldNewLines[oldLine]);
@@ -594,8 +723,8 @@ namespace WindowsFormsApp1 {
 
             return new Model(oldNewLines.Values.ToList(), oldNewRooms.Values.ToList());
         }
-        public Model DeepCopy(Room oldMyRoom1, Room oldMyRoom2, out Room newMyRoom1, out Room newMyRoom2) {
-            //Dictionary<Room, Room> oldNewRooms = new Dictionary<Room, Room>();
+        public Model DeepCopy(MyRoom oldMyRoom1, MyRoom oldMyRoom2, out MyRoom newMyRoom1, out MyRoom newMyRoom2) {
+            //Dictionary<MyRoom, MyRoom> oldNewRooms = new Dictionary<MyRoom, MyRoom>();
             //Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
             //Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
             LoadData();
@@ -615,8 +744,8 @@ namespace WindowsFormsApp1 {
             //    MyLine l = new MyLine(p1, p2);
             //    oldNewLines.Add(line, l);
 
-            //    foreach (Room room in line.relatedRooms) {
-            //        Room r = null;
+            //    foreach (MyRoom room in line.relatedRooms) {
+            //        MyRoom r = null;
             //        if (!oldNewRooms.TryGetValue(room, out r)) {
             //            r = room.GetCopy();
             //            oldNewRooms.Add(room, r);
@@ -625,9 +754,9 @@ namespace WindowsFormsApp1 {
             //    }
             //}
 
-            //foreach (KeyValuePair<Room, Room> oldNew in oldNewRooms) {
-            //    Room oldRoom = oldNew.Key;
-            //    Room newRoom = oldNew.Value;
+            //foreach (KeyValuePair<MyRoom, MyRoom> oldNew in oldNewRooms) {
+            //    MyRoom oldRoom = oldNew.Key;
+            //    MyRoom newRoom = oldNew.Value;
 
             //    foreach (MyLine oldLine in oldRoom.BoundaryLines) {
             //        //TODO: some line is already registered to the room
@@ -683,7 +812,7 @@ namespace WindowsFormsApp1 {
 
             foreach (var myLine in linesToRemoveDict) {
                 foreach (MyLine line in myLine.Value) {
-                    foreach (Room lineRelatedRoom in line.relatedRooms) {
+                    foreach (MyRoom lineRelatedRoom in line.relatedRooms) {
                         lineRelatedRoom.BoundaryLines.Remove(line);
                         lineRelatedRoom.BoundaryLines.Add(myLine.Key);
                         myLine.Key.relatedRooms.Add(lineRelatedRoom);
@@ -719,14 +848,14 @@ namespace WindowsFormsApp1 {
                         if (testLineB.StartMyPoint.Equals(lineA.StartMyPoint)) {
                             testLineB.StartMyPoint.RelatedLines.AddRange(lineA.StartMyPoint.RelatedLines); //give up all the edges
                             lineA.StartMyPoint = testLineB.EndMyPoint;
-                            foreach (Room room in testLineB.relatedRooms) {
+                            foreach (MyRoom room in testLineB.relatedRooms) {
                                 lineA.relatedRooms.Remove(room); //give up all the rooms
                             }
                         }
                         if (testLineB.StartMyPoint.Equals(lineA.EndMyPoint)) {
                             testLineB.StartMyPoint.RelatedLines.AddRange(lineA.EndMyPoint.RelatedLines); //give up all the edges
                             lineA.EndMyPoint = testLineB.EndMyPoint;
-                            foreach (Room room in testLineB.relatedRooms) {
+                            foreach (MyRoom room in testLineB.relatedRooms) {
                                 lineA.relatedRooms.Remove(room); //give up all the rooms
                             }
                         }
@@ -737,14 +866,14 @@ namespace WindowsFormsApp1 {
                         if (testLineB.EndMyPoint.Equals(lineA.StartMyPoint)) {
                             testLineB.StartMyPoint.RelatedLines.AddRange(lineA.StartMyPoint.RelatedLines); //give up all the edges
                             lineA.StartMyPoint = testLineB.EndMyPoint;
-                            foreach (Room room in testLineB.relatedRooms) {
+                            foreach (MyRoom room in testLineB.relatedRooms) {
                                 lineA.relatedRooms.Remove(room); //give up all the rooms
                             }
                         }
                         if (testLineB.EndMyPoint.Equals(lineA.EndMyPoint)) {
                             testLineB.StartMyPoint.RelatedLines.AddRange(lineA.EndMyPoint.RelatedLines); //give up all the edges
                             lineA.EndMyPoint = testLineB.EndMyPoint;
-                            foreach (Room room in testLineB.relatedRooms) {
+                            foreach (MyRoom room in testLineB.relatedRooms) {
                                 lineA.relatedRooms.Remove(room); //give up all the rooms
                             }
                         }
@@ -817,7 +946,7 @@ namespace WindowsFormsApp1 {
             if (length < 1) return;
 
             Logger.WriteLog("Selected: " + selectedEdge + " rooms: " + String.Join(",", selectedEdge.relatedRooms.Select(i => i.Name).ToArray()));
-            List<Room> selectedEdgeRelatedRooms = selectedEdge.relatedRooms;
+            List<MyRoom> selectedEdgeRelatedRooms = selectedEdge.relatedRooms;
             modelLines.Remove(selectedEdge);
             selectedEdge.StartMyPoint.RelatedLines.Remove(selectedEdge);
             selectedEdge.EndMyPoint.RelatedLines.Remove(selectedEdge);
@@ -832,7 +961,7 @@ namespace WindowsFormsApp1 {
             modelLines.Add(b);
             Logger.WriteLog("Added instead: " + b + " rooms: " + String.Join(",", selectedEdge.relatedRooms.Select(i => i.Name).ToArray()));
 
-            foreach (Room edgeRelatedRoom in selectedEdgeRelatedRooms) {
+            foreach (MyRoom edgeRelatedRoom in selectedEdgeRelatedRooms) {
                 try {
                     edgeRelatedRoom.BoundaryLines.Remove(selectedEdge);
                     edgeRelatedRoom.BoundaryLines.Add(a);
@@ -861,11 +990,11 @@ namespace WindowsFormsApp1 {
         /// calculate degree for all rooms starting from the starter room
         /// </summary>
         /// <returns></returns>
-        public void SwitchRooms(ref Room room1, ref Room room2) {
-            Room temp1 = room1.GetCopy();
-            Room temp2 = room2.GetCopy();
-            Room.ChangeAllParams(ref room1, temp2);
-            Room.ChangeAllParams(ref room2, temp1);
+        public void SwitchRooms(ref MyRoom room1, ref MyRoom room2) {
+            MyRoom temp1 = room1.GetCopy();
+            MyRoom temp2 = room2.GetCopy();
+            MyRoom.ChangeAllParams(ref room1, temp2);
+            MyRoom.ChangeAllParams(ref room2, temp1);
             //make a constructor by another room, or preferably two rooms, and only copy the info of the second, and kepp the reference
         }
         public void MoveLine(int offsetDistance, MyLine myLineToMove) {
@@ -925,11 +1054,11 @@ namespace WindowsFormsApp1 {
                     movedStart.RelatedLines.Add(myLineToMove);
                     oldStart.RelatedLines.Remove(myLineToMove);
 
-                    List<Room> p1Rooms = oldStart.RelatedRooms;
-                    List<Room> p3Rooms = movedStart.RelatedRooms;
+                    List<MyRoom> p1Rooms = oldStart.RelatedRooms;
+                    List<MyRoom> p3Rooms = movedStart.RelatedRooms;
 
                     //this is not always good
-                    List<Room> commonRooms = p1Rooms.Intersect(p3Rooms).ToList();
+                    List<MyRoom> commonRooms = p1Rooms.Intersect(p3Rooms).ToList();
 
                     MyLine newConnectionEdge1 = new MyLine(oldStart, movedStart);
                     //TODO: add related modelRooms to this new myLine.
@@ -979,10 +1108,10 @@ namespace WindowsFormsApp1 {
                     movedEnd.RelatedLines.Add(myLineToMove);
                     oldEnd.RelatedLines.Remove(myLineToMove);
 
-                    List<Room> p2Rooms = oldEnd.RelatedRooms;
-                    List<Room> p4Rooms = movedEnd.RelatedRooms;
+                    List<MyRoom> p2Rooms = oldEnd.RelatedRooms;
+                    List<MyRoom> p4Rooms = movedEnd.RelatedRooms;
 
-                    List<Room> commonRooms = p2Rooms.Intersect(p4Rooms).ToList();
+                    List<MyRoom> commonRooms = p2Rooms.Intersect(p4Rooms).ToList();
                     //the new lines related rooms are always handled
                     MyLine newConnectionEdge2 = new MyLine(oldEnd, movedEnd);
                     newConnectionEdge2.relatedRooms = commonRooms;
@@ -1114,11 +1243,11 @@ namespace WindowsFormsApp1 {
         public void CalculateAllRooms() {
             //itt kezelni lehet majd azt a kérdést, hogy van a line-hoz hozzárendelt olyan szoba is, ami nem létezik már
             modelRooms.Clear();
-            List<Room> allRooms = new List<Room>();
+            List<MyRoom> allRooms = new List<MyRoom>();
             foreach (MyLine line in modelLines) {
                 //minden modellinera megnézzük, hogy
                 //annak a hozzá tartozó relatedroomjaiban a room boundarylinejai kozott szerepel-e a myLine
-                foreach (Room room in line.relatedRooms) {
+                foreach (MyRoom room in line.relatedRooms) {
                     if (!allRooms.Contains(room)) {
                         allRooms.Add(room);
                     }
@@ -1127,7 +1256,7 @@ namespace WindowsFormsApp1 {
                     }
                 }
             }
-            modelRooms = new ObservableCollection<Room>(allRooms);//modelRooms.Distinct().ToList();
+            modelRooms = new ObservableCollection<MyRoom>(allRooms);//modelRooms.Distinct().ToList();
         }
         private List<List<MyLine>> CalculateContaining(MyLine line1, MyLine line2) {
 

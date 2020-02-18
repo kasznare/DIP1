@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generate", "Generate\Genera
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateTest", "GenerateTest\GenerateTest.csproj", "{4C14C388-80F1-4DFE-8927-D73835CD9843}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateTests", "GenerateTests\GenerateTests.csproj", "{96B7D659-43BB-4624-8389-D06AFE318DFC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4C14C388-80F1-4DFE-8927-D73835CD9843}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C14C388-80F1-4DFE-8927-D73835CD9843}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C14C388-80F1-4DFE-8927-D73835CD9843}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96B7D659-43BB-4624-8389-D06AFE318DFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96B7D659-43BB-4624-8389-D06AFE318DFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96B7D659-43BB-4624-8389-D06AFE318DFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96B7D659-43BB-4624-8389-D06AFE318DFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

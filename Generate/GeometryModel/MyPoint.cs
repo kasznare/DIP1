@@ -18,11 +18,11 @@ namespace WindowsFormsApp1 {
         public double X { get; set; }
         public double Y { get; set; }
         public Guid Guid { get; set; }
-        public List<Room> RelatedRooms {
+        public List<MyRoom> RelatedRooms {
             get {
-                List<Room> rooms = new List<Room>();
+                List<MyRoom> rooms = new List<MyRoom>();
                 foreach (MyLine relatedLine in RelatedLines) {
-                    foreach (Room room in relatedLine.relatedRooms) {
+                    foreach (MyRoom room in relatedLine.relatedRooms) {
                         if (!rooms.Contains(room)) {
                             rooms.Add(room);
                         }

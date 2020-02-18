@@ -35,7 +35,7 @@ namespace UIWPF {
         public Model model { get; set; }
         public ObservableCollection<MyPoint> Points { get; set; }
         public ObservableCollection<MyLine> Lines { get; set; }
-        public ObservableCollection<Room> Rooms { get; set; }
+        public ObservableCollection<MyRoom> Rooms { get; set; }
         public ObservableCollection<Costs> SimulationCosts { get; set; }
         public Simulate s = new Simulate();
         public ObservableCollection<LineAndCost> LineAndCostActualStep { get; set; }
@@ -53,7 +53,7 @@ namespace UIWPF {
             model = new Model();
             Points = new ObservableCollection<MyPoint>();
             Lines = new ObservableCollection<MyLine>();
-            Rooms = new ObservableCollection<Room>();
+            Rooms = new ObservableCollection<MyRoom>();
             SimulationCosts = new ObservableCollection<Costs>();
             LineAndCostActualStep = new ObservableCollection<LineAndCost>();
 
@@ -170,21 +170,21 @@ namespace UIWPF {
             actualSimulationIndex++;
         }
         private void SimulationStepSwitch() {
-            Dictionary<Room, double> RoomCosts = new Dictionary<Room, double>();
+            Dictionary<MyRoom, double> RoomCosts = new Dictionary<MyRoom, double>();
 
             double actualCost = CostCalculationService.CalculateCost(model).First();
             double mincost = actualCost;
             int rooms = model.modelRooms.Count;
-            Room switchThisRoomFrom = null;
-            Room switchThisRoomTo = null;
+            MyRoom switchThisMyRoomFrom = null;
+            MyRoom switchThisMyRoomTo = null;
             Parallel.For(0, rooms,
                 index => {
                     Parallel.For(index + 1, rooms, secondindex => {
 
-                        Room r1 = model.modelRooms.ElementAt(index);
-                        Room r2 = model.modelRooms.ElementAt(secondindex);
-                        Room r1target = null;
-                        Room r2target = null;
+                        MyRoom r1 = model.modelRooms.ElementAt(index);
+                        MyRoom r2 = model.modelRooms.ElementAt(secondindex);
+                        MyRoom r1target = null;
+                        MyRoom r2target = null;
                         Model tempModel = model.DeepCopy(r1, r2, out r1target, out r2target);
                         tempModel.SwitchRooms(ref r1target, ref r2target);
 
@@ -194,8 +194,8 @@ namespace UIWPF {
                             if (mincost >= cost) {
                                 mincost = cost;
                                 //this might need to be switched later
-                                switchThisRoomFrom = r1;
-                                switchThisRoomTo = r2;
+                                switchThisMyRoomFrom = r1;
+                                switchThisMyRoomTo = r2;
                             }
                         }
                     });
@@ -206,9 +206,9 @@ namespace UIWPF {
             }
 
 
-            if (switchThisRoomFrom != null && switchThisRoomTo != null) {
+            if (switchThisMyRoomFrom != null && switchThisMyRoomTo != null) {
 
-                model.SwitchRooms(ref switchThisRoomFrom, ref switchThisRoomTo);
+                model.SwitchRooms(ref switchThisMyRoomFrom, ref switchThisMyRoomTo);
             }
             else {
                 MessageBox.Show("no room to switch");
@@ -233,7 +233,7 @@ namespace UIWPF {
             for (var i = 0; i < model.modelLines.Count; i++) {
                 MyLine line = model.modelLines[i];
                 ShapeLine myLine = new ShapeLine();
-                Brush solidColorBrush = new SolidColorBrush(Color.FromArgb(95,0,0,0));
+                Brush solidColorBrush = new SolidColorBrush(Color.FromArgb(95, 0, 0, 0));
                 solidColorBrush.Opacity = 0.5;
                 if (i.Equals(selectedLineIndex)) {
                     solidColorBrush = Brushes.Yellow;
@@ -251,15 +251,13 @@ namespace UIWPF {
                 testcanvas.Children.Add(myLine);
             }
 
-            for (var i = 0; i < model.ModelPoints.Count; i++)
-            {
+            for (var i = 0; i < model.ModelPoints.Count; i++) {
                 MyPoint point = model.ModelPoints[i];
                 ShapeLine myLine = new ShapeLine();
 
                 var solidColorBrush = new SolidColorBrush(Color.FromArgb(90, 255, 0, 0));
                 solidColorBrush.Opacity = 0.5;
-                if (i.Equals(selectedPointIndex))
-                {
+                if (i.Equals(selectedPointIndex)) {
                     solidColorBrush = Brushes.GreenYellow;
                 }
 
@@ -275,8 +273,8 @@ namespace UIWPF {
                 testcanvas.Children.Add(myLine);
             }
 
-            //foreach (Room room in model.modelRooms) {
-            foreach (Room room in Rooms) {
+            //foreach (MyRoom room in model.modelRooms) {
+            foreach (MyRoom room in Rooms) {
                 List<MyPoint> boundaries = room.GetBoundaryPointsSorted();
                 if (!boundaries.Any()) continue;
                 //boundaries.RemoveAll(item => item == null); //this is error handling, but I would need to figure out why nulls exist
@@ -292,24 +290,21 @@ namespace UIWPF {
             isPainting = false;
         }
 
-        private void DrawAxis(Canvas canvas)
-        {
+        private void DrawAxis(Canvas canvas) {
             Logger.WriteLog("paint started");
-            for (var i = -400; i < 401; i+=10) {
+            for (var i = -400; i < 401; i += 10) {
                 ShapeLine myLine = new ShapeLine();
                 Brush solidColorBrush = new SolidColorBrush(Color.FromArgb(95, 250, 250, 250));
-                if (i!=0)
-                {
+                if (i != 0) {
                     solidColorBrush.Opacity = 0.5;
-                    if (i % 100 == 0)
-                    {
+                    if (i % 100 == 0) {
                         solidColorBrush.Opacity = 0.75;
                     }
                 }
-                
+
                 myLine.Stroke = solidColorBrush;
-                myLine.X1 = 0+i;
-                myLine.X2 = 0+i;
+                myLine.X1 = 0 + i;
+                myLine.X2 = 0 + i;
                 myLine.Y1 = -400;
                 myLine.Y2 = 400;
                 myLine.StrokeThickness = 1;
@@ -369,15 +364,15 @@ namespace UIWPF {
                 Lines.Add(line);
             }
 
-            List<Room> commonR = Rooms.Intersect(model.modelRooms).ToList();
-            List<Room> diffR = model.modelRooms.ToList().Except(commonR).ToList();
-            List<Room> diffRBAD = Rooms.Except(model.modelRooms).ToList();
+            List<MyRoom> commonR = Rooms.Intersect(model.modelRooms).ToList();
+            List<MyRoom> diffR = model.modelRooms.ToList().Except(commonR).ToList();
+            List<MyRoom> diffRBAD = Rooms.Except(model.modelRooms).ToList();
 
-            foreach (Room room in diffRBAD) {
+            foreach (MyRoom room in diffRBAD) {
                 Rooms.Remove(room);
             }
 
-            foreach (Room room in diffR) {
+            foreach (MyRoom room in diffR) {
                 Rooms.Add(room);
             }
 
@@ -385,7 +380,7 @@ namespace UIWPF {
             //    Lines.Add(line);
             //}
 
-            //foreach (Room room in model.modelRooms) {
+            //foreach (MyRoom room in model.modelRooms) {
             //    Rooms.Add(room);
             //}
         }
@@ -452,8 +447,8 @@ namespace UIWPF {
             int roomcount = s.model.modelRooms.Count;
             if (roomcount >= 2) {
                 Random r = new Random(10);
-                Room r1 = s.model.modelRooms.ElementAt(0);//r.Next(s.model.modelRooms.Count));
-                Room r2 = s.model.modelRooms.ElementAt(1);//r.Next(s.model.modelRooms.Count));
+                MyRoom r1 = s.model.modelRooms.ElementAt(0);//r.Next(s.model.modelRooms.Count));
+                MyRoom r2 = s.model.modelRooms.ElementAt(1);//r.Next(s.model.modelRooms.Count));
 
                 s.SwitchRoom(ref r1, ref r2);
             }
@@ -634,7 +629,10 @@ namespace UIWPF {
             s.model.InitModelWithGivenRooms();
         }
 
-        
+
+        private void LoadTestModelClick(object sender, RoutedEventArgs e) {
+            s.model.InitTestModel();
+        }
     }
 
 

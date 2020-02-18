@@ -51,7 +51,7 @@ namespace WindowsFormsApp1.Simulation {
             }
 
             //TODO: this fails when switched with simulation
-            foreach (Room room in localModel.modelRooms) {
+            foreach (MyRoom room in localModel.modelRooms) {
                 RoomType type = room.type;
                 double actualprop = room.CalculateProportion();
                 if (actualprop > type.proportion) {
@@ -60,7 +60,7 @@ namespace WindowsFormsApp1.Simulation {
             }
 
             //punish more edges
-            foreach (Room room in localModel.modelRooms) {
+            foreach (MyRoom room in localModel.modelRooms) {
                 double countCost = room.BoundaryPoints.Count;
                 if (countCost > 6) {
                     summary += Math.Pow(2, countCost - 6);
@@ -93,10 +93,10 @@ namespace WindowsFormsApp1.Simulation {
                 var count = modelLine.relatedRooms.Count;
                 if (count > 1) {
                     for (var index = 0; index < count; index++) {
-                        Room r1 = modelLine.relatedRooms[index];
+                        MyRoom r1 = modelLine.relatedRooms[index];
                         for (int i = index + 1; i < count; i++) {
                             //TODO: make a 2D grid and choose based on the combination. I dont know the solution
-                            Room r2 = modelLine.relatedRooms[i];
+                            MyRoom r2 = modelLine.relatedRooms[i];
 
                             Dictionary<RoomType, int> asd2 = new Dictionary<RoomType, int>();
                             bool isIn = asd.TryGetValue(r1.type, out asd2);
@@ -128,10 +128,10 @@ namespace WindowsFormsApp1.Simulation {
         private static double CalculatePassageWayCost() {
             //bejárhatóság
             double cost = 0.0;
-            Dictionary<int, List<Room>> processedRooms = new Dictionary<int, List<Room>>();
+            Dictionary<int, List<MyRoom>> processedRooms = new Dictionary<int, List<MyRoom>>();
 
             int accessRoomDepth = 0;
-            List<Room> actualRooms = localModel.modelRooms.Where(i => i.isStartRoom).ToList();
+            List<MyRoom> actualRooms = localModel.modelRooms.Where(i => i.isStartRoom).ToList();
             processedRooms.Add(accessRoomDepth, actualRooms);
 
 
@@ -145,18 +145,18 @@ namespace WindowsFormsApp1.Simulation {
 
 
             //while (accessRoomDepth < localModel.modelRooms.Count) {
-            //    List<Room> actualRoomsForThisDepth = new List<Room>(); 
+            //    List<MyRoom> actualRoomsForThisDepth = new List<MyRoom>(); 
             //    bool isOnGoing = processedRooms.TryGetValue(accessRoomDepth, out actualRoomsForThisDepth);
             //    if (!isOnGoing) break;
 
             //    accessRoomDepth++;
-            //    foreach (Room room in actualRoomsForThisDepth) {
+            //    foreach (MyRoom room in actualRoomsForThisDepth) {
             //        foreach (MyLine line in room.BoundaryLines) {
             //            if (line.HasOpening) {
-            //                List<Room> reachableRoomsFromThisLine = line.relatedRooms;
+            //                List<MyRoom> reachableRoomsFromThisLine = line.relatedRooms;
             //                reachableRoomsFromThisLine.Remove(room);
 
-            //                List<Room> alreadyInRoomsAtThisDepth = new List<Room>();
+            //                List<MyRoom> alreadyInRoomsAtThisDepth = new List<MyRoom>();
             //                bool isAlready = processedRooms.TryGetValue(accessRoomDepth, out alreadyInRoomsAtThisDepth);
 
             //                if (isAlready) {

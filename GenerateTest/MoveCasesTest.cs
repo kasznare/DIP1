@@ -14,10 +14,11 @@ namespace GenerateTest {
         [SetUp]
         public void Setup() {
             m = new Model();
+            m.InitTestModel();
         }
         
         [Test]
-        public void MoveSimple() {
+        public void MoveTestLine() {
             m.InitSimpleModel();
             MyLine l = null;
             foreach (MyLine line in m.modelLines)

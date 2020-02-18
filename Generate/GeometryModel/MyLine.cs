@@ -10,7 +10,7 @@ namespace WindowsFormsApp1 {
         public MyPoint EndMyPoint { get; set; }
         public bool HasOpening { get; set; }
         public bool IsOpening { get; set; }
-        public List<Room> relatedRooms { get; set; }
+        public List<MyRoom> relatedRooms { get; set; }
         public List<MyPoint> relatedPoints { get; set; } 
         #endregion
         public MyLine(MyPoint startMyPoint, MyPoint endMyPoint) {
@@ -25,7 +25,7 @@ namespace WindowsFormsApp1 {
             startMyPoint.RelatedLines.Add(this);
             endMyPoint.RelatedLines.Add(this);
 
-            relatedRooms = new List<Room>();
+            relatedRooms = new List<MyRoom>();
         }
         public MyPoint GetDirection() {
             return new MyPoint(StartMyPoint.X - EndMyPoint.X, StartMyPoint.Y - EndMyPoint.Y);

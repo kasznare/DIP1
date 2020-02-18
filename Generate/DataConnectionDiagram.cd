@@ -4,12 +4,12 @@
     <Position X="12" Y="2.75" Width="3" />
     <TypeIdentifier>
       <HashCode>CAAIhAQAACAEAAUEAkUAAAcQAAABBAAgAAIQAAAAKAg=</HashCode>
-      <FileName>GeometryModel\Room.cs</FileName>
+      <FileName>GeometryModel\MyRoom.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
+      <Field Name="NeighboorRooms" />
       <Field Name="boundaryLines" />
       <Field Name="boundaryPoints" />
-      <Field Name="NeighboorRooms" />
       <Property Name="BoundaryLines" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
@@ -22,7 +22,6 @@
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
       <Field Name="RelatedLines" />
-      <Property Name="RelatedRooms" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>
@@ -33,11 +32,10 @@
       <FileName>GeometryModel\MyLine.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="EndMyPoint" />
       <Property Name="StartMyPoint" />
+      <Property Name="EndMyPoint" />
     </ShowAsAssociation>
     <ShowAsCollectionAssociation>
-      <Property Name="relatedRooms" />
       <Property Name="relatedPoints" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />

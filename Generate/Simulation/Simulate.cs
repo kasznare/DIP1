@@ -93,10 +93,10 @@ namespace WindowsFormsApp1.Simulation {
             for (int index = 0; index < rooms; index++) {
                 for (int secondindex = index + 1; secondindex < rooms; secondindex++) {
                     //Parallel.For(index + 1, rooms, secondindex => {
-                    Room r1 = model.modelRooms.ElementAt(index);
-                    Room r2 = model.modelRooms.ElementAt(secondindex);
-                    Room r1target = null;
-                    Room r2target = null;
+                    MyRoom r1 = model.modelRooms.ElementAt(index);
+                    MyRoom r2 = model.modelRooms.ElementAt(secondindex);
+                    MyRoom r1target = null;
+                    MyRoom r2target = null;
                     Model tempModel = model.DeepCopy(r1, r2, out r1target, out r2target);
                     tempModel.SwitchRooms(ref r1target, ref r2target);
                     if (!tempModel.IsInInvalidState) {
@@ -204,7 +204,7 @@ namespace WindowsFormsApp1.Simulation {
             HandleModelChangeUpdate();
         }
 
-        public void SwitchRoom(ref Room r1, ref Room r2) {
+        public void SwitchRoom(ref MyRoom r1, ref MyRoom r2) {
             Action a = new Switch(ref r1, ref r2);
             a.Step(model);
             double[] costs = CostCalculationService.CalculateCost(model);
@@ -281,16 +281,16 @@ namespace WindowsFormsApp1.Simulation {
         }
     }
     public class Switch : Action {
-        private Room r1;
-        private Room r2;
+        private MyRoom r1;
+        private MyRoom r2;
 
-        public Switch(ref Room r1, ref Room r2, double cost) {
+        public Switch(ref MyRoom r1, ref MyRoom r2, double cost) {
             this.r1 = r1;
             this.r2 = r2;
             this.cost = cost;
         }
 
-        public Switch(ref Room r1, ref Room r2) {
+        public Switch(ref MyRoom r1, ref MyRoom r2) {
             this.r1 = r1;
             this.r2 = r2;
         }

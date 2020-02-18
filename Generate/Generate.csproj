@@ -75,7 +75,7 @@
     <Compile Include="GeometryModel\MyPoint.cs" />
     <Compile Include="Simulation\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GeometryModel\Room.cs" />
+    <Compile Include="GeometryModel\MyRoom.cs" />
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\Utils.cs" />
     <None Include="packages.config" />

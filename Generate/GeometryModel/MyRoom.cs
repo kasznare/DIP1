@@ -7,8 +7,8 @@ using WindowsFormsApp1.Utilities;
 using ONLAB2;
 
 namespace WindowsFormsApp1 {
-    public class Room : IGeometry {
-        public Room(string name, string number, RoomType rt) {
+    public class MyRoom : IGeometry {
+        public MyRoom(string name, string number, RoomType rt) {
             Name = name;
             Number = number;
             BoundaryPoints = new List<MyPoint>();
@@ -17,14 +17,14 @@ namespace WindowsFormsApp1 {
             type = rt;
         }
 
-        public static void ChangeAllParams(ref Room keep, Room getDataFrom) {
+        public static void ChangeAllParams(ref MyRoom keep, MyRoom getDataFrom) {
             keep.Number = getDataFrom.Number;
             keep.Name = getDataFrom.Name;
             keep.type = getDataFrom.type;
 
         }
-        internal Room GetCopy() {
-            return new Room(Name, Number, type);
+        internal MyRoom GetCopy() {
+            return new MyRoom(Name, Number, type);
         }
         public Guid Guid { get; set; }
         public string Name { get; set; }
@@ -35,7 +35,7 @@ namespace WindowsFormsApp1 {
         public int Degree { get; set; }
         public bool isStartRoom { get; set; }
 
-        public List<Room> NeighboorRooms = new List<Room>();
+        public List<MyRoom> NeighboorRooms = new List<MyRoom>();
         public string boundaryLineNames {
             get { return String.Join("\n", GetBoundaryLinesSorted().Select(i => i.ToString()).ToArray()); }
         }
