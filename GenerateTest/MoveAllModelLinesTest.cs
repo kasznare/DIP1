@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using WindowsFormsApp1;
 using WindowsFormsApp1.Simulation;
 using Newtonsoft.Json;
@@ -17,6 +19,17 @@ namespace GenerateTest {
         public void Setup() {
             m = new Model();
         }
+
+        [Test]
+        //[Attribute a=1]
+        public void MoveLineInAllModel()
+        {
+            m=LoadModelFromJsonString();
+            Line l = Find200200400200Line();
+            m.MoveLine(10,l);
+            Assert m.IsInInvalidState.Equals(false);
+        }
+
 
         [Test]
         public void MoveEveryLineInSimple() {
@@ -69,7 +82,77 @@ namespace GenerateTest {
         [Test]
         public void AllCasesTestGeneration()
         {
+            m.InitTestModel();
+            List<Model> newModels = new List<Model>();
+            newModels.Add(m);
+            List<Model> allModels = new List<Model>();
+            while (newModels.Any())
+            {
+                List<Model> loop = new List<Model>();
+                foreach (Model model in newModels)
+                {
+                    List<Model> currentModels = AllRoomPairs(model);
 
+                    foreach (Model currentModel in currentModels)
+                    {
+                        if (currentModel.modelRooms.Count > 1)
+                        {
+                            loop.Add(currentModel);
+                        }
+                    }
+
+                    allModels.AddRange(currentModels);
+                }
+
+                newModels = loop;
+            }
+
+            foreach (Model model in allModels)
+            {
+                Ommitsteps(model);
+            }
+
+            SaveHistoryModel();
+        }
+
+        public List<Model> AllRoomPairs(Model m_mod)
+        {
+            List<Model> storage = new List<Model>();
+            for (var i = 0; i < m_mod.modelRooms.Count; i++)
+            {
+                MyRoom room = m_mod.modelRooms[i];
+                for (var j = i+1; j < m_mod.modelRooms.Count; j++)
+                {
+                    MyRoom modelRoom = m_mod.modelRooms[j];
+                    //if (modelRoom.Guid == room.Guid) continue;
+
+                    bool a = DoTheyHaveCommmonWall(room, modelRoom);
+                    if (!a) continue;
+
+                    else
+                    {
+                        Model newModel = MergeRooms(m_mod, room, modelRoom);
+                        storage.Add(newModel);
+                    }
+                }
+            }
+
+            return storage;
+        }
+
+        private Model MergeRooms(Model mMod, MyRoom room, MyRoom modelRoom)
+        {
+            Model m=null;
+            RemoveCommonWalls();
+            MergeBoundaryLineListToSmallerIdRooms();
+            RemoveOneRoom();
+            return m;
+        }
+
+        private bool DoTheyHaveCommmonWall(MyRoom room, MyRoom modelRoom)
+        {
+            if (room.BoundaryLines.Intersect(modelRoom.BoundaryLines).Any()) return true;
+            return false;
         }
 
 
@@ -79,6 +162,7 @@ namespace GenerateTest {
 
             bool finished = ExitCondition(m_mod);
             if (finished) return;
+
             m_mod=Ommit(m_mod);
             Ommitsteps(m_mod);
 
