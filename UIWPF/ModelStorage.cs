@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using WindowsFormsApp1;
-using NUnit.Framework;
 
 namespace GenerateTest {
     internal class ModelStorage {

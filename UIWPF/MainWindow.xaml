@@ -65,6 +65,9 @@
   <DockPanel>
     <Separator></Separator>
     <Menu DockPanel.Dock="Top">
+      <MenuItem Name="Test" Header="Test" Click="Test_OnClick">
+
+      </MenuItem>
       <MenuItem Name="Simulation" Height="20" Header="_Simulation">
         <MenuItem Header="_Start" Click="StartSimulationClick"></MenuItem>
         <MenuItem Header="_Load Simplest model" Click="LoadSimplestModelClick"></MenuItem>
@@ -88,6 +91,9 @@
         <MenuItem Header="_Save state" Click="SaveStateClick"></MenuItem>
       </MenuItem>
     </Menu>
+    <StatusBar DockPanel.Dock="Bottom">
+      <Label Height="15" Content="{Binding StatusMessage, Mode=OneWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged}"></Label>
+    </StatusBar>
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="800" />
