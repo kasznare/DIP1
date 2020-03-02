@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using WindowsFormsApp1.Utilities;
+using Newtonsoft.Json;
 using ONLAB2;
 
 namespace WindowsFormsApp1 {
@@ -23,26 +25,44 @@ namespace WindowsFormsApp1 {
             keep.type = getDataFrom.type;
 
         }
+
+        public int GetNumberAsInt()
+        {
+            int i = 0;
+            bool asd = int.TryParse(Number, out i);
+            return i;
+        }
         internal MyRoom GetCopy() {
             return new MyRoom(Name, Number, type);
         }
         public Guid Guid { get; set; }
         public string Name { get; set; }
         public string Number { get; set; }
+        [JsonIgnore]
+        [IgnoreDataMember]
         /// <summary>
         /// calculated actual degree from simulation
         /// </summary>
+        /// 
         public int Degree { get; set; }
         public bool isStartRoom { get; set; }
-
+        [JsonIgnore]
+        [IgnoreDataMember]
         public List<MyRoom> NeighboorRooms = new List<MyRoom>();
+        [JsonIgnore]
+        [IgnoreDataMember]
         public string boundaryLineNames {
             get { return String.Join("\n", GetBoundaryLinesSorted().Select(i => i.ToString()).ToArray()); }
         }
         public RoomType type { get; set; }
+
         private bool isBoundaryLinesPossiblyUnsorted = false;
         private bool isBoundaryPointsPossiblyUnsorted = false;
+        [JsonIgnore]
+        [IgnoreDataMember]
         private List<MyLine> boundaryLines;
+        [JsonIgnore]
+        [IgnoreDataMember]
         public List<MyLine> BoundaryLines {
             get => boundaryLines;
             set {
@@ -113,6 +133,8 @@ namespace WindowsFormsApp1 {
             BoundaryLines = orderedLines;
             isBoundaryLinesPossiblyUnsorted = false;
         }
+        [JsonIgnore]
+        [IgnoreDataMember]
         public List<MyPoint> BoundaryPoints {
             get => boundaryPoints;
             set {
@@ -171,7 +193,8 @@ namespace WindowsFormsApp1 {
 
             return commonMyPoint;
         }
-
+        [JsonIgnore]
+        [IgnoreDataMember]
         private List<MyPoint> boundaryPoints;
         public bool IsLineMissing() {
             return false;

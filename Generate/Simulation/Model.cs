@@ -7,7 +7,9 @@ using System.Linq;
 using System.Windows.Forms;
 using WindowsFormsApp1.GeometryModel;
 using WindowsFormsApp1.Utilities;
+using Newtonsoft.Json;
 using ONLAB2;
+using System.Runtime.Serialization;
 
 //still todos
 //TODO: branchelés - model operáció sorrend invariáns? akkor lehet őket osszevonogatni
@@ -47,6 +49,8 @@ using ONLAB2;
 //hogyan változik a loss
 namespace WindowsFormsApp1 {
     public class Model {
+        [JsonIgnore]
+        [IgnoreDataMember]
         Random rand = new Random(10); //this random integer ensures that the simulation keeps the same
         /// <summary>
         /// nullable constructor
@@ -62,6 +66,7 @@ namespace WindowsFormsApp1 {
             }
         }
         //TODO: set this in the move/split/switch 
+        
         public bool IsInInvalidState { get; set; } //when a move makes the model invalid, we set this switch
         public string SaveStateToString() {
             string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(this);
@@ -72,10 +77,14 @@ namespace WindowsFormsApp1 {
             modelLines = obj.modelLines;
             modelRooms = obj.modelRooms;
         }
+        [JsonIgnore] 
+        [IgnoreDataMember] 
         public ModelType loadedModelType { get; set; }
         public ObservableCollection<MyLine> modelLines { get; set; } = new ObservableCollection<MyLine>();
         public ObservableCollection<MyRoom> modelRooms { get; set; } = new ObservableCollection<MyRoom>();
 
+        [JsonIgnore]
+        [IgnoreDataMember]
         /// <summary>
         /// Returns the points of the model ordered by guid
         /// </summary>
@@ -625,9 +634,14 @@ namespace WindowsFormsApp1 {
             Logger.WriteLog("InitSimpleModel() finished");
         }
 
-
+        [JsonIgnore]
+        [IgnoreDataMember]
         private Dictionary<MyRoom, MyRoom> oldNewRooms = new Dictionary<MyRoom, MyRoom>();
+        [JsonIgnore]
+        [IgnoreDataMember]
         private Dictionary<MyPoint, MyPoint> oldNewPoints = new Dictionary<MyPoint, MyPoint>();
+        [JsonIgnore]
+        [IgnoreDataMember]
         private Dictionary<MyLine, MyLine> oldNewLines = new Dictionary<MyLine, MyLine>();
         /// <summary>
         /// Base deepcopy with no other returning parameters
@@ -777,6 +791,14 @@ namespace WindowsFormsApp1 {
             return new Model(oldNewLines.Values.ToList(), oldNewRooms.Values.ToList());
         }
 
+        public Model DeepCopy(MyRoom oldMyRoom1, out MyRoom newMyRoom1) {
+           
+            LoadData();
+            
+            newMyRoom1 = oldNewRooms[oldMyRoom1];
+
+            return new Model(oldNewLines.Values.ToList(), oldNewRooms.Values.ToList());
+        }
 
         //the cause of all prolems is in this function.
         //but it is not the function that is wrong, it makes the model in an invalid state, but that can happen on other functions aswell.

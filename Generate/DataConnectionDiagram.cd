@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Alphabetical" MembersFormat="NameAndType">
-  <Class Name="WindowsFormsApp1.Room">
-    <Position X="12" Y="2.75" Width="3" />
+  <Class Name="WindowsFormsApp1.MyRoom">
+    <Position X="11.75" Y="3.75" Width="3" />
     <TypeIdentifier>
-      <HashCode>CAAIhAQAACAEAAUEAkUAAAcQAAABBAAgAAIQAAAAKAg=</HashCode>
+      <HashCode>CAAIhAQAACAEAAUEAkUAAAcQAAABFAAgAAIQAAAAKAg=</HashCode>
       <FileName>GeometryModel\MyRoom.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>

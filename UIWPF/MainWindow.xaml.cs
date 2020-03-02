@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -78,7 +79,7 @@ namespace UIWPF {
 
         private void CreateRunFolderAndInitPath() {
 
-            runPath = $@"C:\Users\{Environment.UserName}\Documents\DIP1\Screens\{DateTime.Now:yy-MM-dd-hh-ss}_{model.loadedModelType}\";
+            runPath = $@"C:\Users\{Environment.UserName}\Documents\DIP1\Screens\{DateTime.Now:yy-MM-dd-hh-ss-tt}_{model.loadedModelType}\";
             try {
                 Directory.CreateDirectory(runPath);
             }
@@ -649,46 +650,63 @@ namespace UIWPF {
         public void AllCasesTestGeneration() {
             Model m = new Model();
             m.InitTestModel();
-            List<Model> newModels = new List<Model>();
-            newModels.Add(m);
-            List<Model> allModels = new List<Model>();
-            while (newModels.Any()) {
-                List<Model> loop = new List<Model>();
-                foreach (Model model in newModels) {
-                    List<Model> currentModels = AllRoomPairs(model);
 
-                    foreach (Model currentModel in currentModels) {
+            List<Model> newModelsBeforeStep = new List<Model>() { m };
+
+            List<Model> allModels = new List<Model>();
+            int i = 0;
+            while (newModelsBeforeStep.Any() && i <2) {
+                List<Model> newModelsInStep = new List<Model>();
+                foreach (Model model in newModelsBeforeStep) {
+                    List<Model> joinedModels = MergeAllRoomPairs(model);
+
+                    foreach (Model currentModel in joinedModels) {
                         if (currentModel.modelRooms.Count > 1) {
-                            loop.Add(currentModel);
+                            newModelsInStep.Add(currentModel);
                         }
                     }
 
-                    allModels.AddRange(currentModels);
+                    allModels.AddRange(joinedModels);
                 }
 
-                newModels = loop;
+                newModelsBeforeStep = newModelsInStep;
+                i++;
             }
 
+            MessageBox.Show(allModels.Count.ToString());
+            ommitstepcount = 0;
             foreach (Model model in allModels) {
                 Ommitsteps(model);
             }
-
-            foreach (Model m1 in ms.getHistory()) {
-                SaveHistoryModel(m1, GenerateModelNameFromState(m1));
-            }
+            string t = DateTime.Now.ToString("");
+            //foreach (Model m1 in ms.getHistory()) {
+            //    SaveHistoryModel(m1, GenerateModelNameFromState(m1));
+            //}
         }
 
         private string GenerateModelNameFromState(Model currentModel) {
             return
-                $"{currentModel.loadedModelType}_{currentModel.modelRooms.Count}_{currentModel.modelLines.Count}_{string.Join("-", currentModel.ModelPoints.Take(10))}";
+                $"Modell_{string.Join("-",currentModel.modelRooms.Select(i=>i.Number))}_{currentModel.modelLines.Count}_{DateTime.Now.ToString("hh-mm-ss-fff-tt")}";
         }
 
-        public List<Model> AllRoomPairs(Model m_mod) {
+        List<int> fullist = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        public List<Model> MergeAllRoomPairs(Model m_mod) {
+            int missinglargest = 0;
+            m_mod.CalculateAllRooms();
+            IEnumerable<int> enumerable = fullist.Except(m_mod.modelRooms.Select(i => i.GetNumberAsInt()));
+            if (enumerable.Any()) {
+                missinglargest = enumerable.Max();
+
+            }
+            //missinglargest = m_mod.modelRooms.Select(i => int.Parse(i.Number)).Union(fullist).Max();
             List<Model> returnList = new List<Model>();
             for (var i = 0; i < m_mod.modelRooms.Count; i++) {
                 MyRoom room = m_mod.modelRooms[i];
+                if (room.GetNumberAsInt() < missinglargest) continue;
+
                 for (var j = i + 1; j < m_mod.modelRooms.Count; j++) {
                     MyRoom modelRoom = m_mod.modelRooms[j];
+                    if (modelRoom.GetNumberAsInt() < missinglargest) continue;
                     //if (room2.Guid == room1.Guid) continue;
 
                     bool a = DoTheyHaveCommmonWall(room, modelRoom);
@@ -744,32 +762,62 @@ namespace UIWPF {
             return false;
         }
 
-
+        private int ommitstepcount = 0;
         public void Ommitsteps(Model m_mod) {
-            ms.AddModel(m_mod.DeepCopy());
+            ///GC.Collect();
+            //ms.AddModel(m_mod.DeepCopy());
+            Model deepCopy = m_mod.DeepCopy();
+            List<Model> allModels = new List<Model>(){deepCopy};
+            List<Model> lastModel = new List<Model>(){deepCopy};
+            while (lastModel.Any())
+            {
+                List<Model>currentModels = new List<Model>();
+                foreach (Model currentModel in currentModels)
+                {
+                    List<Model> allPossibleOneOmmits = OmmitOne(currentModel);
+                    allModels.AddRange(allPossibleOneOmmits);
+                    currentModels.AddRange(allPossibleOneOmmits);
+                }
 
-            if (ExitCondition(m_mod)) return;
-
-            Ommit(m_mod.DeepCopy());
-
-        }
-
-        private void Ommit(Model mMod) {
-            foreach (MyRoom room in mMod.modelRooms) {
-                MyRoom room2;
-                MyRoom modelRoom2;
-                Model m_mod2 = mMod.DeepCopy(room, null, out room2, out modelRoom2);
-
-                m_mod2.modelRooms.Remove(room2);
-                Ommitsteps(m_mod2);
+                lastModel = currentModels;
             }
 
+            //MessageBox.Show(allModels.Count+" models in ommit step");
+            foreach (Model allModel in allModels)
+            {
+                //ms.AddModel(allModel);
+                SaveHistoryModel(allModel, GenerateModelNameFromState(allModel));
+            }
         }
 
-        private bool ExitCondition(Model model) {
-            if (model.modelRooms.Count == 1) return true;
-            else return false;
+        private List<Model> OmmitOne(Model currentModel) {
+            if (currentModel.modelRooms.Count<2) return new List<Model>();
+            List<Model> returns = new List<Model>();
+            foreach (var room in currentModel.modelRooms)
+            {
+                int missinglargest = 0;
+                IEnumerable<int> enumerable = fullist.Except(currentModel.modelRooms.Select(i => i.GetNumberAsInt()));
+
+                if (enumerable.Any()) {
+                    missinglargest = enumerable.Max();
+                }
+                if (room.GetNumberAsInt() < missinglargest) continue;
+                
+                MyRoom room2;
+                Model m_mod2 = currentModel.DeepCopy(room, out room2);
+
+                foreach (MyLine line in room2.BoundaryLines) {
+                    line.relatedRooms.Remove(room2);
+                }
+                m_mod2.modelRooms.Remove(room2);
+                    
+                
+            }
+
+            return returns;
         }
+
+
 
         private string savepath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         private void SaveHistoryModel(Model ms, string name) {
@@ -778,8 +826,9 @@ namespace UIWPF {
             serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
             serializer.Converters.Add(new JavaScriptDateTimeConverter());
             serializer.NullValueHandling = NullValueHandling.Ignore;
+            serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
-            using (StreamWriter sw = new StreamWriter($"{savepath}\\{name}.json"))
+            using (StreamWriter sw = new StreamWriter($"{savepath}\\Models\\{name}.json"))
             using (JsonWriter writer = new JsonTextWriter(sw)) {
                 serializer.Serialize(writer, ms);
             }
@@ -793,6 +842,7 @@ namespace UIWPF {
 
 
 
-
-
+    //TODO: create serializable model class with serialiable myline, and points --- avoid self referencing
+    //TODO: only incrementing join and incremeting ommit allowed
 }
+//TODO: create lists for the join steps - to keep track of 3,4,5 and 4,5,3 merges --- catch them sooner!!! ---  ((not nessesary)!!!!

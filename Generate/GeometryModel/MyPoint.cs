@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
 using ONLAB2;
 
 namespace WindowsFormsApp1 {
@@ -18,6 +20,8 @@ namespace WindowsFormsApp1 {
         public double X { get; set; }
         public double Y { get; set; }
         public Guid Guid { get; set; }
+        [JsonIgnore]
+        [IgnoreDataMember]
         public List<MyRoom> RelatedRooms {
             get {
                 List<MyRoom> rooms = new List<MyRoom>();
@@ -33,6 +37,8 @@ namespace WindowsFormsApp1 {
             set { RelatedRooms = value; }
         }
         //A myPoint can only have 4 lines starting from it
+        [JsonIgnore]
+        [IgnoreDataMember]
         public List<MyLine> RelatedLines;
 
         public MyPoint GetCopy() {

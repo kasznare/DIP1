@@ -7,5 +7,36 @@
       <FileName>GeometryModel\RoomType.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="WindowsFormsApp1.Model">
+    <Position X="15.75" Y="2.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>BAAIQISACIFRABwAggABAiNAORAICIBCCUgAEBAAAAE=</HashCode>
+      <FileName>Simulation\Model.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WindowsFormsApp1.MyRoom">
+    <Position X="13.25" Y="5.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>CAAIhAQAACAEAAUEAkUAAAcQAAABFAAgAAIQAAAAKAg=</HashCode>
+      <FileName>GeometryModel\MyRoom.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="WindowsFormsApp1.MyPoint">
+    <Position X="14.75" Y="1.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>CQAAAAAAAAAAAAAE4AAAAAAAAAAAJAAAAAAQAACAcAA=</HashCode>
+      <FileName>GeometryModel\MyPoint.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="WindowsFormsApp1.MyLine">
+    <Position X="17.25" Y="6.5" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAwYAAAEVAAAAAAAAAIABAAAAAACAAgCEAQ=</HashCode>
+      <FileName>GeometryModel\MyLine.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
