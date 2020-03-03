@@ -675,18 +675,25 @@ namespace UIWPF {
 
             MessageBox.Show(allModels.Count.ToString());
             ommitstepcount = 0;
-            foreach (Model model in allModels) {
+            foreach (Model model in allModels)
+            {
                 Ommitsteps(model);
+                ommitstepcount++;
+                if (ommitstepcount%10==0)
+                {
+                    MessageBox.Show(ommitstepcount.ToString());
+                }
             }
             string t = DateTime.Now.ToString("");
             //foreach (Model m1 in ms.getHistory()) {
             //    SaveHistoryModel(m1, GenerateModelNameFromState(m1));
             //}
+            this.Close();
         }
 
         private string GenerateModelNameFromState(Model currentModel) {
             return
-                $"Modell_{string.Join("-",currentModel.modelRooms.Select(i=>i.Number))}_{currentModel.modelLines.Count}_{DateTime.Now.ToString("hh-mm-ss-fff-tt")}";
+                $"Modell_{string.Join("-",currentModel.modelRooms.Select(i=>i.Number))}_{currentModel.modelLines.Count}_{DateTime.Now.ToString("hh-mm-ss-fff")}";
         }
 
         List<int> fullist = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -746,11 +753,18 @@ namespace UIWPF {
             int result2;
             bool parsed1 = int.TryParse(room1.Number, out result1);
             bool parsed2 = int.TryParse(room2.Number, out result2);
-            if (parsed1 && parsed2 && result1 < result2) {
+            if (parsed1 && parsed2 && (result1 < result2 || room1.GetNumberAsInt()==2)) {
                 m.modelRooms.Remove(room2);
+                foreach (MyLine line in m.modelLines)
+                {
+                    line.relatedRooms.Remove(room2);
+                }
             }
             else {
                 m.modelRooms.Remove(room1);
+                foreach (MyLine line in m.modelLines) {
+                    line.relatedRooms.Remove(room1);
+                }
             }
 
             return m;
@@ -764,7 +778,7 @@ namespace UIWPF {
 
         private int ommitstepcount = 0;
         public void Ommitsteps(Model m_mod) {
-            ///GC.Collect();
+            GC.Collect();
             //ms.AddModel(m_mod.DeepCopy());
             Model deepCopy = m_mod.DeepCopy();
             List<Model> allModels = new List<Model>(){deepCopy};
@@ -801,7 +815,7 @@ namespace UIWPF {
                 if (enumerable.Any()) {
                     missinglargest = enumerable.Max();
                 }
-                if (room.GetNumberAsInt() < missinglargest) continue;
+                if (room.GetNumberAsInt() < missinglargest || room.GetNumberAsInt()==2) continue;
                 
                 MyRoom room2;
                 Model m_mod2 = currentModel.DeepCopy(room, out room2);
@@ -811,7 +825,7 @@ namespace UIWPF {
                 }
                 m_mod2.modelRooms.Remove(room2);
                     
-                
+                returns.Add(m_mod2);
             }
 
             return returns;

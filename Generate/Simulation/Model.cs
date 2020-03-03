@@ -592,6 +592,7 @@ namespace WindowsFormsApp1 {
 
             MyRoom first = new MyRoom("FirstRoom", "1", RoomType.Kitchen);
             MyRoom second = new MyRoom("SecondRoom", "2", RoomType.LivingRoom);
+            second.isStartRoom = true;
             MyRoom third = new MyRoom("ThirdRoom", "3", RoomType.CorridorRoom);
             MyRoom fourth = new MyRoom("FourthRoom", "4", RoomType.RestRoom);
             MyRoom fifth = new MyRoom("fifthRoom", "5", RoomType.BedRoom);
