@@ -68,6 +68,7 @@
     <Compile Include="Model\_Room.cs" />
     <Compile Include="Model\_RoomType.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Services\ModelConfigurations.cs" />
     <Compile Include="Zoom.xaml.cs">
       <DependentUpon>Zoom.xaml</DependentUpon>
     </Compile>

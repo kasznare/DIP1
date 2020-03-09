@@ -32,6 +32,7 @@ using MessageBox = System.Windows.MessageBox;
 using ShapeEllipse = System.Windows.Shapes.Ellipse;
 using ShapeLine = System.Windows.Shapes.Line;
 using ShapeRectangle = System.Windows.Shapes.Rectangle;
+using Model = WindowsFormsApp1.Model;
 namespace UIWPF {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
