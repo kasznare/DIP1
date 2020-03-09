@@ -689,7 +689,12 @@ namespace WindowsFormsApp1 {
                 foreach (MyLine oldLine in oldMyRoom.BoundaryLines) {
                     //TODO: some line is already registered to the room
                     //the issue is line cancellation, when a line is gone, even in a simple move situation
-                    newMyRoom.BoundaryLines.Add(oldNewLines[oldLine]);
+                    try {
+                        newMyRoom.BoundaryLines.Add(oldNewLines[oldLine]);
+                    }
+                    catch (Exception) {
+
+                    }
                 }
             }
         }

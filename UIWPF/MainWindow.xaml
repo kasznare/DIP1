@@ -65,6 +65,7 @@
   <DockPanel>
     <Separator></Separator>
     <Menu DockPanel.Dock="Top">
+      <MenuItem Name="LoadModel" Header="LoadModel" Click="LoadModel_OnClick"></MenuItem>
       <MenuItem Name="Test" Header="Test" Click="Test_OnClick">
 
       </MenuItem>

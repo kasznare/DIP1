@@ -655,7 +655,7 @@ namespace UIWPF {
 
             List<Model> allModels = new List<Model>();
             int i = 0;
-            while (newModelsBeforeStep.Any() && i <2) {
+            while (newModelsBeforeStep.Any() && i <10) {
                 List<Model> newModelsInStep = new List<Model>();
                 foreach (Model model in newModelsBeforeStep) {
                     List<Model> joinedModels = MergeAllRoomPairs(model);
@@ -679,10 +679,10 @@ namespace UIWPF {
             {
                 Ommitsteps(model);
                 ommitstepcount++;
-                if (ommitstepcount%10==0)
-                {
-                    MessageBox.Show(ommitstepcount.ToString());
-                }
+                //if (ommitstepcount%10==0)
+                //{
+                //    MessageBox.Show(ommitstepcount.ToString());
+                //}
             }
             string t = DateTime.Now.ToString("");
             //foreach (Model m1 in ms.getHistory()) {
@@ -745,6 +745,13 @@ namespace UIWPF {
             foreach (MyLine line in common) {
                 room1.BoundaryLines.Remove(line);
                 room2.BoundaryLines.Remove(line);
+                m.modelLines.Remove(line);
+                foreach (MyRoom room in m.modelRooms)
+                {
+                    room.BoundaryLines.Remove(line);
+                }
+                line.EndMyPoint.RelatedLines.Remove(line);
+                line.StartMyPoint.RelatedLines.Remove(line);
             }
             room1.BoundaryLines.AddRange(room2.BoundaryLines);
             room2.BoundaryLines.AddRange(room1.BoundaryLines);
@@ -753,7 +760,7 @@ namespace UIWPF {
             int result2;
             bool parsed1 = int.TryParse(room1.Number, out result1);
             bool parsed2 = int.TryParse(room2.Number, out result2);
-            if (parsed1 && parsed2 && (result1 < result2 || room1.GetNumberAsInt()==2)) {
+            if (parsed1 && parsed2 && (result1 < result2 && room2.GetNumberAsInt()!=2)) {
                 m.modelRooms.Remove(room2);
                 foreach (MyLine line in m.modelLines)
                 {
@@ -786,7 +793,7 @@ namespace UIWPF {
             while (lastModel.Any())
             {
                 List<Model>currentModels = new List<Model>();
-                foreach (Model currentModel in currentModels)
+                foreach (Model currentModel in lastModel)
                 {
                     List<Model> allPossibleOneOmmits = OmmitOne(currentModel);
                     allModels.AddRange(allPossibleOneOmmits);
@@ -824,7 +831,33 @@ namespace UIWPF {
                     line.relatedRooms.Remove(room2);
                 }
                 m_mod2.modelRooms.Remove(room2);
-                    
+
+                foreach (MyLine line in m_mod2.modelLines)
+                {
+                    line.relatedRooms.Remove(room2);
+                }
+
+
+
+                List<MyLine> toremove = new List<MyLine>();
+                foreach (MyLine line in m_mod2.modelLines)
+                {
+                    if (!line.relatedRooms.Any())
+                    {
+                        toremove.Add(line);
+                    }
+                }
+
+                foreach (MyLine line in toremove)
+                {
+                    m_mod2.modelLines.Remove(line);
+                    foreach (var rooms in model.modelRooms)
+                    {
+                        rooms.BoundaryLines.Remove(line);
+                    }
+                    line.StartMyPoint.RelatedLines.Remove(line);
+                    line.EndMyPoint.RelatedLines.Remove(line);
+                }
                 returns.Add(m_mod2);
             }
 
@@ -848,9 +881,27 @@ namespace UIWPF {
             }
         }
 
+        private void LoadFirstModel()
+        {
+            string path2 = @"C:\Users\Master\Desktop\Models\Modell_1-2_6_04-17-16-821.json";
+            string path = @"C:\Users\Master\Desktop\Models\Modell_1-2-3-4-5-6-7-9_23_04-17-17-251.json";
+            using (StreamReader r = new StreamReader(path)) {
+                string json = r.ReadToEnd();
+                Model items = JsonConvert.DeserializeObject<Model>(json);
+                model = items;
+
+            }
+            Paint();
+        }
+
         private void Test_OnClick(object sender, RoutedEventArgs e) {
             AllCasesTestGeneration();
 
+        }
+
+        private void LoadModel_OnClick(object sender, RoutedEventArgs e)
+        {
+            LoadFirstModel();
         }
     }
 

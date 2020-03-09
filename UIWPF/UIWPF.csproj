@@ -61,6 +61,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ModelStorage.cs" />
+    <Compile Include="Model\_Geometry.cs" />
+    <Compile Include="Model\_Line.cs" />
+    <Compile Include="Model\_Model.cs" />
+    <Compile Include="Model\_Point.cs" />
+    <Compile Include="Model\_Room.cs" />
+    <Compile Include="Model\_RoomType.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Zoom.xaml.cs">
       <DependentUpon>Zoom.xaml</DependentUpon>

@@ -276,7 +276,7 @@ namespace WindowsFormsApp1 {
 
         public override string ToString()
         {
-            return String.Join(Environment.NewLine,GetBoundaryLinesSorted().Select(i=>i.ToString()));
+            return Name+"_"+Number+"_"+ String.Join(Environment.NewLine,GetBoundaryLinesSorted().Select(i=>i.ToString()));
         }
     }
 }
