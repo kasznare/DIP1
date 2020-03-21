@@ -4,6 +4,13 @@
              xmlns:local="clr-namespace:Diploma2"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="Selen/MetroWindowResources.xaml" />
          
-    </Application.Resources>
+          <ResourceDictionary Source="Selen/Resources.xaml" />
+          <ResourceDictionary Source="Selen/Styles.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+  </Application.Resources>
 </Application>

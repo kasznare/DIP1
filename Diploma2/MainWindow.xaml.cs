@@ -18,6 +18,12 @@ namespace Diploma2 {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
+
+        public string StatusMessage { get; set; }
+
+        private void Log(string message) {
+            if (message != null && message != StatusMessage) StatusMessage = message;
+        }
         public MainWindow() {
             InitializeComponent();
         }

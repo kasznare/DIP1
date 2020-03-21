@@ -21,8 +21,8 @@ namespace UIWPF.Services {
             _Room _Room = new _Room();
             _Room.Name = "FirstRoom";
             _Room.Number = 1;
-            _Room.AddLines( new List<_Line>(){line1,line2,line3,line4});
-            m.AddRoom(_Room);
+            _Room.lines( new List<_Line>(){line1,line2,line3,line4});
+            m.Add(_Room);
             return m;
         }
 

@@ -11,22 +11,13 @@ namespace UIWPF.Model {
             lines = newLines;
         }
 
-        private List<_Line> lines { get; set; }
-        public List<_Line> getLines => lines;
-        //public void AddLines(List<_Line> LinesToAdd)
-        //{
-        //    foreach (_Line line in LinesToAdd)
-        //    {
-        //        lines.Add(line);
-        //    }
-        //}
+        public _Room()
+        {
+            
+        }
 
-        //public void AddLine(_Line LineToAdd)
-        //{
-        //    lines.Add(LineToAdd);
-        //}
-        public _RoomType Type { get; set; }
-
+        public List<_Line> lines { get; set; }
+       
         public _Room DeepCopy() {
             List<_Line> newLines = new List<_Line>();
             foreach (_Line line in lines)
