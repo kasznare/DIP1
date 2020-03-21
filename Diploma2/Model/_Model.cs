@@ -8,7 +8,7 @@ using System.Windows.Documents;
 
 namespace UIWPF.Model {
     public class _Model {
-        private ObservableCollection<_Room> modelStorage { get; set; }
+        public ObservableCollection<_Room> modelStorage { get; set; }
 
         public _Model() {
             modelStorage = new ObservableCollection<_Room>();

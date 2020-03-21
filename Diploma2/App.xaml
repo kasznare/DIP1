@@ -7,10 +7,9 @@
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="Selen/MetroWindowResources.xaml" />
-         
-          <ResourceDictionary Source="Selen/Resources.xaml" />
-          <ResourceDictionary Source="Selen/Styles.xaml" />
-        </ResourceDictionary.MergedDictionaries>
+
+        <ResourceDictionary Source="Selen/Resources.xaml" />
+      </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
   </Application.Resources>
 </Application>

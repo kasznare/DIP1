@@ -60,32 +60,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Actions\CloseTabItemAction.cs" />
     <Compile Include="Services\ModelConfigurations.cs" />
-    <None Include="Selen\AppTreeStyle.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </None>
-    <Page Include="Selen\ButtonStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Selen\ComboBoxStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Selen\DataGridStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Selen\GroupBoxStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Selen\ListBoxStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -98,38 +73,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Selen\MenuStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Selen\MetroWindowResources.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Selen\Resources.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Selen\ScrollBarStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Selen\Styles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Selen\TabControlStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Selen\TextBoxStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Selen\WindowStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\_GeometryBase.cs" />
@@ -162,6 +105,28 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Downloads\source\source\Selen.Wpf.Core\Selen.Wpf.Core.csproj">
+      <Project>{c94c1bdd-11f9-4a3f-8929-86b1b67ae1d5}</Project>
+      <Name>Selen.Wpf.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Downloads\source\source\Selen.Wpf.DemoApplication\Selen.Wpf.DemoApplication.csproj">
+      <Project>{12a9479b-4807-47e2-b685-c5cee50e5b53}</Project>
+      <Name>Selen.Wpf.DemoApplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Downloads\source\source\Selen.Wpf.GenericAppTree.Contracts\Selen.Wpf.GenericAppTree.Contracts.csproj">
+      <Project>{fc32ab02-5705-48e0-bcfd-78eb6c137aeb}</Project>
+      <Name>Selen.Wpf.GenericAppTree.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Downloads\source\source\Selen.Wpf.GenericAppTree\Selen.Wpf.GenericAppTree.csproj">
+      <Project>{8615a3c0-298c-4b9d-8ffc-d5aca466523d}</Project>
+      <Name>Selen.Wpf.GenericAppTree</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Downloads\source\source\Selen.Wpf.SystemStyles\Selen.Wpf.SystemStyles.csproj">
+      <Project>{a468315f-fa11-4bc2-8e5f-ea3c48b24c74}</Project>
+      <Name>Selen.Wpf.SystemStyles</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
