@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace WindowsFormsApp1 {
     public class MyLine : IGeometry {
@@ -11,6 +13,8 @@ namespace WindowsFormsApp1 {
         public bool HasOpening { get; set; }
         public bool IsOpening { get; set; }
         public List<MyRoom> relatedRooms { get; set; }
+        [JsonIgnore]
+        [IgnoreDataMember]
         public List<MyPoint> relatedPoints { get; set; } 
         #endregion
         public MyLine(MyPoint startMyPoint, MyPoint endMyPoint) {

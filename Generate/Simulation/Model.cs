@@ -1271,20 +1271,26 @@ namespace WindowsFormsApp1 {
         public void CalculateAllRooms() {
             //itt kezelni lehet majd azt a kérdést, hogy van a line-hoz hozzárendelt olyan szoba is, ami nem létezik már
             modelRooms.Clear();
-            List<MyRoom> allRooms = new List<MyRoom>();
+            List<MyRoom> allUniqueRooms = new List<MyRoom>();
             foreach (MyLine line in modelLines) {
                 //minden modellinera megnézzük, hogy
                 //annak a hozzá tartozó relatedroomjaiban a room boundarylinejai kozott szerepel-e a myLine
-                foreach (MyRoom room in line.relatedRooms) {
-                    if (!allRooms.Contains(room)) {
-                        allRooms.Add(room);
+                foreach (MyRoom room in line.relatedRooms.ToList()) {
+                    if (!allUniqueRooms.Select(i=>i.Name).Contains(room.Name)) {
+                        allUniqueRooms.Add(room);
+                        if (!room.BoundaryLines.Contains(line)) {
+                            room.BoundaryLines.Add(line); //Logger.WriteLog($"CalculateAllRooms for myLine {myLine} {room.Name} ");
+                        }
                     }
-                    if (!room.BoundaryLines.Contains(line)) {
-                        room.BoundaryLines.Add(line); //Logger.WriteLog($"CalculateAllRooms for myLine {myLine} {room.Name} ");
+                    else
+                    {
+                        line.relatedRooms.Remove(room);
+                        line.relatedRooms.Add(allUniqueRooms.FirstOrDefault(i=>i.Name.Equals(room.Name)));
+                        allUniqueRooms.FirstOrDefault(i => i.Name.Equals(room.Name))?.BoundaryLines.Add(line);
                     }
                 }
             }
-            modelRooms = new ObservableCollection<MyRoom>(allRooms);//modelRooms.Distinct().ToList();
+            modelRooms = new ObservableCollection<MyRoom>(allUniqueRooms);//modelRooms.Distinct().ToList();
         }
         private List<List<MyLine>> CalculateContaining(MyLine line1, MyLine line2) {
 

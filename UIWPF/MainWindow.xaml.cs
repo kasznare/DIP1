@@ -654,7 +654,7 @@ namespace UIWPF {
 
             List<Model> newModelsBeforeStep = new List<Model>() { m };
 
-            List<Model> allModels = new List<Model>();
+            List<Model> allModels = new List<Model>(){m};
             int i = 0;
             while (newModelsBeforeStep.Any() && i <10) {
                 List<Model> newModelsInStep = new List<Model>();
@@ -798,6 +798,7 @@ namespace UIWPF {
                 {
                     List<Model> allPossibleOneOmmits = OmmitOne(currentModel);
                     allModels.AddRange(allPossibleOneOmmits);
+                    allModels.Add(currentModel);
                     currentModels.AddRange(allPossibleOneOmmits);
                 }
 
@@ -814,7 +815,8 @@ namespace UIWPF {
 
         private List<Model> OmmitOne(Model currentModel) {
             if (currentModel.modelRooms.Count<2) return new List<Model>();
-            List<Model> returns = new List<Model>();
+            List<Model> returns = new List<Model>(){};
+            GC.Collect();
             foreach (var room in currentModel.modelRooms)
             {
                 int missinglargest = 0;
@@ -884,14 +886,19 @@ namespace UIWPF {
 
         private void LoadFirstModel()
         {
-            string path2 = @"C:\Users\Master\Desktop\Models\Modell_1-2_6_04-17-16-821.json";
-            string path = @"C:\Users\Master\Desktop\Models\Modell_1-2-3-4-5-6-7-9_23_04-17-17-251.json";
+            string pat0h = @"C:\Users\Master\Desktop\Models\Modell_1-2_6_04-17-16-821.json";
+            string path = @"C:\Users\Master\Desktop\Models\Modell_1-2-3-4-5-6-7-8-9_24_07-05-17-014.json";
+            string path4 = @"C:\Users\Master\Desktop\Models\Modell_1-2_6_07-05-20-733.json";
+            string path5 = @"C:\Users\Master\Desktop\Models\Modell_1-2_7_07-05-17-584.json";
+            string path6 = @"C:\Users\Master\Desktop\Models\Modell_1-2-3-4_13_07-05-17-471.json";
             using (StreamReader r = new StreamReader(path)) {
                 string json = r.ReadToEnd();
                 Model items = JsonConvert.DeserializeObject<Model>(json);
                 model = items;
 
             }
+            model.CalculateAllRooms();
+            LoadDataFromModel();
             Paint();
         }
 
