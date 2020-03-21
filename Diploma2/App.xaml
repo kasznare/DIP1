@@ -5,11 +5,45 @@
              StartupUri="MainWindow.xaml">
     <Application.Resources>
       <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="Selen/MetroWindowResources.xaml" />
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.Core;component/MetroWindowResources.xaml" />
+        <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Tooltip.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Buttons.xaml" />-->
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.Core;component/Resources.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.SystemStyles;component/Styles.xaml" />
 
-        <ResourceDictionary Source="Selen/Resources.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.SystemStyles;component/ButtonStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.SystemStyles;component/WindowStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.SystemStyles;component/TabControlStyles.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.SystemStyles;component/MenuStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.SystemStyles;component/ListBoxStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.SystemStyles;component/TextBoxStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.SystemStyles;component/ScrollBarStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.SystemStyles;component/DataGridStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.SystemStyles;component/ComboBoxStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.SystemStyles;component/GroupBoxStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Selen.Wpf.SystemStyles;component/AppTreeStyle.xaml" />
       </ResourceDictionary.MergedDictionaries>
-      </ResourceDictionary>
+      <!--<Style TargetType="Button"
+               BasedOn="{StaticResource StandardButton}" />
+        <Style TargetType="Window"
+               BasedOn="{StaticResource StandardWindow}" />
+        --><!--<Style TargetType="TabControl" BasedOn="{StaticResource StandardTabControl}"/>--><!--
+        <Style TargetType="Menu"
+               BasedOn="{StaticResource StandardMenu}" />
+        <Style TargetType="ListBox"
+               BasedOn="{StaticResource StandardListBox}" />
+        <Style TargetType="ScrollBar"
+               BasedOn="{StaticResource StandardScrollBar}" />
+        <Style TargetType="TextBox"
+               BasedOn="{StaticResource StandardTextBox}" />
+        <Style TargetType="DataGrid"
+               BasedOn="{StaticResource StandardDataGrid}" />
+        <Style TargetType="ComboBox"
+               BasedOn="{StaticResource StandardComboBox}" />
+        <Style TargetType="GroupBox"
+               BasedOn="{StaticResource StandardGroupBox}" />-->
+    </ResourceDictionary>
   </Application.Resources>
 </Application>

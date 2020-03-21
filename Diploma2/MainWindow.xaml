@@ -5,19 +5,91 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Diploma2"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <DockPanel >
-        <StatusBar DockPanel.Dock="Bottom" Height="20">
+        Title="MainWindow"
+        Height="800"
+        Width="1000"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        WindowState="Maximized"
+        Background="Black">
+
+  <DockPanel>
+    <!--<StatusBar DockPanel.Dock="Bottom" Height="20">
           <Label Height="15"
                  Content="{Binding StatusMessage, Mode=OneWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged}"></Label>
-    </StatusBar>
-      <TabControl>
-        <TabItem Header='Graphics' 
-                 Name ='Graphics'>
-          <Grid></Grid>
-        </TabItem>
+    </StatusBar>-->
+    <TabControl>
+      <TabItem Header='Graphics'
+               Name='Graphics'>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width='1*'></ColumnDefinition>
+            <ColumnDefinition Width='4*'></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <StackPanel>
+            <Button Content="Load Model"
+                    Name="LoadModel"
+                    Click="LoadModel_OnClick"
+                    Height="50"></Button>
+            <Button Content="Move Line"
+                    Name="MoveLine"
+                    Click="MoveLine_OnClick"
+                    Height="50"></Button>
+            <Button Content="Exit"
+                    Name="Exit"
+                    Click="Exit_OnClick"
+                    Height="50"></Button>
+          </StackPanel>
+          <Canvas Name="testcanvas"
+                  Grid.Column="1">
+            <!--RenderTransformOrigin="0,0"-->
+            <Canvas.RenderTransform>
+              <TransformGroup>
+                <ScaleTransform ScaleY="-0.1"
+                                ScaleX="0.1" />
+              </TransformGroup>
+            </Canvas.RenderTransform>
+          </Canvas>
+        </Grid>
+      </TabItem>
       <TabItem Header='Data'
-               Name='Data'></TabItem>
-      </TabControl>
-    </DockPanel>
+               Name='Data'>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width='1*'></ColumnDefinition>
+            <ColumnDefinition Width='1*'></ColumnDefinition>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height='1*'></RowDefinition>
+            <RowDefinition Height='1*'></RowDefinition>
+          </Grid.RowDefinitions>
+          <StackPanel  Grid.Column="0"
+                       Grid.Row="0">
+            <TextBlock Text="Pontok"
+                       Foreground="White"
+                       FontSize="30"></TextBlock>
+            <DataGrid  Name="PointGrid"
+                       ItemsSource="{Binding Points, IsAsync=True, Mode=OneWay}"
+                       HorizontalAlignment="Stretch"
+                       Height="300"
+                       VerticalAlignment="Stretch"></DataGrid>
+
+          </StackPanel>
+          <StackPanel  Grid.Column="1"
+                         Grid.Row="0">
+              <TextBlock Text="Vonalak"
+                         Foreground="White"
+                         FontSize="30"></TextBlock>
+              <DataGrid  Name="LineGrid"
+                         ItemsSource="{Binding Lines, IsAsync=True, Mode=OneWay}"
+                         HorizontalAlignment="Stretch"
+                         Height="300"
+                         VerticalAlignment="Stretch"></DataGrid>
+
+</StackPanel>
+        </Grid>
+      </TabItem>
+    </TabControl>
+  </DockPanel>
 </Window>

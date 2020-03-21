@@ -76,17 +76,36 @@ namespace UIWPF.Model {
 
         }
 
-        private List<List<List<_Point>>> AllPoints() {
+        public List<List<List<_Point>>> AllPoints() {
             List<List<List<_Point>>> asd = modelStorage
                 .Select(i => i.lines.Select(j => new List<_Point>() { j.StartPoint, j.EndPoint }).ToList()).ToList();
             return asd;
         }
 
-        private List<List<_Line>> AllLines() {
+        public List<List<_Line>> AllLines() {
             List<List<_Line>> asd = modelStorage.Select(i => i.lines).ToList();
             return asd;
         }
+        public List<_Line> AllLinesFlat() {
+            List<_Line> lines = new List<_Line>();
+            foreach (_Room room in modelStorage)
+            {
+                lines.AddRange(room.lines);
+            }
+            return lines;
+        }
 
+        public List<_Point> AllPointsFlat() {
+            List<_Point> points = new List<_Point>();
+            foreach (_Room room in modelStorage) {
+                foreach (_Line line in room.lines)
+                {
+                    points.Add(line.StartPoint);
+                    points.Add(line.EndPoint);
+                }
+            }
+            return points;
+        }
 
         public void MoveLine(int distance, _Line lineToMove) {
             List<_Room> roomsThatCare = new List<_Room>(); //these rooms might need to change

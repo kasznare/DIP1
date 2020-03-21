@@ -26,5 +26,10 @@ namespace UIWPF.Model {
             }
             return new _Room(newLines);
         }
+
+        public List<_Point> GetBoundaryPointsSorted()
+        {
+            return new List<_Point>();
+        }
     }
 }
