@@ -19,7 +19,7 @@ namespace UIWPF.Model {
         }
 
         internal _Point Move(_Point moveVector) {
-            throw new NotImplementedException();
+            return new _Point(X-moveVector.X, Y-moveVector.Y);
         }
     }
 }

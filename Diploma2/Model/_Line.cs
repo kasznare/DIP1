@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace UIWPF.Model {
-    public class _Line : _Geometry {
+    public class _Line : _GeometryBase {
         public _Point StartPoint { get; set; }
         public _Point EndPoint { get; set; }
         public _Line(_Point startPoint, _Point endPoint) {

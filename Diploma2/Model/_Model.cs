@@ -8,19 +8,19 @@ using System.Windows.Documents;
 
 namespace UIWPF.Model {
     public class _Model {
-        public ObservableCollection<_Room> modelStorage { get; set; }
+        public ObservableCollection<_Room> rooms { get; set; }
 
         public _Model() {
-            modelStorage = new ObservableCollection<_Room>();
+            rooms = new ObservableCollection<_Room>();
         }
 
         public _Model(List<_Room> newRooms) {
-            modelStorage = new ObservableCollection<_Room>(newRooms);
+            rooms = new ObservableCollection<_Room>(newRooms);
         }
 
         public _Model DeepCopy() {
             List<_Room> newRooms = new List<_Room>();
-            foreach (_Room room in modelStorage) {
+            foreach (_Room room in rooms) {
                 newRooms.Add(room.DeepCopy());
             }
 
@@ -36,7 +36,7 @@ namespace UIWPF.Model {
         /// </summary>
         /// <param name="m"></param>
         private void RemoveRedundancy(_Model m) {
-            ObservableCollection<_Room> rooms = m.modelStorage;
+            ObservableCollection<_Room> rooms = m.rooms;
             //List<List<_Line>> lines = m.AllLines();
             //List<List<List<_Point>>> points = m.AllPoints();
             List<_Point> uniquePoints = new List<_Point>();
@@ -77,18 +77,18 @@ namespace UIWPF.Model {
         }
 
         public List<List<List<_Point>>> AllPoints() {
-            List<List<List<_Point>>> asd = modelStorage
+            List<List<List<_Point>>> asd = rooms
                 .Select(i => i.lines.Select(j => new List<_Point>() { j.StartPoint, j.EndPoint }).ToList()).ToList();
             return asd;
         }
 
         public List<List<_Line>> AllLines() {
-            List<List<_Line>> asd = modelStorage.Select(i => i.lines).ToList();
+            List<List<_Line>> asd = rooms.Select(i => i.lines).ToList();
             return asd;
         }
         public List<_Line> AllLinesFlat() {
             List<_Line> lines = new List<_Line>();
-            foreach (_Room room in modelStorage)
+            foreach (_Room room in rooms)
             {
                 lines.AddRange(room.lines);
             }
@@ -97,7 +97,7 @@ namespace UIWPF.Model {
 
         public List<_Point> AllPointsFlat() {
             List<_Point> points = new List<_Point>();
-            foreach (_Room room in modelStorage) {
+            foreach (_Room room in rooms) {
                 foreach (_Line line in room.lines)
                 {
                     points.Add(line.StartPoint);
@@ -109,7 +109,7 @@ namespace UIWPF.Model {
 
         public void MoveLine(int distance, _Line lineToMove) {
             List<_Room> roomsThatCare = new List<_Room>(); //these rooms might need to change
-            roomsThatCare = modelStorage.Where(i => i.lines.Contains(lineToMove)).ToList();
+            roomsThatCare = rooms.Where(i => i.lines.Contains(lineToMove)).ToList();
             if (!roomsThatCare.Any()) throw new Exception("LineIsMissing");
 
             _Line movedLine = lineToMove.DeepCopy();
@@ -120,7 +120,7 @@ namespace UIWPF.Model {
             _Line l2 = new _Line(lineToMove.EndPoint, lineToMove.EndPoint.Move(moveVector));
 
             // the lines are movedline, l1, l2
-            foreach (_Room room in modelStorage) {
+            foreach (_Room room in rooms) {
                 foreach (_Line line in room.lines) {
                     if (line.IsTheSame(l1)) l1 = line;
                     if (line.IsTheSame(l2)) l2 = line;
@@ -152,6 +152,10 @@ namespace UIWPF.Model {
             //we still need to find if there are any rooms just touching the line.
 
 
+        }
+
+        internal void MoveLine() {
+            MoveLine(10,rooms.First().lines.First());
         }
     }
 }

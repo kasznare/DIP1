@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace UIWPF.Model {
-    public class _Room:_Geometry {
+    public class _Room:_GeometryBase {
         public _Room(List<_Line> newLines)
         {
             lines = newLines;

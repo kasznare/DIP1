@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using UIWPF.Model;
+using UIWPF.Services;
 using ShapeLine = System.Windows.Shapes.Line;
 
 namespace Diploma2 {
@@ -25,18 +27,27 @@ namespace Diploma2 {
             if (message != null && message != StatusMessage) StatusMessage = message;
         }
         public MainWindow() {
-            model = new _Model();
             Points = new ObservableCollection<_Point>();
             Lines = new ObservableCollection<_Line>();
             Rooms = new ObservableCollection<_Room>();
             InitializeComponent();
+            LoadModels();
             Paint();
         }
+
+        private void LoadModels() {
+            model = ModelConfigurations.InitSimplestModel();
+            Points = new ObservableCollection<_Point>(model.AllPointsFlat());
+            Lines = new ObservableCollection<_Line>(model.AllLinesFlat());
+            Rooms = model.rooms;
+            LineGrid.ItemsSource = Lines;
+            PointGrid.ItemsSource = Points;
+            RoomGrid.ItemsSource = Rooms;
+        }
+
         private void Paint() {
             isPainting = true;
-            //LoadDataFromModel();
             testcanvas.Children.Clear();
-            //DrawAxis(testcanvas);
 
             var allLinesFlat = model.AllLinesFlat();
             for (var i = 0; i < allLinesFlat.Count; i++) {
@@ -62,7 +73,7 @@ namespace Diploma2 {
 
             List<_Point> allPointsFlat = model.AllPointsFlat();
             for (var i = 0; i < allPointsFlat.Count; i++) {
-               _Point point = allPointsFlat[i];
+                _Point point = allPointsFlat[i];
                 ShapeLine _line = new ShapeLine();
 
                 var solidColorBrush = new SolidColorBrush(Color.FromArgb(90, 255, 0, 0));
@@ -101,15 +112,39 @@ namespace Diploma2 {
         }
 
         private void LoadModel_OnClick(object sender, RoutedEventArgs e) {
-            throw new NotImplementedException();
+            LoadModels();
         }
 
         private void MoveLine_OnClick(object sender, RoutedEventArgs e) {
-            throw new NotImplementedException();
+            model.MoveLine();
         }
 
         private void Exit_OnClick(object sender, RoutedEventArgs e) {
             this.Close();
+        }
+
+        private void Paint_OnClick(object sender, RoutedEventArgs e) {
+            Paint();
+        }
+
+        private void MainWindow_OnKeyDown(object sender, KeyEventArgs e) {
+            switch (e.Key) {
+                case Key.A:
+                    Dispatcher.BeginInvoke((Action)(() => TabControl.SelectedIndex = 0));
+                    break;
+                case Key.D:
+                    Dispatcher.BeginInvoke((Action)(() => TabControl.SelectedIndex = 1));
+                    break;
+                case Key.M:
+                    model.MoveLine();
+                    break;
+                case Key.L:
+                    LoadModels();
+                    break;
+                case Key.Escape:
+                    this.Close();
+                    break;
+            }
         }
     }
 }

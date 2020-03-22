@@ -1,12 +1,12 @@
 ﻿using System;
 
 namespace UIWPF.Model {
-    public class _Geometry {
+    public class _GeometryBase {
         public string Name { get; set; }
         public int Number { get; set; }
         public Guid Guid { get; set; }
 
-        public _Geometry()
+        public _GeometryBase()
         {
             Name = "";
             Number = -1;

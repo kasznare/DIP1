@@ -12,6 +12,7 @@
         ResizeMode="NoResize"
         WindowStyle="None"
         WindowState="Maximized"
+        KeyDown="MainWindow_OnKeyDown"
         Background="Black">
 
   <DockPanel>
@@ -19,7 +20,7 @@
           <Label Height="15"
                  Content="{Binding StatusMessage, Mode=OneWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged}"></Label>
     </StatusBar>-->
-    <TabControl>
+    <TabControl Name="TabControl">
       <TabItem Header='Graphics'
                Name='Graphics'>
         <Grid>
@@ -36,6 +37,10 @@
                     Name="MoveLine"
                     Click="MoveLine_OnClick"
                     Height="50"></Button>
+            <Button Content="Paint"
+                    Name="PaintCanvas"
+                    Click="Paint_OnClick"
+                    Height="50"></Button>
             <Button Content="Exit"
                     Name="Exit"
                     Click="Exit_OnClick"
@@ -46,8 +51,8 @@
             <!--RenderTransformOrigin="0,0"-->
             <Canvas.RenderTransform>
               <TransformGroup>
-                <ScaleTransform ScaleY="-0.1"
-                                ScaleX="0.1" />
+                <ScaleTransform ScaleY="1"
+                                ScaleX="1" />
               </TransformGroup>
             </Canvas.RenderTransform>
           </Canvas>
@@ -88,6 +93,18 @@
                          VerticalAlignment="Stretch"></DataGrid>
 
 </StackPanel>
+          <StackPanel  Grid.Column="0"
+                       Grid.Row="1">
+            <TextBlock Text="Szobák"
+                       Foreground="White"
+                       FontSize="30"></TextBlock>
+            <DataGrid  Name="RoomGrid"
+                       ItemsSource="{Binding Lines, IsAsync=True, Mode=OneWay}"
+                       HorizontalAlignment="Stretch"
+                       Height="300"
+                       VerticalAlignment="Stretch"></DataGrid>
+
+          </StackPanel>
         </Grid>
       </TabItem>
     </TabControl>

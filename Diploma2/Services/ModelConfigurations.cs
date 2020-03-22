@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using UIWPF.Model;
 
 namespace UIWPF.Services {
-    public class ModelConfigurations {
-        public _Model InitSimplestModel()
+    public static class ModelConfigurations {
+        public static _Model InitSimplestModel()
         {
             _Model m = new _Model();
             _Point p1 = new _Point(100, 100);
@@ -22,7 +22,7 @@ namespace UIWPF.Services {
             _Room.Name = "FirstRoom";
             _Room.Number = 1;
             _Room.lines = ( new List<_Line>(){line1,line2,line3,line4});
-            m.modelStorage.Add(_Room);
+            m.rooms.Add(_Room);
             return m;
         }
 
