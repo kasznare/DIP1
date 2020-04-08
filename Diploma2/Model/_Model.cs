@@ -65,7 +65,7 @@ namespace UIWPF.Model {
                 foreach (_Line line in room.lines) {
                     if (uniqueLines.Contains(line)) {
                         room.lines.Remove(line);
-                        _Line @where = uniqueLines.Where(i => i.IsTheSame(line)) as _Line;
+                        _Line @where = uniqueLines.FirstOrDefault(i => i.IsTheSame(line)) as _Line;
                         room.lines.Add(@where);
                     }
                     else {
@@ -107,20 +107,23 @@ namespace UIWPF.Model {
             return points;
         }
 
+        private int moveStepsCount = 0;
+
         public void MoveLine(int distance, _Line lineToMove) {
-            List<_Room> roomsThatCare = new List<_Room>(); //these rooms might need to change
-            roomsThatCare = rooms.Where(i => i.lines.Contains(lineToMove)).ToList();
-            if (!roomsThatCare.Any()) throw new Exception("LineIsMissing");
+            List<_Room> roomsThatCare = new List<_Room>();                           //these rooms might need to change
+            roomsThatCare = rooms.Where(i => i.lines.Contains(lineToMove)).ToList(); //the rooms need to have the line to care
+            if (!roomsThatCare.Any()) throw new Exception("LineIsMissing");   //if there are no rooms, inconsistent state
 
-            _Line movedLine = lineToMove.DeepCopy();
-            movedLine.Name = "Moved";
-            _Point moveVector = new _Point(10, 10);
-            movedLine.Move(moveVector);
+            _Line movedLine = lineToMove.DeepCopy();                                 //first we copy the line we need to move
+            movedLine.Name = $"Moved_{moveStepsCount}";                              //this is for debugging
+            _Point moveVector = new _Point(0, 10);                               //this was before we knew the normal
+            moveVector = movedLine.GetNV(true) * distance;                //we scale it up
+            movedLine.Move(moveVector);                                              //so we moved the copy (why not the actual?)
 
-            _Line l1 = new _Line(lineToMove.StartPoint, lineToMove.StartPoint.Move(moveVector));
-            l1.Name = "NewSmallStart";
+            _Line l1 = new _Line(lineToMove.StartPoint, lineToMove.StartPoint.Move(moveVector)); 
+            l1.Name = $"NewSmallStart_{moveStepsCount}";
             _Line l2 = new _Line(lineToMove.EndPoint, lineToMove.EndPoint.Move(moveVector));
-            l2.Name = "NewSmallEnd";
+            l2.Name = $"NewSmallEnd_{moveStepsCount}";
 
             // the lines are movedline, l1, l2
             foreach (_Room room in rooms) {
@@ -154,7 +157,7 @@ namespace UIWPF.Model {
 
             //we still need to find if there are any rooms just touching the line.
 
-
+            moveStepsCount++;
         }
 
         internal void MoveLine() {

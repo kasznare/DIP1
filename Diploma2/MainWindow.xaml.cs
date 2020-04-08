@@ -48,7 +48,7 @@ namespace Diploma2 {
             for (var i = 0; i < allLinesFlat.Count; i++) {
                 _Line line = allLinesFlat[i];
                 ShapeLine _line = new ShapeLine();
-                Brush solidColorBrush = new SolidColorBrush(Color.FromArgb(95, 0, 0, 0));
+                Brush solidColorBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
                 solidColorBrush.Opacity = 0.5;
                 if (i.Equals(selectedLineIndex)) {
                     solidColorBrush = Brushes.Yellow;

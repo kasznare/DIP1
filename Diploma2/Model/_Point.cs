@@ -22,6 +22,10 @@ namespace UIWPF.Model {
             return new _Point(X-moveVector.X, Y-moveVector.Y);
         }
 
+        public static _Point operator *(_Point a, double b) {
+            return new _Point(a.X * b, a.Y * b);
+        }
+
         public override bool Equals(object obj)
         {
             //Check for null and compare run-time types.
