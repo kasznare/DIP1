@@ -37,12 +37,7 @@ namespace Diploma2 {
 
         private void LoadModels() {
             model = ModelConfigurations.InitSimplestModel();
-            Points = new ObservableCollection<_Point>(model.AllPointsFlat());
-            Lines = new ObservableCollection<_Line>(model.AllLinesFlat());
-            Rooms = model.rooms;
-            LineGrid.ItemsSource = Lines;
-            PointGrid.ItemsSource = Points;
-            RoomGrid.ItemsSource = Rooms;
+            LoadDataFromModel();
         }
 
         private void Paint() {
@@ -117,6 +112,17 @@ namespace Diploma2 {
 
         private void MoveLine_OnClick(object sender, RoutedEventArgs e) {
             model.MoveLine();
+            LoadDataFromModel();
+        }
+
+        private void LoadDataFromModel()
+        {
+            Points = new ObservableCollection<_Point>(model.AllPointsFlat());
+            Lines = new ObservableCollection<_Line>(model.AllLinesFlat());
+            Rooms = model.rooms;
+            LineGrid.ItemsSource = Lines;
+            PointGrid.ItemsSource = Points;
+            RoomGrid.ItemsSource = Rooms;
         }
 
         private void Exit_OnClick(object sender, RoutedEventArgs e) {

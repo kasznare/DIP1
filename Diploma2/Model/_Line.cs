@@ -14,33 +14,35 @@ namespace UIWPF.Model {
         }
 
         public bool IsTheSame(_Line lineToMove) {
-            if (lineToMove.StartPoint.XY == this.StartPoint.XY 
-                && lineToMove.EndPoint.XY == this.EndPoint.XY) return true;
-            if (lineToMove.StartPoint.XY == this.EndPoint.XY 
-                && lineToMove.EndPoint.XY == this.StartPoint.XY) return true;
+            if (lineToMove.StartPoint.Equals( this.StartPoint)
+                && lineToMove.EndPoint.Equals( this.EndPoint) )return true;
+            if (lineToMove.StartPoint.Equals( this.EndPoint)
+                && lineToMove.EndPoint.Equals( this.StartPoint)) return true;
             return false;
         }
 
         public bool Connects(_Line lineToMove) {
-            if (lineToMove.StartPoint.XY == this.StartPoint.XY) return true;
-            if (lineToMove.StartPoint.XY == this.EndPoint.XY) return true;
-            if (lineToMove.EndPoint.XY == this.StartPoint.XY) return true;
-            if (lineToMove.EndPoint.XY == this.EndPoint.XY) return true;
+            if (lineToMove.StartPoint.Equals( this.StartPoint)) return true;
+            if (lineToMove.StartPoint.Equals( this.EndPoint)) return true;
+            if (lineToMove.EndPoint.Equals( this.StartPoint)) return true;
+            if (lineToMove.EndPoint.Equals( this.EndPoint)) return true;
             return false;
         }
         public _Point ConnectsPoint(_Line lineToMove) {
-            if (lineToMove.StartPoint.XY == this.StartPoint.XY) return lineToMove.StartPoint;
-            if (lineToMove.StartPoint.XY == this.EndPoint.XY) return lineToMove.StartPoint;
-            if (lineToMove.EndPoint.XY == this.StartPoint.XY) return lineToMove.EndPoint;
-            if (lineToMove.EndPoint.XY == this.EndPoint.XY) return lineToMove.EndPoint;
+            if (lineToMove.StartPoint.Equals(this.StartPoint)) return lineToMove.StartPoint;
+            if (lineToMove.StartPoint.Equals(this.EndPoint)) return lineToMove.StartPoint;
+            if (lineToMove.EndPoint.Equals(this.StartPoint)) return lineToMove.EndPoint;
+            if (lineToMove.EndPoint.Equals(this.EndPoint)) return lineToMove.EndPoint;
             return null;
         }
 
         internal void Move(_Point moveVector) {
-            EndPoint.Move(moveVector);
-            StartPoint.Move(moveVector);
+            EndPoint = EndPoint.Move(moveVector);
+            StartPoint = StartPoint.Move(moveVector);
+        }
 
-
+        public override string ToString() {
+            return $"From({StartPoint.X},{StartPoint.Y}) to ({EndPoint.X},{EndPoint.Y})";
         }
     }
 }

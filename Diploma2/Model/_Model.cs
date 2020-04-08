@@ -113,11 +113,14 @@ namespace UIWPF.Model {
             if (!roomsThatCare.Any()) throw new Exception("LineIsMissing");
 
             _Line movedLine = lineToMove.DeepCopy();
+            movedLine.Name = "Moved";
             _Point moveVector = new _Point(10, 10);
             movedLine.Move(moveVector);
 
             _Line l1 = new _Line(lineToMove.StartPoint, lineToMove.StartPoint.Move(moveVector));
+            l1.Name = "NewSmallStart";
             _Line l2 = new _Line(lineToMove.EndPoint, lineToMove.EndPoint.Move(moveVector));
+            l2.Name = "NewSmallEnd";
 
             // the lines are movedline, l1, l2
             foreach (_Room room in rooms) {
@@ -129,10 +132,10 @@ namespace UIWPF.Model {
 
             foreach (_Room room in roomsThatCare) {
                 room.lines.Remove(lineToMove);
-                foreach (_Line getLine in room.lines) {
+                foreach (_Line getLine in room.lines.ToList()) {
                     _Point p = getLine.ConnectsPoint(lineToMove);
-                    if (p != null && p == lineToMove.StartPoint) room.lines.Add(l1);
-                    if (p != null && p == lineToMove.EndPoint) room.lines.Add(l2);
+                    if (p != null && p.Equals(lineToMove.StartPoint)) room.lines.Add(l1);
+                    if (p != null && p.Equals(lineToMove.EndPoint)) room.lines.Add(l2);
 
                 }
                 List<_Line> l = room.lines.Where(i => i.Connects(lineToMove)).ToList();

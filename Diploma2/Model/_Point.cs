@@ -21,5 +21,17 @@ namespace UIWPF.Model {
         internal _Point Move(_Point moveVector) {
             return new _Point(X-moveVector.X, Y-moveVector.Y);
         }
+
+        public override bool Equals(object obj)
+        {
+            //Check for null and compare run-time types.
+            if ((obj == null) || !this.GetType().Equals(obj.GetType())) {
+                return false;
+            }
+            else {
+                _Point p = (_Point)obj;
+                return (X == p.X) && (Y == p.Y);
+            }
+        }
     }
 }
