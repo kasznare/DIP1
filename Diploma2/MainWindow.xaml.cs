@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Diploma2.Annotations;
 using UIWPF.Model;
 using UIWPF.Services;
 using ShapeLine = System.Windows.Shapes.Line;
@@ -14,15 +17,50 @@ namespace Diploma2 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window {
+    public partial class MainWindow : Window, INotifyPropertyChanged {
         private bool isPainting;
         private int selectedLineIndex = -1;
-        private int selectedPointIndex = -1;
+        public int selectedPointIndex = -1;
         public string StatusMessage { get; set; }
         public ObservableCollection<_Point> Points { get; set; }
         public ObservableCollection<_Line> Lines { get; set; }
         public ObservableCollection<_Room> Rooms { get; set; }
         public _Model model { get; set; }
+
+        public int SelectedLineIndex
+        {
+            get
+            {
+                return selectedLineIndex;
+
+            }
+            set
+            {
+                selectedLineIndex = value;
+                OnPropertyChanged();
+                MessageBox.Show(value.ToString());
+                Paint();
+            }
+        }
+
+        public int SelectedPointIndex
+        {
+            get
+            {
+                return selectedPointIndex;
+
+            }
+            set
+            {
+                selectedPointIndex = value;
+                MessageBox.Show(value.ToString());
+                OnPropertyChanged();
+                Paint();
+
+
+            }
+        }
+
         private void Log(string message) {
             if (message != null && message != StatusMessage) StatusMessage = message;
         }
@@ -36,7 +74,8 @@ namespace Diploma2 {
         }
 
         private void LoadModels() {
-            model = ModelConfigurations.InitSimplestModel();
+            //model = ModelConfigurations.InitSimplestModel();
+            model = ModelConfigurations.InitSimpleModel();
             LoadDataFromModel();
         }
 
@@ -50,7 +89,7 @@ namespace Diploma2 {
                 ShapeLine _line = new ShapeLine();
                 Brush solidColorBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
                 solidColorBrush.Opacity = 0.5;
-                if (i.Equals(selectedLineIndex)) {
+                if (i.Equals(SelectedLineIndex)) {
                     solidColorBrush = Brushes.Yellow;
                 }
 
@@ -73,7 +112,7 @@ namespace Diploma2 {
 
                 var solidColorBrush = new SolidColorBrush(Color.FromArgb(90, 255, 0, 0));
                 solidColorBrush.Opacity = 0.5;
-                if (i.Equals(selectedPointIndex)) {
+                if (i.Equals(SelectedPointIndex)) {
                     solidColorBrush = Brushes.GreenYellow;
                 }
 
@@ -152,6 +191,14 @@ namespace Diploma2 {
                     this.Close();
                     break;
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

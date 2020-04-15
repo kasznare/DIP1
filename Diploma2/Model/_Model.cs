@@ -140,24 +140,23 @@ namespace UIWPF.Model {
                     _Point p = getLine.ConnectsPoint(lineToMove);
                     if (p != null && p.Equals(lineToMove.StartPoint))                 //there is common point with startpoint, so this line touched the old startpoint
                     {                                                                 //we need to either move it, if it is parallel, or keep it if it is merőleges
-                        //_Line copy = getLine.DeepCopy();
-                        if (getLine.StartPoint.Equals(p))
+                        //THE LINE SHOULD MOVE - BOTH DIRECTIONS - MOVE P WITH MOVEVECTOR
+                        if (getLine.StartPoint.Equals(p)//&&
+                            //Equals(getLine.GetNV(true), lineToMove.GetNV(true)) || Equals(getLine.GetNV(true)*-1, lineToMove.GetNV(true))
+                        )//párhuzamos)
                         {
                             getLine.StartPoint=getLine.StartPoint.Move(moveVector);
                         }
-
                         if (getLine.EndPoint.Equals(p))
                         {
                             getLine.EndPoint= getLine.EndPoint.Move(moveVector);
                         }
-                        //THE LINE SHOULD MOVE - BOTH DIRECTIONS - MOVE P WITH MOVEVECTOR
                         
-                        //room.lines.Add(l1);
+                        
                     }
 
                     if (p != null && p.Equals(lineToMove.EndPoint))
                     {
-                        //room.lines.Add(l2);
                         if (getLine.StartPoint.Equals(p)) {
                             getLine.StartPoint = getLine.StartPoint.Move(moveVector);
                         }
@@ -168,7 +167,7 @@ namespace UIWPF.Model {
                     }
 
                 }
-                List<_Line> l = room.lines.Where(i => i.Connects(lineToMove)).ToList();
+                //List<_Line> l = room.lines.Where(i => i.Connects(lineToMove)).ToList();
 
                 room.lines.Add(movedLine); //this detached the model
             }
@@ -194,10 +193,29 @@ namespace UIWPF.Model {
             }
 
             //ROOMS FILLED WITH L1 OR L2 IF BOUNDARYLINES ORDERING THROW EXCEPTION
-
             //ROOMS MIGHT NEED TO REMOVE PART OF L1 -- BOTTOM LEFT
+            //szobák jatítsák ki magukat - l1 vagy l2 melyikkel lenne teljes
 
-            //szobák javítsák ki magukat - l1 vagy l2 melyikkel lenne teljes
+            foreach (_Room room in rooms)
+            {
+                bool isComplete = room.CanGetBoundarySorted();
+                if (!isComplete)
+                {
+                    room.lines.Add(l1);
+                    isComplete = room.CanGetBoundarySorted(); //the rooms might be with overlapping lines at this point, we need to handle that
+                    if (!isComplete)
+                    {
+                        room.lines.Remove(l1);
+                        room.lines.Add(l2);
+                        isComplete = room.CanGetBoundarySorted();
+                        if (!isComplete)
+                        {
+                            room.lines.Remove(l2);
+                            throw new Exception("room cannot be fixed in move step");
+                        }
+                    }
+                }
+            }
 
 
             GC.Collect();
@@ -216,6 +234,22 @@ namespace UIWPF.Model {
 
             moveStepsCount++;
         }
+
+        //TODO: implement
+        public void SplitLine()
+        {
+            SplitLine(0.50, rooms.First().lines.First());
+        }
+        public void SplitLine(double percentage, _Line lineToSplit)
+        {
+
+        }
+        //TODO: implement
+        public void SwitchRoom()
+        {
+
+        }
+
 
         internal void MoveLine() {
             MoveLine(10,rooms.First().lines.First());

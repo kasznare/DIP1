@@ -68,6 +68,7 @@
               <DataGrid  Name="PointGrid"
                          AutoGenerateColumns="False"
                          ItemsSource="{Binding Points, IsAsync=True, Mode=OneWay}"
+                         SelectedIndex="{Binding selectedPointIndex, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"
                          Height="300"
                          VerticalAlignment="Stretch">
@@ -130,6 +131,7 @@
                          ItemsSource="{Binding Lines, IsAsync=True, Mode=OneWay}"
                          HorizontalAlignment="Stretch"
                          Height="300"
+                         SelectedIndex="{Binding selectedLineIndex, UpdateSourceTrigger=PropertyChanged}"
                          VerticalAlignment="Stretch">
 
                 <DataGrid.Columns>
