@@ -52,6 +52,12 @@ namespace UIWPF.Model {
                 return Normalize(p);
             }
         }
+
+        public bool isParallel(_Line line)
+        {
+            return false;
+        }
+
         public _Line Normalize(_Line _Line) {
            _Point sMyPoint = _Line.StartPoint;
            _Point eMyPoint = _Line.EndPoint;

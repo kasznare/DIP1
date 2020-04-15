@@ -26,7 +26,8 @@
         <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width='1*'></ColumnDefinition>
-            <ColumnDefinition Width='4*'></ColumnDefinition>
+            <ColumnDefinition Width='2*'></ColumnDefinition>
+            <ColumnDefinition Width='2*'></ColumnDefinition>
           </Grid.ColumnDefinitions>
           <StackPanel>
             <Button Content="Load Model"
@@ -47,15 +48,155 @@
                     Height="50"></Button>
           </StackPanel>
           <Canvas Name="testcanvas"
-                  Grid.Column="1">
+                  Margin='32,444,368,13'
+                  Grid.ColumnSpan='2'
+                  Grid.Column='1'>
             <!--RenderTransformOrigin="0,0"-->
             <Canvas.RenderTransform>
               <TransformGroup>
-                <ScaleTransform ScaleY="1"
+                <ScaleTransform ScaleY="-1"
                                 ScaleX="1" />
               </TransformGroup>
             </Canvas.RenderTransform>
           </Canvas>
+          <StackPanel Grid.Column="2">
+            <StackPanel  Grid.Column="2"
+                         Grid.Row="0">
+              <TextBlock Text="Pontok"
+                         Foreground="White"
+                         FontSize="30"></TextBlock>
+              <DataGrid  Name="PointGrid"
+                         AutoGenerateColumns="False"
+                         ItemsSource="{Binding Points, IsAsync=True, Mode=OneWay}"
+                         HorizontalAlignment="Stretch"
+                         Height="300"
+                         VerticalAlignment="Stretch">
+                <DataGrid.Columns>
+                  <DataGridTemplateColumn Header="X"
+                                          Width="65">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding X}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="Y"
+                                          Width="50">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Y}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="Name"
+                                          Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Name}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="Number"
+                                          Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Number}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="Guid"
+                                          Width="300">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Guid}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                </DataGrid.Columns>
+              </DataGrid>
+
+            </StackPanel>
+            <StackPanel  Grid.Column="2"
+                         Grid.Row="0">
+              <TextBlock Text="Vonalak"
+                         Foreground="White"
+                         FontSize="30"></TextBlock>
+              <DataGrid  Name="LineGrid"
+                         ItemsSource="{Binding Lines, IsAsync=True, Mode=OneWay}"
+                         HorizontalAlignment="Stretch"
+                         Height="300"
+                         VerticalAlignment="Stretch">
+
+                <DataGrid.Columns>
+                  <DataGridTemplateColumn Header="StartPoint"
+                                          Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding StartPoint}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="EndPoint"
+                                          Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding EndPoint}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="Name"
+                                          Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Name}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="Number"
+                                          Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Number}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="Guid"
+                                          Width="300">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Guid}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                </DataGrid.Columns>
+              </DataGrid>
+
+            </StackPanel>
+            <StackPanel  Grid.Column="2"
+                         Grid.Row="1">
+              <TextBlock Text="Szobák"
+                         Foreground="White"
+                         FontSize="30"></TextBlock>
+              <DataGrid  Name="RoomGrid"
+                         ItemsSource="{Binding Lines, IsAsync=True, Mode=OneWay}"
+                         HorizontalAlignment="Stretch"
+                         Height="300"
+                         VerticalAlignment="Stretch"></DataGrid>
+
+            </StackPanel>
+
+          </StackPanel>
+
         </Grid>
       </TabItem>
       <TabItem Header='Data'
@@ -69,42 +210,7 @@
             <RowDefinition Height='1*'></RowDefinition>
             <RowDefinition Height='1*'></RowDefinition>
           </Grid.RowDefinitions>
-          <StackPanel  Grid.Column="0"
-                       Grid.Row="0">
-            <TextBlock Text="Pontok"
-                       Foreground="White"
-                       FontSize="30"></TextBlock>
-            <DataGrid  Name="PointGrid"
-                       ItemsSource="{Binding Points, IsAsync=True, Mode=OneWay}"
-                       HorizontalAlignment="Stretch"
-                       Height="300"
-                       VerticalAlignment="Stretch"></DataGrid>
 
-          </StackPanel>
-          <StackPanel  Grid.Column="1"
-                         Grid.Row="0">
-              <TextBlock Text="Vonalak"
-                         Foreground="White"
-                         FontSize="30"></TextBlock>
-              <DataGrid  Name="LineGrid"
-                         ItemsSource="{Binding Lines, IsAsync=True, Mode=OneWay}"
-                         HorizontalAlignment="Stretch"
-                         Height="300"
-                         VerticalAlignment="Stretch"></DataGrid>
-
-</StackPanel>
-          <StackPanel  Grid.Column="0"
-                       Grid.Row="1">
-            <TextBlock Text="Szobák"
-                       Foreground="White"
-                       FontSize="30"></TextBlock>
-            <DataGrid  Name="RoomGrid"
-                       ItemsSource="{Binding Lines, IsAsync=True, Mode=OneWay}"
-                       HorizontalAlignment="Stretch"
-                       Height="300"
-                       VerticalAlignment="Stretch"></DataGrid>
-
-          </StackPanel>
         </Grid>
       </TabItem>
     </TabControl>

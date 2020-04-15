@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
+using System.Windows.Shapes;
 
 namespace UIWPF.Model {
     public class _Model {
@@ -125,8 +126,8 @@ namespace UIWPF.Model {
             _Line l2 = new _Line(lineToMove.EndPoint, lineToMove.EndPoint.Move(moveVector));
             l2.Name = $"NewSmallEnd_{moveStepsCount}";
 
-            // the lines are movedline, l1, l2
-            foreach (_Room room in rooms) {
+           
+            foreach (_Room room in rooms) {                                          // the lines are movedline, l1, l2 already existed, then find them
                 foreach (_Line line in room.lines) {
                     if (line.IsTheSame(l1)) l1 = line;
                     if (line.IsTheSame(l2)) l2 = line;
@@ -135,10 +136,36 @@ namespace UIWPF.Model {
 
             foreach (_Room room in roomsThatCare) {
                 room.lines.Remove(lineToMove);
-                foreach (_Line getLine in room.lines.ToList()) {
+                foreach (_Line getLine in room.lines.ToList()) {                      //is tolist legal? is this same object references?
                     _Point p = getLine.ConnectsPoint(lineToMove);
-                    if (p != null && p.Equals(lineToMove.StartPoint)) room.lines.Add(l1);
-                    if (p != null && p.Equals(lineToMove.EndPoint)) room.lines.Add(l2);
+                    if (p != null && p.Equals(lineToMove.StartPoint))                 //there is common point with startpoint, so this line touched the old startpoint
+                    {                                                                 //we need to either move it, if it is parallel, or keep it if it is merőleges
+                        //_Line copy = getLine.DeepCopy();
+                        if (getLine.StartPoint.Equals(p))
+                        {
+                            getLine.StartPoint=getLine.StartPoint.Move(moveVector);
+                        }
+
+                        if (getLine.EndPoint.Equals(p))
+                        {
+                            getLine.EndPoint= getLine.EndPoint.Move(moveVector);
+                        }
+                        //THE LINE SHOULD MOVE - BOTH DIRECTIONS - MOVE P WITH MOVEVECTOR
+                        
+                        //room.lines.Add(l1);
+                    }
+
+                    if (p != null && p.Equals(lineToMove.EndPoint))
+                    {
+                        //room.lines.Add(l2);
+                        if (getLine.StartPoint.Equals(p)) {
+                            getLine.StartPoint = getLine.StartPoint.Move(moveVector);
+                        }
+
+                        if (getLine.EndPoint.Equals(p)) {
+                            getLine.EndPoint = getLine.EndPoint.Move(moveVector);
+                        }
+                    }
 
                 }
                 List<_Line> l = room.lines.Where(i => i.Connects(lineToMove)).ToList();
@@ -146,14 +173,44 @@ namespace UIWPF.Model {
                 room.lines.Add(movedLine); //this detached the model
             }
 
+            //MIGHT BE UNNESSESARY
+            _Line l5 = null;                                                             //lets start with if the line already existed fully
+            foreach (_Line line in AllLinesFlat())
+            {
+                if (line.Guid!= movedLine.Guid && line.IsTheSame(movedLine))
+                {
+                    l5 = line;
+                    break;                                                               //TODO: here we could allow multiple
+                }
+            }
 
-            //lets start with if the line already existed fully
-            
+            foreach (_Room room in rooms)
+            {
+                if (room.lines.Contains(l5))
+                {
+                    room.lines.Remove(l5);                                                  //Should we handle points?
+                    room.lines.Add(movedLine);
+                }
+            }
+
+            //ROOMS FILLED WITH L1 OR L2 IF BOUNDARYLINES ORDERING THROW EXCEPTION
+
+            //ROOMS MIGHT NEED TO REMOVE PART OF L1 -- BOTTOM LEFT
+
+            //szobák javítsák ki magukat - l1 vagy l2 melyikkel lenne teljes
+
+
+            GC.Collect();
             
 
             //at this point we only need to solve
             //1. same line already existed before - fully or partially
             //2. new point was not needed
+
+
+            //we need to handle created lines with no rooms
+
+
 
             //we still need to find if there are any rooms just touching the line.
 

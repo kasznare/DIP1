@@ -19,6 +19,7 @@ namespace UIWPF.Model {
         }
 
         internal _Point Move(_Point moveVector) {
+            //im not sure that it needs to return a new point
             return new _Point(X-moveVector.X, Y-moveVector.Y);
         }
 
@@ -36,6 +37,10 @@ namespace UIWPF.Model {
                 _Point p = (_Point)obj;
                 return (X == p.X) && (Y == p.Y);
             }
+        }
+
+        public override string ToString() {
+            return $"{X},{Y}";
         }
     }
 }

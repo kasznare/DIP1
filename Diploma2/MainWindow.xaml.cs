@@ -113,6 +113,7 @@ namespace Diploma2 {
         private void MoveLine_OnClick(object sender, RoutedEventArgs e) {
             model.MoveLine();
             LoadDataFromModel();
+            Paint();
         }
 
         private void LoadDataFromModel()
