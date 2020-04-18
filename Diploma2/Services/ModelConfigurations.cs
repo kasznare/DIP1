@@ -51,5 +51,52 @@ namespace UIWPF.Services {
             return m;
         }
 
+        public static _Model InitNormalModel() {
+            _Model m = new _Model();
+            _Point a1 = new _Point(0, 0);
+            _Point a2 = new _Point(200, 0);
+            _Point a3 = new _Point(200, 200);
+            _Point a4 = new _Point(0, 200);
+
+            _Point a5 = new _Point(200, 400);
+            _Point a6 = new _Point(0, 400);
+            _Point a7 = new _Point(400, 0);
+            _Point a8 = new _Point(400, 200);
+            _Point a9 = new _Point(400, 400);
+
+            _Line l12 = new _Line(a1, a2);
+            _Line l23 = new _Line(a2, a3);
+            _Line l34 = new _Line(a3, a4);
+            _Line l41 = new _Line(a4, a1);
+
+            _Line l35 = new _Line(a3, a5);
+            _Line l56 = new _Line(a5, a6);
+            _Line l64 = new _Line(a6, a4);
+
+            _Line l27 = new _Line(a2, a7);
+            _Line l78 = new _Line(a7, a8);
+            _Line l83 = new _Line(a8, a3);
+
+            _Line l89 = new _Line(a8, a9);
+            _Line l95 = new _Line(a9, a5);
+
+
+            _Room first = new _Room { Name = "FirstRoom", Number = 1 };
+            _Room second = new _Room { Name = "SecondRoom", Number = 2 };
+            _Room third = new _Room { Name = "ThirdRoom", Number = 3 };
+            _Room fourth = new _Room { Name = "FourthRoom", Number = 4 };
+            first.Lines = (new List<_Line>() { l12, l23, l34, l41 });
+            second.Lines = (new List<_Line>() { l35, l56, l64, l34 });
+            third.Lines = (new List<_Line>() { l23, l27, l78, l83 });
+            fourth.Lines = (new List<_Line>() { l83, l89, l95, l35 });
+
+            m.rooms.Add(first);
+            m.rooms.Add(second);
+            m.rooms.Add(third);
+            m.rooms.Add(fourth);
+
+            return m;
+        }
+
     }
 }

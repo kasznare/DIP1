@@ -77,7 +77,7 @@ namespace Diploma2 {
 
         private void LoadModels() {
             //model = ModelConfigurations.InitSimplestModel();
-            model = ModelConfigurations.InitSimpleModel();
+            model = ModelConfigurations.InitNormalModel();
             LoadDataFromModel();
         }
 
