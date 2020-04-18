@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UIWPF.Model {
+namespace Diploma2.Model {
     public class _GeometryBase {
         public string Name { get; set; }
         public int Number { get; set; }

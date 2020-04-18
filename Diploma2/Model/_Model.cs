@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Documents;
-using System.Windows.Shapes;
 
-namespace UIWPF.Model {
+namespace Diploma2.Model {
     public class _Model {
         public ObservableCollection<_Room> rooms { get; set; }
 

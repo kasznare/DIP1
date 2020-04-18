@@ -11,8 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Diploma2.Annotations;
-using UIWPF.Model;
-using UIWPF.Services;
+using Diploma2.Model;
+using Diploma2.Services;
 using ShapeLine = System.Windows.Shapes.Line;
 
 namespace Diploma2 {

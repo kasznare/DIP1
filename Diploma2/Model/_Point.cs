@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace UIWPF.Model {
+﻿namespace Diploma2.Model {
     public class _Point {
         public double[] XY => new double[]{X,Y};
 

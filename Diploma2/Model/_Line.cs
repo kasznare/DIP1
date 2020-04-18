@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UIWPF.Model {
+namespace Diploma2.Model {
     public class _Line : _GeometryBase {
         public _Point StartPoint { get; set; }
         public _Point EndPoint { get; set; }

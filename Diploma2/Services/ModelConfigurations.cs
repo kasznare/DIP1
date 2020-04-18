@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UIWPF.Model;
+﻿using System.Collections.Generic;
+using Diploma2.Model;
 
-namespace UIWPF.Services {
+namespace Diploma2.Services {
     public static class ModelConfigurations {
         public static _Model InitSimplestModel()
         {

@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using Diploma2.Annotations;
 
-namespace UIWPF.Model {
+namespace Diploma2.Model {
     public class _Room : _GeometryBase, INotifyPropertyChanged {
         public _Room(List<_Line> newLines) {
             lines = newLines;
@@ -39,6 +36,7 @@ namespace UIWPF.Model {
 
         private List<_Point> Points = new List<_Point>();
         private List<_Line> lines = new List<_Line>();
+        public _RoomType type { get; set; }
 
         public List<_Point> GetBoundaryPointsSorted() {
             SortPoints();
@@ -149,6 +147,76 @@ namespace UIWPF.Model {
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public double CalculateArea()
+        {
+            List<_Point> bp = GetBoundaryPointsSorted();
+
+            if (bp.Count == 0) {
+                throw new Exception("Area is null");
+            }
+
+            double[] X = bp.Select(i => i.X).ToArray();
+            double[] Y = bp.Select(i => i.Y).ToArray();
+            double area = PolygonArea(X, Y, bp.Count);
+
+            if (area < 0.01) {
+                //throw new Exception("Area is too small: " + area);
+            }
+
+            return area / 10000;
+        }
+        /// <summary>
+        /// of a polygon using shoelace formula
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public static double PolygonArea(double[] X,
+            double[] Y, int n) {
+            // (X[i], Y[i]) are coordinates of i'th myPoint. 
+
+            // Initialze area 
+            double area = 0.0;
+
+            // Calculate Value of shoelace formula 
+            int j = n - 1;
+
+            for (int i = 0; i < n; i++) {
+                area += (X[j] + X[i]) * (Y[j] - Y[i]);
+
+                // j is previous vertex to i 
+                j = i;
+            }
+
+            // Return absolute Value 
+            return Math.Abs(area / 2.0);
+        }
+
+        public double CalculateProportion() {
+            double proportion = 0.0;
+            try {
+                List<MyPoint> bp = GetBoundaryPointsSorted();
+
+                double[] X = bp.Select(i => i.X).ToArray();
+                double[] Y = bp.Select(i => i.Y).ToArray();
+
+                MyPoint max = new MyPoint(X.Max(), Y.Max());
+                MyPoint min = new MyPoint(X.Min(), Y.Min());
+
+
+                proportion = (max.X - min.X) / (max.Y - min.Y);
+                if (proportion < 1 && Math.Abs(proportion) > 0.01) {
+                    proportion = 1 / proportion;
+                }
+            }
+            catch (Exception exception) {
+                Logger.WriteLog(exception);
+            }
+
+            return proportion;
         }
     }
 }

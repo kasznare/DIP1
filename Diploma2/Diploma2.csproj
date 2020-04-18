@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -65,7 +66,13 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Services\CostCalculationService.cs" />
     <Compile Include="Services\ModelConfigurations.cs" />
+    <Compile Include="Services\Simulate.cs" />
+    <Compile Include="Utilities\ImageSaver.cs" />
+    <Compile Include="Utilities\Logger.cs" />
+    <Compile Include="Utilities\MyInterlockedExchangeExampleClass.cs" />
+    <Compile Include="Utilities\Utils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
