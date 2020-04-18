@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Diploma2.Annotations;
 
 namespace UIWPF.Model {
-    public class _Room : _GeometryBase {
+    public class _Room : _GeometryBase, INotifyPropertyChanged {
         public _Room(List<_Line> newLines) {
             lines = newLines;
         }
@@ -15,7 +18,15 @@ namespace UIWPF.Model {
 
         }
 
-        public List<_Line> lines { get; set; }
+        public List<_Line> Lines
+        {
+            get { return lines; }
+            set
+            {
+                lines = value; 
+                OnPropertyChanged("Lines");
+            }
+        }
 
         public _Room DeepCopy() {
             List<_Line> newLines = new List<_Line>();
@@ -26,9 +37,14 @@ namespace UIWPF.Model {
         }
 
 
-        private List<_Point> Points;
+        private List<_Point> Points = new List<_Point>();
+        private List<_Line> lines = new List<_Line>();
+
         public List<_Point> GetBoundaryPointsSorted() {
             SortPoints();
+            return Points;
+        }
+        public List<_Point> GetPoints() {
             return Points;
         }
         private void SortLines() {
@@ -122,9 +138,17 @@ namespace UIWPF.Model {
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                //MessageBox.Show(e.Message);
                 return false;
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

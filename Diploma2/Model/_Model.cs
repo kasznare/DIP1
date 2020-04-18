@@ -45,7 +45,7 @@ namespace UIWPF.Model {
             //clean points first
             //TODO: might need to override equals for the contains filter
             foreach (_Room room in rooms) {
-                foreach (_Line line in room.lines) {
+                foreach (_Line line in room.Lines) {
                     if (uniquePoints.Contains(line.StartPoint)) {
                         line.StartPoint = uniquePoints.Find(i => i.XY == line.StartPoint.XY);
                     }
@@ -63,11 +63,11 @@ namespace UIWPF.Model {
             //TODO: might need to override equals for the contains filter
             //clean lines
             foreach (_Room room in rooms) {
-                foreach (_Line line in room.lines) {
+                foreach (_Line line in room.Lines) {
                     if (uniqueLines.Contains(line)) {
-                        room.lines.Remove(line);
+                        room.Lines.Remove(line);
                         _Line @where = uniqueLines.FirstOrDefault(i => i.IsTheSame(line)) as _Line;
-                        room.lines.Add(@where);
+                        room.Lines.Add(@where);
                     }
                     else {
                         uniqueLines.Add(line);
@@ -79,19 +79,19 @@ namespace UIWPF.Model {
 
         public List<List<List<_Point>>> AllPoints() {
             List<List<List<_Point>>> asd = rooms
-                .Select(i => i.lines.Select(j => new List<_Point>() { j.StartPoint, j.EndPoint }).ToList()).ToList();
+                .Select(i => i.Lines.Select(j => new List<_Point>() { j.StartPoint, j.EndPoint }).ToList()).ToList();
             return asd;
         }
 
         public List<List<_Line>> AllLines() {
-            List<List<_Line>> asd = rooms.Select(i => i.lines).ToList();
+            List<List<_Line>> asd = rooms.Select(i => i.Lines).ToList();
             return asd;
         }
         public List<_Line> AllLinesFlat() {
             List<_Line> lines = new List<_Line>();
             foreach (_Room room in rooms)
             {
-                lines.AddRange(room.lines);
+                lines.AddRange(room.Lines);
             }
             return lines;
         }
@@ -99,7 +99,7 @@ namespace UIWPF.Model {
         public List<_Point> AllPointsFlat() {
             List<_Point> points = new List<_Point>();
             foreach (_Room room in rooms) {
-                foreach (_Line line in room.lines)
+                foreach (_Line line in room.Lines)
                 {
                     points.Add(line.StartPoint);
                     points.Add(line.EndPoint);
@@ -112,7 +112,7 @@ namespace UIWPF.Model {
 
         public void MoveLine(int distance, _Line lineToMove) {
             List<_Room> roomsThatCare = new List<_Room>();                           //these rooms might need to change
-            roomsThatCare = rooms.Where(i => i.lines.Contains(lineToMove)).ToList(); //the rooms need to have the line to care
+            roomsThatCare = rooms.Where(i => i.Lines.Contains(lineToMove)).ToList(); //the rooms need to have the line to care
             if (!roomsThatCare.Any()) throw new Exception("LineIsMissing");   //if there are no rooms, inconsistent state
 
             _Line movedLine = lineToMove.DeepCopy();                                 //first we copy the line we need to move
@@ -128,26 +128,30 @@ namespace UIWPF.Model {
 
            
             foreach (_Room room in rooms) {                                          // the lines are movedline, l1, l2 already existed, then find them
-                foreach (_Line line in room.lines) {
+                foreach (_Line line in room.Lines) {
                     if (line.IsTheSame(l1)) l1 = line;
                     if (line.IsTheSame(l2)) l2 = line;
                 }
             }
 
             foreach (_Room room in roomsThatCare) {
-                room.lines.Remove(lineToMove);
-                foreach (_Line getLine in room.lines.ToList()) {                      //is tolist legal? is this same object references?
+                room.Lines.Remove(lineToMove);
+                foreach (_Line getLine in room.Lines.ToList()) {                      //is tolist legal? is this same object references?
                     _Point p = getLine.ConnectsPoint(lineToMove);
+
+                    _Point objA = getLine.GetNV(true);
+                    _Point objB = lineToMove.GetNV(true);
                     if (p != null && p.Equals(lineToMove.StartPoint))                 //there is common point with startpoint, so this line touched the old startpoint
                     {                                                                 //we need to either move it, if it is parallel, or keep it if it is merőleges
                         //THE LINE SHOULD MOVE - BOTH DIRECTIONS - MOVE P WITH MOVEVECTOR
-                        if (getLine.StartPoint.Equals(p)//&&
-                            //Equals(getLine.GetNV(true), lineToMove.GetNV(true)) || Equals(getLine.GetNV(true)*-1, lineToMove.GetNV(true))
-                        )//párhuzamos)
+                        
+                        bool parallel = Equals(objA, objB);
+                        bool inverseParallel = Equals(objA * -1, objB);
+                        if (getLine.StartPoint.Equals(p)&&!(parallel || inverseParallel))//párhuzamos)
                         {
                             getLine.StartPoint=getLine.StartPoint.Move(moveVector);
                         }
-                        if (getLine.EndPoint.Equals(p))
+                        if (getLine.EndPoint.Equals(p) && !(parallel || inverseParallel))
                         {
                             getLine.EndPoint= getLine.EndPoint.Move(moveVector);
                         }
@@ -157,11 +161,13 @@ namespace UIWPF.Model {
 
                     if (p != null && p.Equals(lineToMove.EndPoint))
                     {
-                        if (getLine.StartPoint.Equals(p)) {
+                        bool parallel = Equals(objA, objB);
+                        bool inverseParallel = Equals(objA * -1, objB);
+                        if (getLine.StartPoint.Equals(p) && !(parallel || inverseParallel)) {
                             getLine.StartPoint = getLine.StartPoint.Move(moveVector);
                         }
 
-                        if (getLine.EndPoint.Equals(p)) {
+                        if (getLine.EndPoint.Equals(p) && !(parallel || inverseParallel)) {
                             getLine.EndPoint = getLine.EndPoint.Move(moveVector);
                         }
                     }
@@ -169,7 +175,7 @@ namespace UIWPF.Model {
                 }
                 //List<_Line> l = room.lines.Where(i => i.Connects(lineToMove)).ToList();
 
-                room.lines.Add(movedLine); //this detached the model
+                room.Lines.Add(movedLine); //this detached the model
             }
 
             //MIGHT BE UNNESSESARY
@@ -185,10 +191,10 @@ namespace UIWPF.Model {
 
             foreach (_Room room in rooms)
             {
-                if (room.lines.Contains(l5))
+                if (room.Lines.Contains(l5))
                 {
-                    room.lines.Remove(l5);                                                  //Should we handle points?
-                    room.lines.Add(movedLine);
+                    room.Lines.Remove(l5);                                                  //Should we handle points?
+                    room.Lines.Add(movedLine);
                 }
             }
 
@@ -201,17 +207,23 @@ namespace UIWPF.Model {
                 bool isComplete = room.CanGetBoundarySorted();
                 if (!isComplete)
                 {
-                    room.lines.Add(l1);
+                    room.Lines.Add(l1);
                     isComplete = room.CanGetBoundarySorted(); //the rooms might be with overlapping lines at this point, we need to handle that
                     if (!isComplete)
                     {
-                        room.lines.Remove(l1);
-                        room.lines.Add(l2);
+                        room.Lines.Remove(l1);
+                        room.Lines.Add(l2);
                         isComplete = room.CanGetBoundarySorted();
                         if (!isComplete)
                         {
-                            room.lines.Remove(l2);
-                            throw new Exception("room cannot be fixed in move step");
+                            room.Lines.Add(l1);
+                            isComplete = room.CanGetBoundarySorted();
+                            if (!isComplete)
+                            {
+                                room.Lines.Remove(l2);
+                                room.Lines.Remove(l1);
+                            }
+                            //throw new Exception("room cannot be fixed in move step");
                         }
                     }
                 }
@@ -238,7 +250,7 @@ namespace UIWPF.Model {
         //TODO: implement
         public void SplitLine()
         {
-            SplitLine(0.50, rooms.First().lines.First());
+            SplitLine(0.50, rooms.First().Lines.First());
         }
         public void SplitLine(double percentage, _Line lineToSplit)
         {
@@ -252,7 +264,7 @@ namespace UIWPF.Model {
 
 
         internal void MoveLine() {
-            MoveLine(10,rooms.First().lines.First());
+            MoveLine(10,rooms.First().Lines.First());
         }
     }
 }

@@ -19,7 +19,7 @@ namespace UIWPF.Services {
             _Line line3 = new _Line(p3, p4);
             _Line line4 = new _Line(p4, p1);
             _Room _Room = new _Room {Name = "FirstRoom", Number = 1};
-            _Room.lines = ( new List<_Line>(){line1,line2,line3,line4});
+            _Room.Lines = ( new List<_Line>(){line1,line2,line3,line4});
             m.rooms.Add(_Room);
             return m;
         }
@@ -42,8 +42,8 @@ namespace UIWPF.Services {
             _Room first = new _Room { Name = "FirstRoom", Number = 1 };
             _Room second = new _Room { Name = "SecondRoom", Number = 2 };
 
-            first.lines = (new List<_Line>() { line1, line2, line3, line4 });
-            second.lines = (new List<_Line>() { l1, l2, l3, line1 });
+            first.Lines = (new List<_Line>() { line1, line2, line3, line4 });
+            second.Lines = (new List<_Line>() { l1, l2, l3, line1 });
             
             m.rooms.Add(first);
             m.rooms.Add(second);

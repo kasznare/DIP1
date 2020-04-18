@@ -68,9 +68,10 @@
               <DataGrid  Name="PointGrid"
                          AutoGenerateColumns="False"
                          ItemsSource="{Binding Points, IsAsync=True, Mode=OneWay}"
-                         SelectedIndex="{Binding selectedPointIndex, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"
                          Height="300"
+                         SelectionUnit="FullRow"
+SelectedCellsChanged="PointGrid_OnSelectedCellsChanged"
                          VerticalAlignment="Stretch">
                 <DataGrid.Columns>
                   <DataGridTemplateColumn Header="X"
@@ -131,6 +132,8 @@
                          ItemsSource="{Binding Lines, IsAsync=True, Mode=OneWay}"
                          HorizontalAlignment="Stretch"
                          Height="300"
+                         SelectionUnit="FullRow"
+SelectedCellsChanged="LineGrid_OnSelectedCellsChanged"
                          SelectedIndex="{Binding selectedLineIndex, UpdateSourceTrigger=PropertyChanged}"
                          VerticalAlignment="Stretch">
 
@@ -190,10 +193,54 @@
                          Foreground="White"
                          FontSize="30"></TextBlock>
               <DataGrid  Name="RoomGrid"
-                         ItemsSource="{Binding Lines, IsAsync=True, Mode=OneWay}"
+                         ItemsSource="{Binding Rooms, IsAsync=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"
                          Height="300"
-                         VerticalAlignment="Stretch"></DataGrid>
+                         AutoGenerateColumns="False"
+                         SelectionUnit="FullRow"
+                         SelectedCellsChanged="RoomGrid_OnSelectedCellsChanged"
+                         VerticalAlignment="Stretch">
+
+                <DataGrid.Columns>
+                  <DataGridTemplateColumn Header="Lines"
+                                          Width="200">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <ItemsControl ItemsSource="{Binding Lines}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="Name"
+                                          Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Name}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+               
+                  <DataGridTemplateColumn Header="Number"
+                                          Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Number}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="Guid"
+                                          Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Guid}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                </DataGrid.Columns>
+
+              </DataGrid>
 
             </StackPanel>
 

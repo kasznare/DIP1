@@ -5,8 +5,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Diploma2.Annotations;
 using UIWPF.Model;
@@ -38,7 +40,6 @@ namespace Diploma2 {
             {
                 selectedLineIndex = value;
                 OnPropertyChanged();
-                MessageBox.Show(value.ToString());
                 Paint();
             }
         }
@@ -53,7 +54,6 @@ namespace Diploma2 {
             set
             {
                 selectedPointIndex = value;
-                MessageBox.Show(value.ToString());
                 OnPropertyChanged();
                 Paint();
 
@@ -64,7 +64,9 @@ namespace Diploma2 {
         private void Log(string message) {
             if (message != null && message != StatusMessage) StatusMessage = message;
         }
-        public MainWindow() {
+        public MainWindow()
+        {
+            DataContext = this;
             Points = new ObservableCollection<_Point>();
             Lines = new ObservableCollection<_Line>();
             Rooms = new ObservableCollection<_Room>();
@@ -79,6 +81,8 @@ namespace Diploma2 {
             LoadDataFromModel();
         }
 
+        List<int> selectedLineIndices = new List<int>();
+
         private void Paint() {
             isPainting = true;
             testcanvas.Children.Clear();
@@ -89,7 +93,7 @@ namespace Diploma2 {
                 ShapeLine _line = new ShapeLine();
                 Brush solidColorBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
                 solidColorBrush.Opacity = 0.5;
-                if (i.Equals(SelectedLineIndex)) {
+                if (selectedLineIndices.Contains(i)) {
                     solidColorBrush = Brushes.Yellow;
                 }
 
@@ -130,7 +134,7 @@ namespace Diploma2 {
 
             //foreach (MyRoom room in model.modelRooms) {
             foreach (_Room room in Rooms) {
-                List<_Point> boundaries = room.GetBoundaryPointsSorted();
+                List<_Point> boundaries = room.GetPoints();
                 if (!boundaries.Any()) continue;
                 //boundaries.RemoveAll(item => item == null); //this is error handling, but I would need to figure out why nulls exist
                 List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
@@ -162,6 +166,7 @@ namespace Diploma2 {
             Rooms = model.rooms;
             LineGrid.ItemsSource = Lines;
             PointGrid.ItemsSource = Points;
+            RoomGrid.ItemsSource = null;
             RoomGrid.ItemsSource = Rooms;
         }
 
@@ -199,6 +204,39 @@ namespace Diploma2 {
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void RoomGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            _Room index = RoomGrid.CurrentCell.Item as _Room;
+            selectedLineIndices.Clear();
+            var i = 0;
+            foreach (var line in Lines)
+            {
+                if (index.Lines.Contains(line))
+                {
+                    selectedLineIndices.Add(i);
+                }
+
+                i++;
+            }
+            //e.AddedCells.Select(i => i.Item as _Room);
+            Paint();
+            RoomGrid.SelectedIndex = -1;
+
+        }
+
+        private void LineGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            selectedLineIndices.Clear();
+            selectedLineIndices.Add(LineGrid.SelectedIndex);
+            Paint();
+        }
+
+        private void PointGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            SelectedPointIndex = PointGrid.SelectedIndex;
+
         }
     }
 }
