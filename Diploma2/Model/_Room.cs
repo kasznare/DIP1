@@ -144,6 +144,49 @@ namespace Diploma2.Model {
         public bool CanGetBoundarySorted() {
             try {
                 GetBoundaryPointsSorted();
+
+                List<_Line> linesAdded = new List<_Line>();
+                for (var index = 0; index < Lines.Count; index++)
+                {
+                    _Line line = Lines[index];
+                    for (var i = 0; i < Points.Count; i++)
+                    {
+                        _Point point = Points[i];
+                        if (_Model.IsOnLine(point,line) && !Equals(point, line.StartPoint) && !Equals(point, line.EndPoint) )
+                        {
+                            //this means there is redundancy
+                            //this point should be a splitter on the line, that contains it.
+                            lines.Remove(line);
+                            _Line l1 = new _Line(point, line.StartPoint) {Name = line.Name, Guid = line.Guid, Number = line.Number};
+                            _Line l2 = new _Line(point, line.EndPoint) { Name = line.Name, Guid = line.Guid, Number = line.Number };
+                            lines.Add(l1);
+                            lines.Add(l2);
+
+                            linesAdded.Add(l1);
+                            linesAdded.Add(l2);
+                            //then we hope, that redundancy is removed
+                            break; //this might be bad
+
+                        }
+                    }
+                }
+
+                for (var index = 0; index < Lines.Count; index++)
+                {
+                    _Line line = Lines[index];
+                    foreach (_Line line1 in linesAdded)
+                    {
+                        if (line.IsTheSame(line1))
+                        {
+                            Lines.Remove(line);
+                            lines.Remove(line1);
+                        }
+
+                    }
+                }
+                //check that there is no overlap
+                //if one of the points is on an other line, and not at an endpoint, there is overlap
+                
                 return true;
             }
             catch (Exception e)

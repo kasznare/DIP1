@@ -73,11 +73,10 @@ namespace Diploma2.Services {
             double wallLength = 0.0;
             foreach (_Line seg in localModel.AllLinesFlat()) {
                 {
-                    //if (seg.GetLength()>0)
-                    //{
-                        
-                    //wallLength += Math.Sqrt((seg.GetLength() / 100)) * 3;
-                    //}
+                    if (seg.GetLength() > 0) {
+
+                        wallLength += Math.Sqrt((seg.GetLength() / 100)) * 3;
+                    }
                 }
             }
 

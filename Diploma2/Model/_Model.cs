@@ -212,11 +212,9 @@ namespace Diploma2.Model {
                 foreach (_Line getLine in room.Lines.ToList()) {                      //is tolist legal? is this same object references?
                     _Point p = getLine.ConnectsPoint(lineToMove);
                     if (p != null && p.Equals(lineToMove.StartPoint))                 //there is common point with startpoint, so this line touched the old startpoint
-                    {                                                                 //we need to either move it, if it is parallel, or keep it if it is merőleges
-                                                                                      //THE LINE SHOULD MOVE - BOTH DIRECTIONS - MOVE P WITH MOVEVECTOR
-
-                        _Point objA = getLine.GetNV(true);
-                        _Point objB = lineToMove.GetNV(true);
+                    {                                                                 
+                        _Point objA = getLine.GetNV(true);//we need to either move it, if it is parallel, or keep it if it is merőleges
+                        _Point objB = lineToMove.GetNV(true);//THE LINE SHOULD MOVE - BOTH DIRECTIONS - MOVE P WITH MOVEVECTOR
 
                         bool parallel = Equals(objA, objB);
                         bool inverseParallel = Equals(objA * -1, objB);
@@ -227,8 +225,6 @@ namespace Diploma2.Model {
                         if (getLine.EndPoint.Equals(p) && !(parallel || inverseParallel)) {
                             getLine.EndPoint = getLine.EndPoint.Move(moveVector);
                         }
-
-
                     }
 
                     if (p != null && p.Equals(lineToMove.EndPoint)) {
@@ -244,11 +240,8 @@ namespace Diploma2.Model {
                             getLine.EndPoint = getLine.EndPoint.Move(moveVector);
                         }
                     }
-
                 }
-                //List<_Line> l = room.lines.Where(i => i.Connects(lineToMove)).ToList();
-
-                room.Lines.Add(movedLine); //this detached the Model
+                room.Lines.Add(movedLine); 
             }
 
             //MIGHT BE UNNESSESARY
@@ -271,6 +264,8 @@ namespace Diploma2.Model {
             //ROOMS MIGHT NEED TO REMOVE PART OF L1 -- BOTTOM LEFT
             //szobák jatítsák ki magukat - l1 vagy l2 melyikkel lenne teljes
 
+
+            //TODO: remove overlaps, if existing, this currently makes a loop
             foreach (_Room room in rooms) {
                 bool isComplete = room.CanGetBoundarySorted();
                 if (!isComplete) {
@@ -293,19 +288,11 @@ namespace Diploma2.Model {
                 }
             }
 
-
             GC.Collect();
-
-
             //at this point we only need to solve
             //1. same line already existed before - fully or partially
             //2. new point was not needed
-
-
             //we need to handle created lines with no rooms
-
-
-
             //we still need to find if there are any rooms just touching the line.
 
             moveStepsCount++;
@@ -315,12 +302,9 @@ namespace Diploma2.Model {
         public void SplitLine() {
             SplitLine(0.50, rooms.First().Lines.First());
         }
-        public void SplitLine(double percentage, _Line lineToSplit) {
-
-        }
         //TODO: implement
-
-
+        public void SplitLine(double percentage, _Line lineToSplit) {
+        }
 
         internal void MoveLine() {
             MoveLine(10, rooms.First().Lines.First());
@@ -331,6 +315,27 @@ namespace Diploma2.Model {
             _Room temp2 = room2.DeepCopy();
             _Room.ChangeAllParams(ref room1, temp2);
             _Room.ChangeAllParams(ref room2, temp1);
+        }
+
+        public static bool IsOnLine(_Point myPoint, _Line myLine) {
+            return PointOnLine2D(myPoint, myLine.StartPoint, myLine.EndPoint);
+        }
+        public static bool PointOnLine2D(_Point p, _Point a, _Point b, float t = 1E-03f) {
+            // ensure points are collinear
+            var zero = (b.X - a.X) * (p.Y - a.Y) - (p.X - a.X) * (b.Y - a.Y);
+            if (zero > t || zero < -t) return false;
+
+            // check if X-coordinates are not equal
+            if (a.X - b.X > t || b.X - a.X > t)
+                // ensure X is between a.X & b.X (use tolerance)
+                return a.X > b.X
+                    ? p.X + t > b.X && p.X - t < a.X
+                    : p.X + t > a.X && p.X - t < b.X;
+
+            // ensure Y is between a.Y & b.Y (use tolerance)
+            return a.Y > b.Y
+                ? p.Y + t > b.Y && p.Y - t < a.Y
+                : p.Y + t > a.Y && p.Y - t < b.Y;
         }
     }
 }
