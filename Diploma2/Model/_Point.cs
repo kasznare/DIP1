@@ -27,7 +27,7 @@
 
         public override bool Equals(object obj)
         {
-            //Check for null and compare run-time types.
+            //Check for null and compare RunSteps-time types.
             if ((obj == null) || !this.GetType().Equals(obj.GetType())) {
                 return false;
             }

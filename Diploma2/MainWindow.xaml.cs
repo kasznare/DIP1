@@ -34,7 +34,7 @@ namespace Diploma2 {
         public ObservableCollection<_Room> Rooms { get; set; } = new ObservableCollection<_Room>();
         public _Model model { get; set; }
         public ObservableCollection<Costs> SimulationCosts { get; set; } = new ObservableCollection<Costs>();
-        public Simulate s = new Simulate();
+        public Simulation s = new Simulation();
         public ObservableCollection<LineAndCost> LineAndCostActualStep { get; set; } = new ObservableCollection<LineAndCost>();
 
         public ObservableCollection<_RoomType> roomtypes { get; set; } = new ObservableCollection<_RoomType>();
@@ -87,13 +87,13 @@ namespace Diploma2 {
             InitializeComponent();
             model = ModelConfigurations.InitSimpleModel();
             LoadDataFromModel();
-            s.model = model;
+            s.Model = model;
             s.ModelChanged += ModelChangeHandler;
             Paint();
         }
 
         private void LoadModels() {
-            //model = ModelConfigurations.InitSimplestModel();
+            //Model = ModelConfigurations.InitSimplestModel();
             model = ModelConfigurations.InitNormalModel();
             LoadDataFromModel();
         }
@@ -149,18 +149,26 @@ namespace Diploma2 {
                 testcanvas.Children.Add(_line);
             }
 
-            //foreach (MyRoom room in model.modelRooms) {
+            //foreach (MyRoom room in Model.modelRooms) {
             foreach (_Room room in Rooms) {
-                List<_Point> boundaries = room.GetPoints();
-                if (!boundaries.Any()) continue;
-                //boundaries.RemoveAll(item => item == null); //this is error handling, but I would need to figure out why nulls exist
-                List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
-                Polygon p = new Polygon();
-                p.Points = new PointCollection(convertedPoints);
-                //p.Fill = new SolidColorBrush(room.type.fillColor.ToMediaColor());
-                p.Opacity = 0.25;
-                p.ToolTip = room.ToString();
-                testcanvas.Children.Add(p);
+                try
+                {
+                    List<_Point> boundaries = room.GetPoints();
+                    if (!boundaries.Any()) continue;
+                    //boundaries.RemoveAll(item => item == null); //this is error handling, but I would need to figure out why nulls exist
+                    List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
+                    Polygon p = new Polygon();
+                    p.Points = new PointCollection(convertedPoints);
+                    p.Fill = new SolidColorBrush(room.type.fillColor.ToMediaColor());
+                    p.Opacity = 0.25;
+                    p.ToolTip = room.ToString();
+                    testcanvas.Children.Add(p);
+
+                }
+                catch (Exception e)
+                {
+                    Logger.WriteLog(e);
+                }
             }
 
             isPainting = false;
@@ -293,10 +301,10 @@ namespace Diploma2 {
 
         private void StartSimulation_OnClick(object sender, RoutedEventArgs e)
         {
-            s.model = model;
+            s.Model = model;
             Paint();
 
-            Thread t = new Thread(s.run);
+            Thread t = new Thread(s.RunSteps);
             t.Start();
         }
     }

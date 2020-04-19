@@ -45,7 +45,7 @@ namespace Diploma2.Utilities {
 
                 //Code to access a resource that is not thread safe would go here.
 
-                //Simulate some work
+                //Simulation some work
                 Thread.Sleep(500);
 
                 Console.WriteLine("{0} exiting lock", Thread.CurrentThread.Name);

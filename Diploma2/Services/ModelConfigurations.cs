@@ -14,7 +14,7 @@ namespace Diploma2.Services {
             _Line line2 = new _Line(p2, p3);
             _Line line3 = new _Line(p3, p4);
             _Line line4 = new _Line(p4, p1);
-            _Room _Room = new _Room {Name = "FirstRoom", Number = 1};
+            _Room _Room = new _Room {Name = "FirstRoom", Number = 1, type = _RoomType.LivingRoom, isStartRoom = true};
             _Room.Lines = ( new List<_Line>(){line1,line2,line3,line4});
             m.rooms.Add(_Room);
             return m;
@@ -35,8 +35,8 @@ namespace Diploma2.Services {
             _Line l1 = new _Line(q1, p1);
             _Line l2 = new _Line(q2, p2);
             _Line l3 = new _Line(q1, q2);
-            _Room first = new _Room { Name = "FirstRoom", Number = 1 };
-            _Room second = new _Room { Name = "SecondRoom", Number = 2 };
+            _Room first = new _Room { Name = "FirstRoom", Number = 1 , type = _RoomType.Kitchen};
+            _Room second = new _Room { Name = "SecondRoom", Number = 2 , type = _RoomType.LivingRoom, isStartRoom = true};
 
             first.Lines = (new List<_Line>() { line1, line2, line3, line4 });
             second.Lines = (new List<_Line>() { l1, l2, l3, line1 });

@@ -17,19 +17,14 @@ namespace Diploma2.Services {
             double layoutcost = 0.0;
             double constaintcost = 0.0;
 
-            //try {
             areacost = CalculateParameterCost();
             layoutcost = CalculateLayoutCost();
             constaintcost = CalculateConstraintCost();
             summary = areacost + layoutcost + constaintcost;
-            //}
-            //catch (Exception ex) {
-            //    Logger.WriteLog("Error during cost calculation" + ex);
-            //}
+            
             return new double[] { summary, areacost, layoutcost, constaintcost };
         }
         private static double CalculateConstraintCost() {
-            //muszáj teljesülne
             return 0.0;
         }
         private static double CalculateParameterCost() {

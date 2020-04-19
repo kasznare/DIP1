@@ -247,7 +247,7 @@ namespace Diploma2.Model {
                 }
                 //List<_Line> l = room.lines.Where(i => i.Connects(lineToMove)).ToList();
 
-                room.Lines.Add(movedLine); //this detached the model
+                room.Lines.Add(movedLine); //this detached the Model
             }
 
             //MIGHT BE UNNESSESARY
