@@ -159,11 +159,25 @@ namespace Diploma2.Model {
                             lines.Remove(line);
                             _Line l1 = new _Line(point, line.StartPoint) {Name = line.Name, Guid = line.Guid, Number = line.Number};
                             _Line l2 = new _Line(point, line.EndPoint) { Name = line.Name, Guid = line.Guid, Number = line.Number };
-                            lines.Add(l1);
-                            lines.Add(l2);
 
-                            linesAdded.Add(l1);
-                            linesAdded.Add(l2);
+                            _Line already1 = lines.FirstOrDefault(j => j.IsTheSame(l1));
+                            _Line already2 = lines.FirstOrDefault(j => j.IsTheSame(l2));
+                            //if this does not work, check for length
+                            if (already1!=null) //if in, then it is the short one, then remove it
+                            {
+                                lines.Remove(already1);
+                            }
+                            else
+                            {
+                                lines.Add(l1);
+                            }
+                            if (already2!=null)
+                            {
+                                lines.Remove(already2);
+                            }
+                            else {
+                                lines.Add(l2);
+                            }
                             //then we hope, that redundancy is removed
                             break; //this might be bad
 
@@ -171,19 +185,19 @@ namespace Diploma2.Model {
                     }
                 }
 
-                for (var index = 0; index < Lines.Count; index++)
-                {
-                    _Line line = Lines[index];
-                    foreach (_Line line1 in linesAdded)
-                    {
-                        if (line.IsTheSame(line1))
-                        {
-                            Lines.Remove(line);
-                            lines.Remove(line1);
-                        }
+                //for (var index = 0; index < Lines.Count; index++)
+                //{
+                //    _Line line = Lines[index];
+                //    foreach (_Line line1 in linesAdded)
+                //    {
+                //        if (line.IsTheSame(line1))
+                //        {
+                //            Lines.Remove(line);
+                //            lines.Remove(line1);
+                //        }
 
-                    }
-                }
+                //    }
+                //}
                 //check that there is no overlap
                 //if one of the points is on an other line, and not at an endpoint, there is overlap
                 
