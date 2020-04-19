@@ -37,14 +37,14 @@ namespace Diploma2 {
         public Simulation s = new Simulation();
         public ObservableCollection<LineAndCost> LineAndCostActualStep { get; set; } = new ObservableCollection<LineAndCost>();
 
-        public ObservableCollection<_RoomType> roomtypes { get; set; } = new ObservableCollection<_RoomType>();
+        public ObservableCollection<_RoomType> roomtypes { get; set; } = new ObservableCollection<_RoomType>(_RoomType.getRoomTypes());
         public int LineGridSelectedIndex { get; set; }
         private int actualSimulationThreshold = 0;
         private int MaxSimulationThreshold = 5;
         public int actualSimulationIndex = 0;
         readonly object locker = new object();
         public int moveDistance = 10;
-        public string runPath = "";
+     
         public int SelectedLineIndex
         {
             get
@@ -83,7 +83,6 @@ namespace Diploma2 {
         public MainWindow()
         {
             DataContext = this;
-            InitRoomTypes();
             InitializeComponent();
             model = ModelConfigurations.InitSimpleModel();
             LoadDataFromModel();
@@ -238,14 +237,12 @@ namespace Diploma2 {
             var i = 0;
             foreach (var line in Lines)
             {
-                if (index.Lines.Contains(line))
+                if (index != null && index.Lines.Contains(line))
                 {
                     selectedLineIndices.Add(i);
                 }
-
                 i++;
             }
-            //e.AddedCells.Select(i => i.Item as _Room);
             Paint();
             RoomGrid.SelectedIndex = -1;
 
@@ -261,25 +258,12 @@ namespace Diploma2 {
         private void PointGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
             SelectedPointIndex = PointGrid.SelectedIndex;
-
         }
 
-        private void CreateRunFolderAndInitPath() {
-
-            runPath = $@"C:\Users\{Environment.UserName}\Documents\DIP1\Screens\{DateTime.Now:yy-MM-dd-hh-ss-tt}_{model.loadedModelType}\";
-            try {
-                Directory.CreateDirectory(runPath);
-            }
-            catch (Exception e) {
-                Logger.WriteLog("Directory can not be created, it already exists");
-            }
-        }
+       
 
         private void InitRoomTypes() {
-            roomtypes.Add(_RoomType.BedRoom);
-            roomtypes.Add(_RoomType.LivingRoom);
-            roomtypes.Add(_RoomType.RestRoom);
-            roomtypes.Add(_RoomType.Kitchen);
+            
         }
         private void ModelChangeHandler(object sender, ProgressEventArgs e) {
 
@@ -306,6 +290,11 @@ namespace Diploma2 {
 
             Thread t = new Thread(s.RunSteps);
             t.Start();
+        }
+
+        private void UndoStep_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

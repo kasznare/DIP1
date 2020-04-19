@@ -34,6 +34,10 @@
                     Height="50"
                     Name="StartSimulation"
                     Click="StartSimulation_OnClick"></Button>
+            <Button Content="Undo simulation step"
+                    Height="50"
+                    Name="UndoStep"
+                    Click="UndoStep_OnClick"></Button>
             <Button Content="Load Model"
                     Name="LoadModel"
                     Click="LoadModel_OnClick"

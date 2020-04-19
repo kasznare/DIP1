@@ -37,18 +37,22 @@ namespace Diploma2.Model {
             List<_Room> newRooms = new List<_Room>();
             foreach (_Room room in rooms) {
                 _Room deepCopy = room.DeepCopy();
-                oldNewRooms.Add(room, deepCopy);
+
+                bool isroomthere = oldNewRooms.ContainsKey(deepCopy);
+                if (!isroomthere) {
+                    oldNewRooms.Add(room, deepCopy);
+                }
+
                 for (var index = 0; index < room.Lines.Count; index++) {
                     _Line i = room.Lines[index];
                     _Line iCopy = deepCopy.Lines[index];
                     bool ifs = oldNewLines.ContainsKey(i);
                     if (!ifs) {
                         oldNewLines.Add(i, iCopy);
-
                     }
                 }
 
-                //this is duplicate this way
+                //this storage type is duplicate this way
                 newRooms.Add(deepCopy);
             }
 
@@ -64,8 +68,7 @@ namespace Diploma2.Model {
 
             newMyLine = oldNewLines[oldMyLine];
 
-            if (newMyLine.StartPoint == null || newMyLine.EndPoint == null ) 
-            {
+            if (newMyLine.StartPoint == null || newMyLine.EndPoint == null) {
                 throw new Exception("bad");
             }
             return copy;
@@ -125,23 +128,21 @@ namespace Diploma2.Model {
                     if (uniqueLines.Contains(line)) {
                         //if (oldNewLines.ContainsKey(line))
                         //{
-                            
+
                         //}
                         //else
                         {
                             room.Lines.Remove(line);
                             _Line @where = uniqueLines.FirstOrDefault(i => i.IsTheSame(line)) as _Line;
-                            if (@where==null || @where.Number==-1)
-                            {
+                            if (@where == null || @where.Number == -1) {
                                 room.Lines.Add(line);
                             }
-                            else
-                            {
-                            room.Lines.Add(@where);
-                                
+                            else {
+                                room.Lines.Add(@where);
+
                             }
                         }
-                      
+
                     }
                     else {
                         uniqueLines.Add(line);

@@ -34,11 +34,8 @@ namespace Diploma2.Services {
             foreach (var room in localModel.rooms) {
                 double actualarea = room.CalculateArea();
 
-                _RoomType type = room.type;
-                if (type==null)
-                {
-                    type= _RoomType.BedRoom;
-                }
+                _RoomType type = room.type ?? _RoomType.BedRoom;
+
                 if (Math.Abs(actualarea - type.areamax) > 0.01 || Math.Abs(actualarea - type.areamin) > 0.01) {
 
                     if (actualarea < type.areamin) {

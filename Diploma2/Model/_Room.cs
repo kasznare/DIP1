@@ -162,10 +162,10 @@ namespace Diploma2.Model {
 
         public double CalculateArea()
         {
-            List<_Point> bp = GetPoints();
+            List<_Point> bp = GetBoundaryPointsSorted();
 
             if (bp.Count == 0) {
-                //throw new Exception("Area is null");
+                throw new Exception("Area is null");
             }
 
             double[] X = bp.Select(i => i.X).ToArray();
@@ -173,10 +173,10 @@ namespace Diploma2.Model {
             double area = PolygonArea(X, Y, bp.Count);
 
             if (area < 0.01) {
-                //throw new Exception("Area is too small: " + area);
+                throw new Exception("Area is too small: " + area);
             }
 
-            return area / 10000;
+            return area / 10000; //this is for unit conversion
         }
         /// <summary>
         /// of a polygon using shoelace formula
@@ -214,6 +214,10 @@ namespace Diploma2.Model {
                 double[] X = bp.Select(i => i.X).ToArray();
                 double[] Y = bp.Select(i => i.Y).ToArray();
 
+                if (!X.Any() || !Y.Any())
+                {
+                    throw new Exception("bad");
+                }
                 _Point max = new _Point(X.Max(), Y.Max());
                 _Point min = new _Point(X.Min(), Y.Min());
 

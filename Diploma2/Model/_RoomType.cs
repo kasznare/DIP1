@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using Diploma2.Annotations;
@@ -48,6 +49,17 @@ namespace Diploma2.Model
             return this.typeid == a.typeid;
             //return Close(a.X, X) && Close(a.Y, Y);
             //return base.Equals(obj);
+        }
+
+        public static List<_RoomType> getRoomTypes()
+        {
+            List<_RoomType> roomtypes = new List<_RoomType>();
+            roomtypes.Add(_RoomType.BedRoom);
+            roomtypes.Add(_RoomType.LivingRoom);
+            roomtypes.Add(_RoomType.RestRoom);
+            roomtypes.Add(_RoomType.Kitchen);
+
+            return roomtypes;
         }
 
         //public static RoomType LivingRoom {

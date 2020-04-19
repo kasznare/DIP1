@@ -84,7 +84,7 @@ namespace Diploma2.Services {
         }
 
         private void CalculateCostsForState() {
-            //ActionsByCosts = new Dictionary<Action, double>();
+            ActionsByCosts = new Dictionary<Action, double>();
 
             CalculateMoveCosts();
 
@@ -121,9 +121,10 @@ namespace Diploma2.Services {
 
             //Parallel.For(0, Model.modelLines.Count,
             //    index => {
-            for (int index = 0; index < Model.AllLinesFlat().Count; index++) {
+            var allLinesFlat = Model.AllLinesFlat();
+            for (int index = 0; index < allLinesFlat.Count; index++) {
 
-                _Line myLine = Model.AllLinesFlat().ElementAt(index);
+                _Line myLine = allLinesFlat.ElementAt(index);
                 _Line newMyLine = null;
                 _Model tempModel = Model.DeepCopy(myLine, out newMyLine);
                 tempModel.MoveLine(baseMoveDistance, newMyLine);
@@ -140,9 +141,9 @@ namespace Diploma2.Services {
             //});
             //Parallel.For(0, Model.modelLines.Count,
             //    index => {
-            for (int index = 0; index < Model.AllLinesFlat().Count; index++) {
+            for (int index = 0; index < allLinesFlat.Count; index++) {
 
-                _Line myLine = Model.AllLinesFlat().ElementAt(index);
+                _Line myLine = allLinesFlat.ElementAt(index);
                 _Line newMyLine = null;
                 _Model tempModel = Model.DeepCopy(myLine, out newMyLine);
                 tempModel.MoveLine(-baseMoveDistance, newMyLine);
