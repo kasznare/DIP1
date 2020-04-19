@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Windows.Controls;
+using Newtonsoft.Json;
 
 namespace Diploma2.Model {
     public class _Model {
         public ObservableCollection<_Room> rooms { get; set; }
+        public object loadedModelType { get; internal set; }
+        public bool IsInInvalidState { get; internal set; }
 
         public _Model() {
             rooms = new ObservableCollection<_Room>();
@@ -15,16 +20,73 @@ namespace Diploma2.Model {
             rooms = new ObservableCollection<_Room>(newRooms);
         }
 
+
+        [JsonIgnore]
+        [IgnoreDataMember]
+        private Dictionary<_Room, _Room> oldNewRooms = new Dictionary<_Room, _Room>();
+        [JsonIgnore]
+        [IgnoreDataMember]
+        private Dictionary<_Point, _Point> oldNewPoints = new Dictionary<_Point, _Point>();
+        [JsonIgnore]
+        [IgnoreDataMember]
+        private Dictionary<_Line, _Line> oldNewLines = new Dictionary<_Line, _Line>();
         public _Model DeepCopy() {
+            oldNewLines.Clear();
+            oldNewPoints.Clear();
+            oldNewRooms.Clear();
             List<_Room> newRooms = new List<_Room>();
             foreach (_Room room in rooms) {
-                newRooms.Add(room.DeepCopy());
+                _Room deepCopy = room.DeepCopy();
+                oldNewRooms.Add(room, deepCopy);
+                for (var index = 0; index < room.Lines.Count; index++) {
+                    _Line i = room.Lines[index];
+                    _Line iCopy = deepCopy.Lines[index];
+                    bool ifs = oldNewLines.ContainsKey(i);
+                    if (!ifs) {
+                        oldNewLines.Add(i, iCopy);
+
+                    }
+                }
+
+                //this is duplicate this way
+                newRooms.Add(deepCopy);
             }
 
             _Model m = new _Model(newRooms);
+            //RemoveRedundancy(m);
 
-            RemoveRedundancy(m);
             return m;
+        }
+        public _Model DeepCopy(_Line oldMyLine, out _Line newMyLine) {
+
+            _Model copy = this.DeepCopy();
+            //then only need to find the needed line
+
+            newMyLine = oldNewLines[oldMyLine];
+
+            if (newMyLine.StartPoint == null || newMyLine.EndPoint == null ) 
+            {
+                throw new Exception("bad");
+            }
+            return copy;
+        }
+        //READY
+        public _Model DeepCopy(_Room oldMyRoom1, _Room oldMyRoom2, out _Room newMyRoom1, out _Room newMyRoom2) {
+
+            _Model copy = this.DeepCopy();
+            newMyRoom1 = oldNewRooms[oldMyRoom1];
+            newMyRoom2 = oldNewRooms[oldMyRoom2];
+            return copy;
+
+        }
+
+        public _Model DeepCopy(_Room oldMyRoom1, out _Room newMyRoom1) {
+
+            _Model copy = this.DeepCopy();
+
+            newMyRoom1 = oldNewRooms[oldMyRoom1];
+            return copy;
+
         }
 
         /// <summary>
@@ -61,9 +123,25 @@ namespace Diploma2.Model {
             foreach (_Room room in rooms) {
                 foreach (_Line line in room.Lines) {
                     if (uniqueLines.Contains(line)) {
-                        room.Lines.Remove(line);
-                        _Line @where = uniqueLines.FirstOrDefault(i => i.IsTheSame(line)) as _Line;
-                        room.Lines.Add(@where);
+                        //if (oldNewLines.ContainsKey(line))
+                        //{
+                            
+                        //}
+                        //else
+                        {
+                            room.Lines.Remove(line);
+                            _Line @where = uniqueLines.FirstOrDefault(i => i.IsTheSame(line)) as _Line;
+                            if (@where==null || @where.Number==-1)
+                            {
+                                room.Lines.Add(line);
+                            }
+                            else
+                            {
+                            room.Lines.Add(@where);
+                                
+                            }
+                        }
+                      
                     }
                     else {
                         uniqueLines.Add(line);
@@ -85,8 +163,7 @@ namespace Diploma2.Model {
         }
         public List<_Line> AllLinesFlat() {
             List<_Line> lines = new List<_Line>();
-            foreach (_Room room in rooms)
-            {
+            foreach (_Room room in rooms) {
                 lines.AddRange(room.Lines);
             }
             return lines;
@@ -95,8 +172,7 @@ namespace Diploma2.Model {
         public List<_Point> AllPointsFlat() {
             List<_Point> points = new List<_Point>();
             foreach (_Room room in rooms) {
-                foreach (_Line line in room.Lines)
-                {
+                foreach (_Line line in room.Lines) {
                     points.Add(line.StartPoint);
                     points.Add(line.EndPoint);
                 }
@@ -117,12 +193,12 @@ namespace Diploma2.Model {
             moveVector = movedLine.GetNV(true) * distance;                //we scale it up
             movedLine.Move(moveVector);                                              //so we moved the copy (why not the actual?)
 
-            _Line l1 = new _Line(lineToMove.StartPoint, lineToMove.StartPoint.Move(moveVector)); 
+            _Line l1 = new _Line(lineToMove.StartPoint, lineToMove.StartPoint.Move(moveVector));
             l1.Name = $"NewSmallStart_{moveStepsCount}";
             _Line l2 = new _Line(lineToMove.EndPoint, lineToMove.EndPoint.Move(moveVector));
             l2.Name = $"NewSmallEnd_{moveStepsCount}";
 
-           
+
             foreach (_Room room in rooms) {                                          // the lines are movedline, l1, l2 already existed, then find them
                 foreach (_Line line in room.Lines) {
                     if (line.IsTheSame(l1)) l1 = line;
@@ -134,29 +210,29 @@ namespace Diploma2.Model {
                 room.Lines.Remove(lineToMove);
                 foreach (_Line getLine in room.Lines.ToList()) {                      //is tolist legal? is this same object references?
                     _Point p = getLine.ConnectsPoint(lineToMove);
-
-                    _Point objA = getLine.GetNV(true);
-                    _Point objB = lineToMove.GetNV(true);
                     if (p != null && p.Equals(lineToMove.StartPoint))                 //there is common point with startpoint, so this line touched the old startpoint
                     {                                                                 //we need to either move it, if it is parallel, or keep it if it is merőleges
-                        //THE LINE SHOULD MOVE - BOTH DIRECTIONS - MOVE P WITH MOVEVECTOR
-                        
+                                                                                      //THE LINE SHOULD MOVE - BOTH DIRECTIONS - MOVE P WITH MOVEVECTOR
+
+                        _Point objA = getLine.GetNV(true);
+                        _Point objB = lineToMove.GetNV(true);
+
                         bool parallel = Equals(objA, objB);
                         bool inverseParallel = Equals(objA * -1, objB);
-                        if (getLine.StartPoint.Equals(p)&&!(parallel || inverseParallel))//párhuzamos)
+                        if (getLine.StartPoint.Equals(p) && !(parallel || inverseParallel))//párhuzamos)
                         {
-                            getLine.StartPoint=getLine.StartPoint.Move(moveVector);
+                            getLine.StartPoint = getLine.StartPoint.Move(moveVector);
                         }
-                        if (getLine.EndPoint.Equals(p) && !(parallel || inverseParallel))
-                        {
-                            getLine.EndPoint= getLine.EndPoint.Move(moveVector);
+                        if (getLine.EndPoint.Equals(p) && !(parallel || inverseParallel)) {
+                            getLine.EndPoint = getLine.EndPoint.Move(moveVector);
                         }
-                        
-                        
+
+
                     }
 
-                    if (p != null && p.Equals(lineToMove.EndPoint))
-                    {
+                    if (p != null && p.Equals(lineToMove.EndPoint)) {
+                        _Point objA = getLine.GetNV(true);
+                        _Point objB = lineToMove.GetNV(true);
                         bool parallel = Equals(objA, objB);
                         bool inverseParallel = Equals(objA * -1, objB);
                         if (getLine.StartPoint.Equals(p) && !(parallel || inverseParallel)) {
@@ -176,19 +252,15 @@ namespace Diploma2.Model {
 
             //MIGHT BE UNNESSESARY
             _Line l5 = null;                                                             //lets start with if the line already existed fully
-            foreach (_Line line in AllLinesFlat())
-            {
-                if (line.Guid!= movedLine.Guid && line.IsTheSame(movedLine))
-                {
+            foreach (_Line line in AllLinesFlat()) {
+                if (line.Guid != movedLine.Guid && line.IsTheSame(movedLine)) {
                     l5 = line;
                     break;                                                               //TODO: here we could allow multiple
                 }
             }
 
-            foreach (_Room room in rooms)
-            {
-                if (room.Lines.Contains(l5))
-                {
+            foreach (_Room room in rooms) {
+                if (room.Lines.Contains(l5)) {
                     room.Lines.Remove(l5);                                                  //Should we handle points?
                     room.Lines.Add(movedLine);
                 }
@@ -198,24 +270,19 @@ namespace Diploma2.Model {
             //ROOMS MIGHT NEED TO REMOVE PART OF L1 -- BOTTOM LEFT
             //szobák jatítsák ki magukat - l1 vagy l2 melyikkel lenne teljes
 
-            foreach (_Room room in rooms)
-            {
+            foreach (_Room room in rooms) {
                 bool isComplete = room.CanGetBoundarySorted();
-                if (!isComplete)
-                {
+                if (!isComplete) {
                     room.Lines.Add(l1);
                     isComplete = room.CanGetBoundarySorted(); //the rooms might be with overlapping lines at this point, we need to handle that
-                    if (!isComplete)
-                    {
+                    if (!isComplete) {
                         room.Lines.Remove(l1);
                         room.Lines.Add(l2);
                         isComplete = room.CanGetBoundarySorted();
-                        if (!isComplete)
-                        {
+                        if (!isComplete) {
                             room.Lines.Add(l1);
                             isComplete = room.CanGetBoundarySorted();
-                            if (!isComplete)
-                            {
+                            if (!isComplete) {
                                 room.Lines.Remove(l2);
                                 room.Lines.Remove(l1);
                             }
@@ -227,7 +294,7 @@ namespace Diploma2.Model {
 
 
             GC.Collect();
-            
+
 
             //at this point we only need to solve
             //1. same line already existed before - fully or partially
@@ -244,23 +311,25 @@ namespace Diploma2.Model {
         }
 
         //TODO: implement
-        public void SplitLine()
-        {
+        public void SplitLine() {
             SplitLine(0.50, rooms.First().Lines.First());
         }
-        public void SplitLine(double percentage, _Line lineToSplit)
-        {
+        public void SplitLine(double percentage, _Line lineToSplit) {
 
         }
         //TODO: implement
-        public void SwitchRoom()
-        {
 
-        }
 
 
         internal void MoveLine() {
-            MoveLine(10,rooms.First().Lines.First());
+            MoveLine(10, rooms.First().Lines.First());
+        }
+
+        public void SwitchRooms(ref _Room room1, ref _Room room2) {
+            _Room temp1 = room1.DeepCopy();
+            _Room temp2 = room2.DeepCopy();
+            _Room.ChangeAllParams(ref room1, temp2);
+            _Room.ChangeAllParams(ref room2, temp1);
         }
     }
 }

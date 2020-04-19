@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Controls;
-using WindowsFormsApp1;
 using Image = System.Drawing.Image;
 
 namespace Diploma2.Utilities {

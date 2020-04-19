@@ -4,11 +4,17 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Diploma2.Annotations;
+using Diploma2.Utilities;
 
 namespace Diploma2.Model {
     public class _Room : _GeometryBase, INotifyPropertyChanged {
         public _Room(List<_Line> newLines) {
             lines = newLines;
+        }
+
+        public override string ToString()
+        {
+            return Name+"_"+Number.ToString();
         }
 
         public _Room() {
@@ -30,13 +36,18 @@ namespace Diploma2.Model {
             foreach (_Line line in lines) {
                 newLines.Add(line.DeepCopy());
             }
-            return new _Room(newLines);
+
+            _Room deepCopy = new _Room(newLines);
+            deepCopy.Name = Name;
+            deepCopy.Number = Number;
+            return deepCopy;
         }
 
 
         private List<_Point> Points = new List<_Point>();
         private List<_Line> lines = new List<_Line>();
         public _RoomType type { get; set; }
+        public bool isStartRoom { get; internal set; }
 
         public List<_Point> GetBoundaryPointsSorted() {
             SortPoints();
@@ -151,10 +162,10 @@ namespace Diploma2.Model {
 
         public double CalculateArea()
         {
-            List<_Point> bp = GetBoundaryPointsSorted();
+            List<_Point> bp = GetPoints();
 
             if (bp.Count == 0) {
-                throw new Exception("Area is null");
+                //throw new Exception("Area is null");
             }
 
             double[] X = bp.Select(i => i.X).ToArray();
@@ -198,13 +209,13 @@ namespace Diploma2.Model {
         public double CalculateProportion() {
             double proportion = 0.0;
             try {
-                List<MyPoint> bp = GetBoundaryPointsSorted();
+                List<_Point> bp = GetPoints();
 
                 double[] X = bp.Select(i => i.X).ToArray();
                 double[] Y = bp.Select(i => i.Y).ToArray();
 
-                MyPoint max = new MyPoint(X.Max(), Y.Max());
-                MyPoint min = new MyPoint(X.Min(), Y.Min());
+                _Point max = new _Point(X.Max(), Y.Max());
+                _Point min = new _Point(X.Min(), Y.Min());
 
 
                 proportion = (max.X - min.X) / (max.Y - min.Y);
@@ -217,6 +228,13 @@ namespace Diploma2.Model {
             }
 
             return proportion;
+        }
+
+        public static void ChangeAllParams(ref _Room keep, _Room getDataFrom)
+        {
+            keep.Number = getDataFrom.Number;
+            keep.Name = getDataFrom.Name;
+            keep.type = getDataFrom.type;
         }
     }
 }

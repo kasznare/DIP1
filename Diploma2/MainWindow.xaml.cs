@@ -2,17 +2,22 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Diploma2.Annotations;
 using Diploma2.Model;
 using Diploma2.Services;
+using Diploma2.Utilities;
+using Action = System.Action;
 using ShapeLine = System.Windows.Shapes.Line;
 
 namespace Diploma2 {
@@ -24,11 +29,22 @@ namespace Diploma2 {
         private int selectedLineIndex = -1;
         public int selectedPointIndex = -1;
         public string StatusMessage { get; set; }
-        public ObservableCollection<_Point> Points { get; set; }
-        public ObservableCollection<_Line> Lines { get; set; }
-        public ObservableCollection<_Room> Rooms { get; set; }
+        public ObservableCollection<_Point> Points { get; set; } = new ObservableCollection<_Point>();
+        public ObservableCollection<_Line> Lines { get; set; }= new ObservableCollection<_Line>();
+        public ObservableCollection<_Room> Rooms { get; set; } = new ObservableCollection<_Room>();
         public _Model model { get; set; }
+        public ObservableCollection<Costs> SimulationCosts { get; set; } = new ObservableCollection<Costs>();
+        public Simulate s = new Simulate();
+        public ObservableCollection<LineAndCost> LineAndCostActualStep { get; set; } = new ObservableCollection<LineAndCost>();
 
+        public ObservableCollection<_RoomType> roomtypes { get; set; } = new ObservableCollection<_RoomType>();
+        public int LineGridSelectedIndex { get; set; }
+        private int actualSimulationThreshold = 0;
+        private int MaxSimulationThreshold = 5;
+        public int actualSimulationIndex = 0;
+        readonly object locker = new object();
+        public int moveDistance = 10;
+        public string runPath = "";
         public int SelectedLineIndex
         {
             get
@@ -67,11 +83,12 @@ namespace Diploma2 {
         public MainWindow()
         {
             DataContext = this;
-            Points = new ObservableCollection<_Point>();
-            Lines = new ObservableCollection<_Line>();
-            Rooms = new ObservableCollection<_Room>();
+            InitRoomTypes();
             InitializeComponent();
-            LoadModels();
+            model = ModelConfigurations.InitSimpleModel();
+            LoadDataFromModel();
+            s.model = model;
+            s.ModelChanged += ModelChangeHandler;
             Paint();
         }
 
@@ -237,6 +254,50 @@ namespace Diploma2 {
         {
             SelectedPointIndex = PointGrid.SelectedIndex;
 
+        }
+
+        private void CreateRunFolderAndInitPath() {
+
+            runPath = $@"C:\Users\{Environment.UserName}\Documents\DIP1\Screens\{DateTime.Now:yy-MM-dd-hh-ss-tt}_{model.loadedModelType}\";
+            try {
+                Directory.CreateDirectory(runPath);
+            }
+            catch (Exception e) {
+                Logger.WriteLog("Directory can not be created, it already exists");
+            }
+        }
+
+        private void InitRoomTypes() {
+            roomtypes.Add(_RoomType.BedRoom);
+            roomtypes.Add(_RoomType.LivingRoom);
+            roomtypes.Add(_RoomType.RestRoom);
+            roomtypes.Add(_RoomType.Kitchen);
+        }
+        private void ModelChangeHandler(object sender, ProgressEventArgs e) {
+
+            Dispatcher.BeginInvoke(new Action(() => {
+
+                lock (locker) {
+
+                    //SaveStateToPng();
+                    model = e.model;
+                    SimulationCosts.Add(new Costs(e.simIndex, e.cost, e.areacost, e.layoutcost, 0, e.stepAction));
+                    LoadDataFromModel();
+                    Paint();
+
+
+                }
+            }), DispatcherPriority.SystemIdle);
+
+        }
+
+        private void StartSimulation_OnClick(object sender, RoutedEventArgs e)
+        {
+            s.model = model;
+            Paint();
+
+            Thread t = new Thread(s.run);
+            t.Start();
         }
     }
 }

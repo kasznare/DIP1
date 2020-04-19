@@ -30,6 +30,10 @@
             <ColumnDefinition Width='2*'></ColumnDefinition>
           </Grid.ColumnDefinitions>
           <StackPanel>
+            <Button Content="Start Simulation"
+                    Height="50"
+                    Name="StartSimulation"
+                    Click="StartSimulation_OnClick"></Button>
             <Button Content="Load Model"
                     Name="LoadModel"
                     Click="LoadModel_OnClick"

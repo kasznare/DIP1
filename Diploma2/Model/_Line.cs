@@ -9,8 +9,12 @@ namespace Diploma2.Model {
             EndPoint = endPoint;
         }
 
-        public _Line DeepCopy() {
-            return new _Line(StartPoint.DeepCopy(), EndPoint.DeepCopy());
+        public _Line DeepCopy()
+        {
+            _Line deepCopy = new _Line(StartPoint.DeepCopy(), EndPoint.DeepCopy());
+            deepCopy.Name = Name;
+            deepCopy.Number = Number;
+            return deepCopy;
         }
 
         public bool IsTheSame(_Line lineToMove) {

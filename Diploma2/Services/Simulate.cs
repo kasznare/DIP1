@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Diploma2.Model;
+using Diploma2.Utilities;
 
 namespace Diploma2.Services {
     public class Simulate {
@@ -18,7 +19,7 @@ namespace Diploma2.Services {
         private int actualSimulationThreshold = 0;
         private int MaxSimulationThreshold = 20;
         public int actualSimulationIndex = 0;
-        public int MaxSimulationIndex = 2000;
+        public int MaxSimulationIndex = 1;
         public int moveDistance = 10;
         bool isFinished = false;
         bool isTimeout = false;
@@ -88,16 +89,16 @@ namespace Diploma2.Services {
             throw new NotImplementedException();
         }
         private void CalculateSwitchCosts() {
-            int rooms = model.modelRooms.Count;
+            int rooms = model.rooms.Count;
             //Parallel.For(0, rooms, index => {
             for (int index = 0; index < rooms; index++) {
                 for (int secondindex = index + 1; secondindex < rooms; secondindex++) {
                     //Parallel.For(index + 1, rooms, secondindex => {
-                    MyRoom r1 = model.modelRooms.ElementAt(index);
-                    MyRoom r2 = model.modelRooms.ElementAt(secondindex);
-                    MyRoom r1target = null;
-                    MyRoom r2target = null;
-                    Model tempModel = model.DeepCopy(r1, r2, out r1target, out r2target);
+                    _Room r1 = model.rooms.ElementAt(index);
+                    _Room r2 = model.rooms.ElementAt(secondindex);
+                    _Room r1target = null;
+                    _Room r2target = null;
+                    _Model tempModel = model.DeepCopy(r1, r2, out r1target, out r2target);
                     tempModel.SwitchRooms(ref r1target, ref r2target);
                     if (!tempModel.IsInInvalidState) {
                         double cost = CostCalculationService.CalculateCost(tempModel).First();
@@ -114,11 +115,11 @@ namespace Diploma2.Services {
 
             //Parallel.For(0, model.modelLines.Count,
             //    index => {
-            for (int index = 0; index < model.modelLines.Count; index++) {
+            for (int index = 0; index < model.AllLinesFlat().Count; index++) {
 
-                MyLine myLine = model.modelLines.ElementAt(index);
-                MyLine newMyLine = null;
-                Model tempModel = model.DeepCopy(myLine, out newMyLine);
+                _Line myLine = model.AllLinesFlat().ElementAt(index);
+                _Line newMyLine = null;
+                _Model tempModel = model.DeepCopy(myLine, out newMyLine);
                 tempModel.MoveLine(moveDistance, newMyLine);
                 if (tempModel.IsInInvalidState) continue;
 
@@ -133,11 +134,11 @@ namespace Diploma2.Services {
             //});
             //Parallel.For(0, model.modelLines.Count,
             //    index => {
-            for (int index = 0; index < model.modelLines.Count; index++) {
+            for (int index = 0; index < model.AllLinesFlat().Count; index++) {
 
-                MyLine myLine = model.modelLines.ElementAt(index);
-                MyLine newMyLine = null;
-                Model tempModel = model.DeepCopy(myLine, out newMyLine);
+                _Line myLine = model.AllLinesFlat().ElementAt(index);
+                _Line newMyLine = null;
+                _Model tempModel = model.DeepCopy(myLine, out newMyLine);
                 tempModel.MoveLine(-moveDistance, newMyLine);
                 if (tempModel.IsInInvalidState) continue;
                 double[] costs = CostCalculationService.CalculateCost(tempModel);
@@ -154,7 +155,7 @@ namespace Diploma2.Services {
         public void SaveState() {
             modelCopyHistory.Add(model.DeepCopy());
         }
-        public void LoadState(Model m) {
+        public void LoadState(_Model m) {
             model = m;
         }
 
@@ -183,7 +184,7 @@ namespace Diploma2.Services {
             return null;
         }
 
-        public void Split(int splitPercentage, MyLine lineGridSelectedItem) {
+        public void Split(int splitPercentage, _Line lineGridSelectedItem) {
             Action a = new Split(splitPercentage, lineGridSelectedItem);
             a.Step(model);
             double[] costs = CostCalculationService.CalculateCost(model);
@@ -193,7 +194,7 @@ namespace Diploma2.Services {
             actualLayoutCost = costs[2];
             HandleModelChangeUpdate();
         }
-        public void Move(MyLine lineGridSelectedItem, int movedistance) {
+        public void Move(_Line lineGridSelectedItem, int movedistance) {
             Action a = new Move(lineGridSelectedItem, movedistance);
             a.Step(model);
             double[] costs = CostCalculationService.CalculateCost(model);
@@ -204,7 +205,7 @@ namespace Diploma2.Services {
             HandleModelChangeUpdate();
         }
 
-        public void SwitchRoom(ref MyRoom r1, ref MyRoom r2) {
+        public void SwitchRoom(ref _Room r1, ref _Room r2) {
             Action a = new Switch(ref r1, ref r2);
             a.Step(model);
             double[] costs = CostCalculationService.CalculateCost(model);
@@ -216,14 +217,14 @@ namespace Diploma2.Services {
         }
     }
     public class ProgressEventArgs : EventArgs {
-        public Model model { get; private set; }
+        public _Model model { get; private set; }
         public Action stepAction { get; set; }
         public double cost { get; private set; }
         public double areacost { get; set; }
         public double layoutcost { get; set; }
 
         public int simIndex { get; private set; }
-        public ProgressEventArgs(Model status, double actualcost, int index) {
+        public ProgressEventArgs(_Model status, double actualcost, int index) {
             cost = actualcost;
             model = status;
             simIndex = index;
@@ -231,7 +232,7 @@ namespace Diploma2.Services {
     }
 
     public abstract class Action {
-        public abstract void Step(Model m);
+        public abstract void Step(_Model m);
         public double cost;
         public double areacost;
         public double layoutcost;
@@ -240,21 +241,21 @@ namespace Diploma2.Services {
         }
     }
     public class Move : Action {
-        private MyLine myLine;
+        private _Line myLine;
         private int moveDistance;
         private double summary;
 
-        public Move(MyLine myLine, int moveDistance) {
+        public Move(_Line myLine, int moveDistance) {
             this.myLine = myLine;
             this.moveDistance = moveDistance;
         }
-        public Move(MyLine myLine, double cost, int moveDistance) {
+        public Move(_Line myLine, double cost, int moveDistance) {
             this.myLine = myLine;
             this.cost = cost;
             this.moveDistance = moveDistance;
         }
 
-        public Move(MyLine myLine, double summary, double areacost, double layoutcost, int moveDistance) {
+        public Move(_Line myLine, double summary, double areacost, double layoutcost, int moveDistance) {
             this.myLine = myLine;
             this.cost = summary;
             this.areacost = areacost;
@@ -262,40 +263,40 @@ namespace Diploma2.Services {
             this.moveDistance = moveDistance;
         }
 
-        public override void Step(Model m) {
+        public override void Step(_Model m) {
             Logger.WriteLog("Before transform"+myLine);
             m.MoveLine(moveDistance, myLine);
             Logger.WriteLog("After transform"+myLine);
         }
     }
     public class Split : Action {
-        private MyLine myLine;
+        private _Line myLine;
         private int split;
-        public Split(int splitPercentage, MyLine lineGridSelectedItem) {
+        public Split(int splitPercentage, _Line lineGridSelectedItem) {
             split = splitPercentage;
             myLine = lineGridSelectedItem;
         }
 
-        public override void Step(Model m) {
-            m.SplitEdge(split, myLine);
+        public override void Step(_Model m) {
+            m.SplitLine(split, myLine);
         }
     }
     public class Switch : Action {
-        private MyRoom r1;
-        private MyRoom r2;
+        private _Room r1;
+        private _Room r2;
 
-        public Switch(ref MyRoom r1, ref MyRoom r2, double cost) {
+        public Switch(ref _Room r1, ref _Room r2, double cost) {
             this.r1 = r1;
             this.r2 = r2;
             this.cost = cost;
         }
 
-        public Switch(ref MyRoom r1, ref MyRoom r2) {
+        public Switch(ref _Room r1, ref _Room r2) {
             this.r1 = r1;
             this.r2 = r2;
         }
 
-        public override void Step(Model m) {
+        public override void Step(_Model m) {
             m.SwitchRooms(ref r1, ref r2);
         }
     }
