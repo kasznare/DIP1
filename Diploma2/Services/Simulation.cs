@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -33,7 +34,7 @@ namespace Diploma2.Services {
         double actualAreaCost;
         double actualLayoutCost;
 
-        public List<_Model> modelCopyHistory = new List<_Model>();
+        public ObservableCollection<_Model> modelCopyHistory = new ObservableCollection<_Model>();
         public Dictionary<Action, double> ActionsByCosts = new Dictionary<Action, double>();
         public List<Action> Actions = new List<Action>();
         public List<Dictionary<Action, double>> history = new List<Dictionary<Action, double>>();
@@ -74,6 +75,11 @@ namespace Diploma2.Services {
             st.Reset();
         }
 
+        public void UndoStep()
+        {
+            LoadState(modelCopyHistory.ElementAt(CurrentIndex-1));
+            HandleModelChangeUpdate();
+        }
         private void HandleModelChangeUpdate() {
             if (ModelChanged == null) return;
             ProgressEventArgs args = new ProgressEventArgs(Model, actualCost, CurrentIndex);

@@ -40,6 +40,7 @@ namespace Diploma2.Model {
             _Room deepCopy = new _Room(newLines);
             deepCopy.Name = Name;
             deepCopy.Number = Number;
+            deepCopy.type = type;
             return deepCopy;
         }
 

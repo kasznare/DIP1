@@ -20,8 +20,9 @@
           <Label Height="15"
                  Content="{Binding StatusMessage, Mode=OneWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged}"></Label>
     </StatusBar>-->
-    <TabControl Name="TabControl">
-      <TabItem Header='Graphics'
+    <TabControl Name="TabControl"
+                Margin='0,0,0,-318'>
+      <TabItem Header='Graphicsimulation'
                Name='Graphics'>
         <Grid>
           <Grid.ColumnDefinitions>
@@ -29,12 +30,14 @@
             <ColumnDefinition Width='2*'></ColumnDefinition>
             <ColumnDefinition Width='2*'></ColumnDefinition>
           </Grid.ColumnDefinitions>
+          
           <StackPanel>
             <Button Content="Start Simulation"
                     Height="50"
                     Name="StartSimulation"
                     Click="StartSimulation_OnClick"></Button>
-            <Button Content="Undo simulation step"
+           
+            <Button Content="Undo step"
                     Height="50"
                     Name="UndoStep"
                     Click="UndoStep_OnClick"></Button>
@@ -55,18 +58,59 @@
                     Click="Exit_OnClick"
                     Height="50"></Button>
           </StackPanel>
-          <Canvas Name="testcanvas"
-                  Margin='32,444,368,13'
-                  Grid.ColumnSpan='2'
-                  Grid.Column='1'>
-            <!--RenderTransformOrigin="0,0"-->
-            <Canvas.RenderTransform>
-              <TransformGroup>
-                <ScaleTransform ScaleY="-1"
-                                ScaleX="1" />
-              </TransformGroup>
-            </Canvas.RenderTransform>
-          </Canvas>
+
+          <StackPanel  Grid.Column="1"
+                       Grid.Row="0">
+            <Canvas Name="testcanvas"
+                    Height="300"
+                    Margin="0,400,0,0"
+                    Grid.ColumnSpan='2'
+                    Grid.Column='1'>
+              <!--RenderTransformOrigin="0,0"-->
+              <Canvas.RenderTransform>
+                <TransformGroup>
+                  <ScaleTransform ScaleY="-1"
+                                  ScaleX="1" />
+                </TransformGroup>
+              </Canvas.RenderTransform>
+            </Canvas>
+            <TextBlock Text="History"
+                       Foreground="White"
+                       FontSize="30"></TextBlock>
+            <DataGrid  Name="history"
+                       ItemsSource="{Binding modelHistory, IsAsync=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                       HorizontalAlignment="Stretch"
+                       Height="300"
+                       AutoGenerateColumns="False"
+                       SelectionUnit="FullRow"
+                       SelectedCellsChanged="RoomGrid_OnSelectedCellsChanged"
+                       VerticalAlignment="Stretch">
+
+              <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Linesimulation"
+                                        Width="200">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <ItemsControl ItemsSource="{Binding rooms}" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="IsInInvalidState"
+                                        Width="100">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding IsInInvalidState}"
+                                 TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+              </DataGrid.Columns>
+
+            </DataGrid>
+
+          </StackPanel>
+         
           <StackPanel Grid.Column="2">
             <StackPanel  Grid.Column="2"
                          Grid.Row="0">
@@ -210,7 +254,7 @@ SelectedCellsChanged="LineGrid_OnSelectedCellsChanged"
                          VerticalAlignment="Stretch">
 
                 <DataGrid.Columns>
-                  <DataGridTemplateColumn Header="Lines"
+                  <DataGridTemplateColumn Header="Linesimulation"
                                           Width="200">
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate>

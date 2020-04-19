@@ -30,11 +30,12 @@ namespace Diploma2 {
         public int selectedPointIndex = -1;
         public string StatusMessage { get; set; }
         public ObservableCollection<_Point> Points { get; set; } = new ObservableCollection<_Point>();
-        public ObservableCollection<_Line> Lines { get; set; }= new ObservableCollection<_Line>();
+        public ObservableCollection<_Line> Lines { get; set; } = new ObservableCollection<_Line>();
         public ObservableCollection<_Room> Rooms { get; set; } = new ObservableCollection<_Room>();
+        public ObservableCollection<_Model> modelHistory { get; set; } = new ObservableCollection<_Model>();
         public _Model model { get; set; }
         public ObservableCollection<Costs> SimulationCosts { get; set; } = new ObservableCollection<Costs>();
-        public Simulation s = new Simulation();
+        public Simulation simulation = new Simulation();
         public ObservableCollection<LineAndCost> LineAndCostActualStep { get; set; } = new ObservableCollection<LineAndCost>();
 
         public ObservableCollection<_RoomType> roomtypes { get; set; } = new ObservableCollection<_RoomType>(_RoomType.getRoomTypes());
@@ -44,31 +45,25 @@ namespace Diploma2 {
         public int actualSimulationIndex = 0;
         readonly object locker = new object();
         public int moveDistance = 10;
-     
-        public int SelectedLineIndex
-        {
-            get
-            {
+
+        public int SelectedLineIndex {
+            get {
                 return selectedLineIndex;
 
             }
-            set
-            {
+            set {
                 selectedLineIndex = value;
                 OnPropertyChanged();
                 Paint();
             }
         }
 
-        public int SelectedPointIndex
-        {
-            get
-            {
+        public int SelectedPointIndex {
+            get {
                 return selectedPointIndex;
 
             }
-            set
-            {
+            set {
                 selectedPointIndex = value;
                 OnPropertyChanged();
                 Paint();
@@ -80,14 +75,13 @@ namespace Diploma2 {
         private void Log(string message) {
             if (message != null && message != StatusMessage) StatusMessage = message;
         }
-        public MainWindow()
-        {
+        public MainWindow() {
             DataContext = this;
             InitializeComponent();
             model = ModelConfigurations.InitSimpleModel();
             LoadDataFromModel();
-            s.Model = model;
-            s.ModelChanged += ModelChangeHandler;
+            simulation.Model = model;
+            simulation.ModelChanged += ModelChangeHandler;
             Paint();
         }
 
@@ -135,7 +129,6 @@ namespace Diploma2 {
                 if (i.Equals(SelectedPointIndex)) {
                     solidColorBrush = Brushes.GreenYellow;
                 }
-
                 _line.Stroke = solidColorBrush;
                 _line.X1 = point.X;
                 _line.X2 = point.X + 1;
@@ -148,13 +141,10 @@ namespace Diploma2 {
                 testcanvas.Children.Add(_line);
             }
 
-            //foreach (MyRoom room in Model.modelRooms) {
             foreach (_Room room in Rooms) {
-                try
-                {
-                    List<_Point> boundaries = room.GetPoints();
+                try {
+                    List<_Point> boundaries = room.GetBoundaryPointsSorted();
                     if (!boundaries.Any()) continue;
-                    //boundaries.RemoveAll(item => item == null); //this is error handling, but I would need to figure out why nulls exist
                     List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
                     Polygon p = new Polygon();
                     p.Points = new PointCollection(convertedPoints);
@@ -162,10 +152,8 @@ namespace Diploma2 {
                     p.Opacity = 0.25;
                     p.ToolTip = room.ToString();
                     testcanvas.Children.Add(p);
-
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     Logger.WriteLog(e);
                 }
             }
@@ -183,8 +171,7 @@ namespace Diploma2 {
             Paint();
         }
 
-        private void LoadDataFromModel()
-        {
+        private void LoadDataFromModel() {
             Points = new ObservableCollection<_Point>(model.AllPointsFlat());
             Lines = new ObservableCollection<_Line>(model.AllLinesFlat());
             Rooms = model.rooms;
@@ -225,20 +212,16 @@ namespace Diploma2 {
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void RoomGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
-        {
+        private void RoomGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
             _Room index = RoomGrid.CurrentCell.Item as _Room;
             selectedLineIndices.Clear();
             var i = 0;
-            foreach (var line in Lines)
-            {
-                if (index != null && index.Lines.Contains(line))
-                {
+            foreach (var line in Lines) {
+                if (index != null && index.Lines.Contains(line)) {
                     selectedLineIndices.Add(i);
                 }
                 i++;
@@ -248,23 +231,16 @@ namespace Diploma2 {
 
         }
 
-        private void LineGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
-        {
+        private void LineGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
             selectedLineIndices.Clear();
             selectedLineIndices.Add(LineGrid.SelectedIndex);
             Paint();
         }
 
-        private void PointGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
-        {
+        private void PointGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
             SelectedPointIndex = PointGrid.SelectedIndex;
         }
 
-       
-
-        private void InitRoomTypes() {
-            
-        }
         private void ModelChangeHandler(object sender, ProgressEventArgs e) {
 
             Dispatcher.BeginInvoke(new Action(() => {
@@ -272,6 +248,7 @@ namespace Diploma2 {
                 lock (locker) {
 
                     //SaveStateToPng();
+                    modelHistory.Add(model);
                     model = e.model;
                     SimulationCosts.Add(new Costs(e.simIndex, e.cost, e.areacost, e.layoutcost, 0, e.stepAction));
                     LoadDataFromModel();
@@ -283,18 +260,18 @@ namespace Diploma2 {
 
         }
 
-        private void StartSimulation_OnClick(object sender, RoutedEventArgs e)
-        {
-            s.Model = model;
+        private void StartSimulation_OnClick(object sender, RoutedEventArgs e) {
+            simulation.Model = model;
             Paint();
 
-            Thread t = new Thread(s.RunSteps);
+            Thread t = new Thread(simulation.RunSteps);
             t.Start();
         }
 
         private void UndoStep_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            simulation.UndoStep();
         }
+
     }
 }

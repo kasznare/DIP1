@@ -42,7 +42,7 @@ namespace Diploma2.Annotations
   /// 
   /// void UseTest() {
   ///   var p = Test();
-  ///   var s = p.ToString(); // Warning: Possible 'System.NullReferenceException'
+  ///   var simulation = p.ToString(); // Warning: Possible 'System.NullReferenceException'
   /// }
   /// </code></example>
   [AttributeUsage(
@@ -267,8 +267,8 @@ namespace Diploma2.Annotations
   /// public string GetName(string surname)
   /// </code></item>
   /// <item><code>
-  /// [ContractAnnotation("s:null =&gt; true")]
-  /// public bool IsNullOrEmpty(string s) // string.IsNullOrEmpty()
+  /// [ContractAnnotation("simulation:null =&gt; true")]
+  /// public bool IsNullOrEmpty(string simulation) // string.IsNullOrEmpty()
   /// </code></item>
   /// <item><code>
   /// // A method that returns null if the parameter is null,
@@ -278,7 +278,7 @@ namespace Diploma2.Annotations
   /// </code></item>
   /// <item><code>
   /// [ContractAnnotation("=&gt; true, result: notnull; =&gt; false, result: null")]
-  /// public bool TryParse(string s, out Person result)
+  /// public bool TryParse(string simulation, out Person result)
   /// </code></item>
   /// </list></examples>
   [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
