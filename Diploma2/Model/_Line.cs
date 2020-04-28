@@ -17,6 +17,18 @@ namespace Diploma2.Model {
             return deepCopy;
         }
 
+        public override bool Equals(object obj)
+        {
+            //Check for null and compare RunSteps-time types.
+            if ((obj == null) || !this.GetType().Equals(obj.GetType())) {
+                return false;
+            }
+            else {
+                _Line l = (_Line)obj;
+                return (StartPoint.Equals(l.StartPoint) && (EndPoint.Equals(l.EndPoint))) || (StartPoint.Equals(l.EndPoint) && (EndPoint.Equals(l.StartPoint)));
+            }
+        }
+
         public bool IsTheSame(_Line lineToMove) {
             if (lineToMove.StartPoint.Equals( this.StartPoint)
                 && lineToMove.EndPoint.Equals( this.EndPoint) )return true;

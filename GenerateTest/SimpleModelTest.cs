@@ -1,6 +1,8 @@
 ﻿using System;
 using WindowsFormsApp1;
 using WindowsFormsApp1.Simulation;
+using Diploma2.Model;
+using Diploma2.Services;
 using NUnit;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
@@ -9,10 +11,10 @@ using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 namespace GenerateTest {
     public class SimpleModelTest {
 
-        Simulate s = new Simulate();
+        Simulation s = new Simulation();
         [SetUp]
         public void Setup() {
-            s.model = new Model();
+            s.Model = new _Model();
         }
         //the test should be to try every single move and see if there is an error
         //if there is an error...
@@ -28,13 +30,13 @@ namespace GenerateTest {
         //the goal of the tests are to avoid exceptions, if there is an exception, it fails.
         //[Test]
         public void SimpleModel() {
-            s.model.InitSimpleModel();
-            s.run();
+            s.Model = ModelConfigurations.InitSimpleModel();
+            s.RunSteps();
         }
         //[Test]
         public void FullSimulation() {
-            s.model.InitSimpleModel();
-            s.run();
+            s.Model = ModelConfigurations.InitSimpleModel();
+            s.RunSteps();
         }
 
         //[Test]

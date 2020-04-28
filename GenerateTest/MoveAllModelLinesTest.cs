@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using WindowsFormsApp1;
 using WindowsFormsApp1.Simulation;
+using Diploma2.Model;
+using Diploma2.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NUnit;
@@ -14,12 +16,12 @@ using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace GenerateTest {
     public class MoveAllModelLinesTest {
-        Model m;
+        _Model m;
         ModelStorage ms = new ModelStorage();
 
         [SetUp]
         public void Setup() {
-            m = new Model();
+            m = new _Model();
         }
 
         [Test]
@@ -34,10 +36,11 @@ namespace GenerateTest {
 
         [Test]
         public void MoveEveryLineInSimple() {
-            m.InitSimpleModel();
-            MyLine l = null;
-            for (var i = 0; i < m.modelLines.Count; i++) {
-                l = m.modelLines[i];
+            m = ModelConfigurations.InitSimpleModel();
+            _Line l = null;
+            List<_Line> lines = m.AllLinesFlat();
+            for (var i = 0; i < lines.Count; i++) {
+                l = lines[i];
                 m.MoveLine(10, l);
                 m.MoveLine(-10, l);
                 m.MoveLine(-10, l);
@@ -47,10 +50,11 @@ namespace GenerateTest {
 
         [Test]
         public void MoveEveryLineInNormal() {
-            m.InitNormalModel();
-            MyLine l = null;
-            for (var i = 0; i < m.modelLines.Count; i++) {
-                l = m.modelLines[i];
+            m = ModelConfigurations.InitNormalModel();
+            _Line l = null;
+            List<_Line> lines = m.AllLinesFlat();
+            for (var i = 0; i < lines.Count; i++) {
+                l = lines[i];
                 m.MoveLine(10, l);
                 m.MoveLine(-10, l);
                 m.MoveLine(-10, l);
@@ -58,72 +62,52 @@ namespace GenerateTest {
             }
         }
 
-        [Test]
-        public void MoveEveryLineInAdvanced() {
-            m.InitAdvancedModel();
-            MyLine l = null;
-            for (var i = 0; i < m.modelLines.Count; i++) {
-                l = m.modelLines[i];
-                m.MoveLine(10, l);
-                m.MoveLine(-10, l);
-            }
-        }
-
-        [Test]
-        public void MoveEveryLineInFactory() {
-            m.InitModelWithGivenRooms();
-            MyLine l = null;
-            for (var i = 0; i < m.modelLines.Count; i++) {
-                l = m.modelLines[i];
-                m.MoveLine(10, l);
-                m.MoveLine(-10, l);
-            }
-        }
 
         [Test]
         public void AllCasesTestGeneration() {
-            m.InitTestModel();
-            List<Model> newModels = new List<Model>();
-            newModels.Add(m);
-            List<Model> allModels = new List<Model>();
-            while (newModels.Any()) {
-                List<Model> loop = new List<Model>();
-                foreach (Model model in newModels) {
-                    List<Model> currentModels = AllRoomPairs(model);
+            m = ModelConfigurations.InitTestModel();
+            List<_Model> new_Models = new List<_Model>();
+            new_Models.Add(m);
+            List<_Model> all_Models = new List<_Model>();
+            while (new_Models.Any()) {
+                List<_Model> loop = new List<_Model>();
+                foreach (_Model _Model in new_Models) {
+                    List<_Model> current_Models = AllRoomPairs(_Model);
 
-                    foreach (Model currentModel in currentModels) {
-                        if (currentModel.modelRooms.Count > 1) {
-                            loop.Add(currentModel);
+                    foreach (_Model current_Model in current_Models) {
+                        if (current_Model.rooms.Count > 1) {
+                            loop.Add(current_Model);
                         }
                     }
 
-                    allModels.AddRange(currentModels);
+                    all_Models.AddRange(current_Models);
                 }
 
-                newModels = loop;
+                new_Models = loop;
             }
 
-            foreach (Model model in allModels) {
-                Ommitsteps(model);
+            foreach (_Model _Model in all_Models) {
+                Ommitsteps(_Model);
             }
 
-            foreach (Model m1 in ms.getHistory())
+            foreach (_Model m1 in ms.getHistory())
             {
                 SaveHistoryModel(m1, GenerateModelNameFromState(m1));
             }
         }
 
-        private string GenerateModelNameFromState(Model currentModel) {
+        private string GenerateModelNameFromState(_Model currentModel) {
             return
-                $"{currentModel.loadedModelType}_{currentModel.modelRooms.Count}_{currentModel.modelLines.Count}_{string.Join("-", currentModel.ModelPoints.Take(10))}";
+                $"{currentModel.loadedModelType}_{currentModel.rooms.Count}_" +
+                $"{currentModel.AllLinesFlat().Count}";
         }
 
-        public List<Model> AllRoomPairs(Model m_mod) {
-            List<Model> returnList = new List<Model>();
-            for (var i = 0; i < m_mod.modelRooms.Count; i++) {
-                MyRoom room = m_mod.modelRooms[i];
-                for (var j = i + 1; j < m_mod.modelRooms.Count; j++) {
-                    MyRoom modelRoom = m_mod.modelRooms[j];
+        public List<_Model> AllRoomPairs(_Model m_mod) {
+            List<_Model> returnList = new List<_Model>();
+            for (var i = 0; i < m_mod.rooms.Count; i++) {
+                _Room room = m_mod.rooms[i];
+                for (var j = i + 1; j < m_mod.rooms.Count; j++) {
+                    _Room modelRoom = m_mod.rooms[j];
                     //if (room2.Guid == room1.Guid) continue;
 
                     bool a = DoTheyHaveCommmonWall(room, modelRoom);
@@ -131,11 +115,11 @@ namespace GenerateTest {
 
                     else
                     {
-                        MyRoom room2;
-                        MyRoom modelRoom2;
-                        Model m_mod2 = m_mod.DeepCopy(room, modelRoom, out room2, out modelRoom2);
+                        _Room room2;
+                        _Room modelRoom2;
+                        _Model m_mod2 = m_mod.DeepCopy(room, modelRoom, out room2, out modelRoom2);
 
-                        Model newModel = MergeRooms(m_mod2, room2, modelRoom2);
+                        _Model newModel = MergeRooms(m_mod2, room2, modelRoom2);
                         returnList.Add(newModel);
                     }
                 }
@@ -144,44 +128,44 @@ namespace GenerateTest {
             return returnList;
         }
 
-        private Model MergeRooms(Model mMod, MyRoom room, MyRoom modelRoom) {
+        private _Model MergeRooms(_Model mMod, _Room room, _Room modelRoom) {
             //Model m = mMod.DeepCopy();
             mMod = RemoveCommonWalls(mMod, room, modelRoom);
             //MergeBoundaryLineListToSmallerIdRooms();
             return m;
         }
 
-        private Model RemoveCommonWalls(Model m, MyRoom room1, MyRoom room2) {
-            List<MyLine> common = room1.BoundaryLines.Intersect(room2.BoundaryLines).ToList();
-            foreach (MyLine line in common) {
-                room1.BoundaryLines.Remove(line);
-                room2.BoundaryLines.Remove(line);
+        private _Model RemoveCommonWalls(_Model m, _Room room1, _Room room2) {
+            List<_Line> common = room1.Lines.Intersect(room2.Lines).ToList();
+            foreach (_Line line in common) {
+                room1.Lines.Remove(line);
+                room2.Lines.Remove(line);
             }
-            room1.BoundaryLines.AddRange(room2.BoundaryLines);
-            room2.BoundaryLines.AddRange(room1.BoundaryLines);
+            room1.Lines.AddRange(room2.Lines);
+            room2.Lines.AddRange(room1.Lines);
 
-            int result1;
-            int result2;
-            bool parsed1 = int.TryParse(room1.Number, out result1);
-            bool parsed2 = int.TryParse(room2.Number, out result2);
+            int result1 = room1.Number;
+            int result2 = room2.Number;
+            bool parsed1 = room1.Number is int;
+            bool parsed2 = room2.Number is int;
             if (parsed1 && parsed2 && result1 < result2) {
-                m.modelRooms.Remove(room2);
+                m.rooms.Remove(room2);
             }
             else {
-                m.modelRooms.Remove(room1);
+                m.rooms.Remove(room1);
             }
 
             return m;
         }
 
 
-        private bool DoTheyHaveCommmonWall(MyRoom room, MyRoom modelRoom) {
-            if (room.BoundaryLines.Intersect(modelRoom.BoundaryLines).Any()) return true;
+        private bool DoTheyHaveCommmonWall(_Room room, _Room modelRoom) {
+            if (room.Lines.Intersect(modelRoom.Lines).Any()) return true;
             return false;
         }
 
 
-        public void Ommitsteps(Model m_mod) {
+        public void Ommitsteps(_Model m_mod) {
             ms.AddModel(m_mod.DeepCopy());
 
             if (ExitCondition(m_mod)) return;
@@ -190,26 +174,26 @@ namespace GenerateTest {
 
         }
 
-        private void Ommit(Model mMod) {
-            foreach (MyRoom room in mMod.modelRooms)
+        private void Ommit(_Model mMod) {
+            foreach (_Room room in mMod.rooms)
             {
-                MyRoom room2;
-                MyRoom modelRoom2;
-                Model m_mod2 = mMod.DeepCopy(room, null, out room2, out modelRoom2);
+                _Room room2;
+                _Room modelRoom2;
+                _Model m_mod2 = mMod.DeepCopy(room, null, out room2, out modelRoom2);
 
-                m_mod2.modelRooms.Remove(room2);
+                m_mod2.rooms.Remove(room2);
                 Ommitsteps(m_mod2);
             }
 
         }
 
-        private bool ExitCondition(Model model) {
-            if (m.modelRooms.Count == 1) return true;
+        private bool ExitCondition(_Model model) {
+            if (m.rooms.Count == 1) return true;
             else return false;
         }
 
         private string savepath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        private void SaveHistoryModel(Model ms, string name) {
+        private void SaveHistoryModel(_Model ms, string name) {
             //string data = JsonConvert.SerializeObject(jsondata);
             JsonSerializer serializer = new JsonSerializer();
             serializer.Formatting = Formatting.Indented;

@@ -1,6 +1,7 @@
 ﻿using System;
-using WindowsFormsApp1;
 using WindowsFormsApp1.Simulation;
+using Diploma2.Model;
+using Diploma2.Services;
 using NUnit;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -10,23 +11,35 @@ using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 namespace GenerateTest {
     public class MoveTest
     {
-        private Model m;
+        private _Model m;
         [SetUp]
         public void Setup() {
-            m = new Model();
-            m.InitTestModel();
+            m = ModelConfigurations.InitTestModel();
         }
         
         [Test]
         public void MoveTestLine() {
-            m.InitSimpleModel();
-            MyLine l = null;
-            foreach (MyLine line in m.modelLines)
+
+            foreach (_Room mRoom in m.rooms)
             {
-                l = line;
-                break;
+                foreach (_Line line in mRoom.Lines)
+                {
+                    m.MoveLine(10,line);
+                }
             }
-            m.MoveLine(10,l);
+            
+        }
+
+        [Test]
+        public void CopiedModelMoveTestLine()
+        {
+
+            m = m.DeepCopy();
+            foreach (_Room mRoom in m.rooms) {
+                foreach (_Line line in mRoom.Lines) {
+                    m.MoveLine(10, line);
+                }
+            }
         }
 
         [TearDown]

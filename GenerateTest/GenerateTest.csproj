@@ -70,13 +70,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Generate\Generate.csproj">
-      <Project>{3674FF68-AFEC-405C-8E09-52E3F7E51B0E}</Project>
-      <Name>Generate</Name>
-    </ProjectReference>
+    <Folder Include="GeometryModel\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="GeometryModel\" />
+    <ProjectReference Include="..\Diploma2\Diploma2.csproj">
+      <Project>{40864cc7-091f-4c39-ac28-571d393c41f8}</Project>
+      <Name>Diploma2</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

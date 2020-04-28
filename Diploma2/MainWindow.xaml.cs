@@ -78,7 +78,11 @@ namespace Diploma2 {
         public MainWindow() {
             DataContext = this;
             InitializeComponent();
-            model = ModelConfigurations.InitSimpleModel();
+            model = ModelConfigurations.InitTestModel();
+            foreach (var room in model.rooms)
+            {
+                room.CanGetBoundarySorted();
+            }
             LoadDataFromModel();
             simulation.Model = model;
             simulation.ModelChanged += ModelChangeHandler;
@@ -87,11 +91,12 @@ namespace Diploma2 {
 
         private void LoadModels() {
             //Model = ModelConfigurations.InitSimplestModel();
-            model = ModelConfigurations.InitNormalModel();
+            model = ModelConfigurations.InitTestModel();
             LoadDataFromModel();
         }
 
         List<int> selectedLineIndices = new List<int>();
+        List<_Line> selectedLines = new List<_Line>();
 
         private void Paint() {
             isPainting = true;
@@ -143,7 +148,7 @@ namespace Diploma2 {
 
             foreach (_Room room in Rooms) {
                 try {
-                    List<_Point> boundaries = room.GetBoundaryPointsSorted();
+                    List<_Point> boundaries = room.GetPoints();
                     if (!boundaries.Any()) continue;
                     List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
                     Polygon p = new Polygon();
@@ -166,7 +171,13 @@ namespace Diploma2 {
         }
 
         private void MoveLine_OnClick(object sender, RoutedEventArgs e) {
-            model.MoveLine();
+            if (selectedLines.FirstOrDefault() == null) {
+                model.MoveLine();
+            }
+            else {
+                model.MoveLine(10, selectedLines.FirstOrDefault());
+
+            }
             LoadDataFromModel();
             Paint();
         }
@@ -219,10 +230,12 @@ namespace Diploma2 {
         private void RoomGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
             _Room index = RoomGrid.CurrentCell.Item as _Room;
             selectedLineIndices.Clear();
+            selectedLines.Clear();
             var i = 0;
             foreach (var line in Lines) {
                 if (index != null && index.Lines.Contains(line)) {
                     selectedLineIndices.Add(i);
+                    selectedLines.Add(line);
                 }
                 i++;
             }
@@ -233,8 +246,15 @@ namespace Diploma2 {
 
         private void LineGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
             selectedLineIndices.Clear();
-            selectedLineIndices.Add(LineGrid.SelectedIndex);
+            selectedLines.Clear();
+            var ined = LineGrid.SelectedIndex;
+            if (ined!=-1)
+            {
+            selectedLineIndices.Add(ined);
+            selectedLines.Add(Lines.ElementAt(ined));
             Paint();
+                
+            }
         }
 
         private void PointGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
@@ -268,8 +288,7 @@ namespace Diploma2 {
             t.Start();
         }
 
-        private void UndoStep_OnClick(object sender, RoutedEventArgs e)
-        {
+        private void UndoStep_OnClick(object sender, RoutedEventArgs e) {
             simulation.UndoStep();
         }
 

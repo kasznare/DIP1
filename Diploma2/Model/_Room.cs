@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using Diploma2.Annotations;
 using Diploma2.Utilities;
 
@@ -50,7 +51,7 @@ namespace Diploma2.Model {
         public _RoomType type { get; set; }
         public bool isStartRoom { get; internal set; }
 
-        public List<_Point> GetBoundaryPointsSorted() {
+        public List<_Point> GetSortedBoundaryPoints() {
             SortPoints();
             return Points;
         }
@@ -59,53 +60,59 @@ namespace Diploma2.Model {
         }
         private void SortLines() {
             List<_Line> orderedLines = new List<_Line>();
-
-            int actualIndex = 0;
-            int boundCount = lines.Count;
-            for (int i = 0; i < boundCount; i++) {
-                if (actualIndex >= boundCount) {
-                    continue;
-                }
-                _Line actualLine = lines.ElementAt(actualIndex);
-                orderedLines.Add(actualLine);
-                actualIndex = 0;
-                foreach (_Line line in lines) {
-
-                    if (orderedLines.Contains(line)) {
-                        actualIndex++;
-                        continue;
-                    }
-                    _Point p1 = line.StartPoint;
-                    _Point p2 = line.EndPoint;
-                    _Point p3 = actualLine.StartPoint;
-                    _Point p4 = actualLine.EndPoint;
-
-                    if (Equals(line.StartPoint, actualLine.StartPoint) && !Equals(line.EndPoint, actualLine.EndPoint)) {
-                        break;
-                    }
-                    if (Equals(line.StartPoint, actualLine.EndPoint) && !Equals(line.EndPoint, actualLine.StartPoint)) {
-                        break;
-                    }
-                    if (Equals(line.EndPoint, actualLine.EndPoint) && !Equals(line.StartPoint, actualLine.StartPoint)) {
-                        break;
-                    }
-                    if (Equals(line.EndPoint, actualLine.StartPoint) && !Equals(line.StartPoint, actualLine.EndPoint)) {
-                        break;
-                    }
-
-                    actualIndex++;
-                }
-                if (actualIndex > boundCount) {
-                    throw new Exception("LineOrderingFailed");
-                }
-            }
-
-            if (orderedLines.Count < lines.Count)
+            //todo: store the first point and the last point
+            try
             {
-                throw new Exception("ordering failed");
-            }
+                int actualIndex = 0;//the basis of sorting is to loop and keep this actualindex 
+                int boundCount = Lines.Count;
+                for (int i = 0; i < boundCount; i++) {
+                    _Line loopLine = Lines[actualIndex];
+                    if (loopLine.StartPoint.Equals(loopLine.EndPoint)) continue; //we remove null lines this way
 
-            lines = orderedLines;
+                    orderedLines.Add(loopLine);
+                    actualIndex = 0;
+                    for (var j = 0; j < boundCount; j++) {
+                        _Line innerLoopLine = Lines[j];
+                        if (orderedLines.Contains(innerLoopLine)) {
+                            actualIndex++; //so skip this line, this is bad
+                            continue;
+                        }
+                        //from these next statments, only one can be true
+                        if (Equals(innerLoopLine.StartPoint, loopLine.StartPoint) && !Equals(innerLoopLine.EndPoint, loopLine.EndPoint)) {
+                            break;
+                        }
+
+                        if (Equals(innerLoopLine.StartPoint, loopLine.EndPoint) && !Equals(innerLoopLine.EndPoint, loopLine.StartPoint)) {
+                            break;
+                        }
+
+                        if (Equals(innerLoopLine.EndPoint, loopLine.EndPoint) && !Equals(innerLoopLine.StartPoint, loopLine.StartPoint)) {
+                            break;
+                        }
+
+                        if (Equals(innerLoopLine.EndPoint, loopLine.StartPoint) && !Equals(innerLoopLine.StartPoint, loopLine.EndPoint)) {
+                            break;
+                        }
+
+                        actualIndex++;
+                    }
+                    //if (actualIndex > boundCount) {
+                    //    throw new Exception("LineOrderingFailed");
+                    //}
+                }
+                //TODO: here we only need to check that the list loops, so that the first and last line touch.
+                bool isGoodOrdering = orderedLines.First().Connects(orderedLines.Last());
+                if (!isGoodOrdering) {
+                    throw new Exception("first and last line does not connect");
+                }
+               
+                Lines = orderedLines; //this step should persist.
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+            
         }
         private void SortPoints() {
             SortLines();
@@ -143,47 +150,9 @@ namespace Diploma2.Model {
 
         public bool CanGetBoundarySorted() {
             try {
-                GetBoundaryPointsSorted();
+                SortPoints();
 
-                List<_Line> linesAdded = new List<_Line>();
-                for (var index = 0; index < Lines.Count; index++)
-                {
-                    _Line line = Lines[index];
-                    for (var i = 0; i < Points.Count; i++)
-                    {
-                        _Point point = Points[i];
-                        if (_Model.IsOnLine(point,line) && !Equals(point, line.StartPoint) && !Equals(point, line.EndPoint) )
-                        {
-                            //this means there is redundancy
-                            //this point should be a splitter on the line, that contains it.
-                            lines.Remove(line);
-                            _Line l1 = new _Line(point, line.StartPoint) {Name = line.Name, Guid = line.Guid, Number = line.Number};
-                            _Line l2 = new _Line(point, line.EndPoint) { Name = line.Name, Guid = line.Guid, Number = line.Number };
-
-                            _Line already1 = lines.FirstOrDefault(j => j.IsTheSame(l1));
-                            _Line already2 = lines.FirstOrDefault(j => j.IsTheSame(l2));
-                            //if this does not work, check for length
-                            if (already1!=null) //if in, then it is the short one, then remove it
-                            {
-                                lines.Remove(already1);
-                            }
-                            else
-                            {
-                                lines.Add(l1);
-                            }
-                            if (already2!=null)
-                            {
-                                lines.Remove(already2);
-                            }
-                            else {
-                                lines.Add(l2);
-                            }
-                            //then we hope, that redundancy is removed
-                            break; //this might be bad
-
-                        }
-                    }
-                }
+                //ThisIsDoingSomething();
 
                 //for (var index = 0; index < Lines.Count; index++)
                 //{
@@ -200,13 +169,58 @@ namespace Diploma2.Model {
                 //}
                 //check that there is no overlap
                 //if one of the points is on an other line, and not at an endpoint, there is overlap
-                
+
                 return true;
             }
             catch (Exception e)
             {
                 //MessageBox.Show(e.Message);
                 return false;
+            }
+        }
+
+        private void ThisIsDoingSomething()
+        {
+            List<_Line> linesAdded = new List<_Line>();
+            for (var index = 0; index < Lines.Count; index++)
+            {
+                _Line line = Lines[index];
+                for (var i = 0; i < Points.Count; i++)
+                {
+                    _Point point = Points[i];
+                    if (_Model.IsOnLine(point, line) && !Equals(point, line.StartPoint) && !Equals(point, line.EndPoint))
+                    {
+                        //this means there is redundancy
+                        //this point should be a splitter on the line, that contains it.
+                        lines.Remove(line);
+                        _Line l1 = new _Line(point, line.StartPoint) {Name = line.Name, Guid = line.Guid, Number = line.Number};
+                        _Line l2 = new _Line(point, line.EndPoint) {Name = line.Name, Guid = line.Guid, Number = line.Number};
+
+                        _Line already1 = lines.FirstOrDefault(j => j.IsTheSame(l1));
+                        _Line already2 = lines.FirstOrDefault(j => j.IsTheSame(l2));
+                        //if this does not work, check for length
+                        if (already1 != null) //if in, then it is the short one, then remove it
+                        {
+                            lines.Remove(already1);
+                        }
+                        else
+                        {
+                            lines.Add(l1);
+                        }
+
+                        if (already2 != null)
+                        {
+                            lines.Remove(already2);
+                        }
+                        else
+                        {
+                            lines.Add(l2);
+                        }
+
+                        //then we hope, that redundancy is removed
+                        break; //this might be bad
+                    }
+                }
             }
         }
 
@@ -220,10 +234,10 @@ namespace Diploma2.Model {
 
         public double CalculateArea()
         {
-            List<_Point> bp = GetBoundaryPointsSorted();
+            List<_Point> bp = GetPoints();
 
             if (bp.Count == 0) {
-                throw new Exception("Area is null");
+                throw new Exception("Area is null, points should be sorted at this point");
             }
 
             double[] X = bp.Select(i => i.X).ToArray();
