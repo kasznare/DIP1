@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 namespace Diploma2.Model {
     public class _Model {
+        public List<Action> actionHistory { get; set; }
         public ObservableCollection<_Room> rooms { get; set; }
         public object loadedModelType { get; internal set; }
         public bool IsInInvalidState { get; internal set; }
@@ -15,7 +16,6 @@ namespace Diploma2.Model {
         public _Model() {
             rooms = new ObservableCollection<_Room>();
         }
-
         public _Model(List<_Room> newRooms) {
             rooms = new ObservableCollection<_Room>(newRooms);
         }
@@ -30,25 +30,31 @@ namespace Diploma2.Model {
         [JsonIgnore]
         [IgnoreDataMember]
         private Dictionary<_Line, _Line> oldNewLines = new Dictionary<_Line, _Line>();
-        public _Model DeepCopy() {
-            oldNewLines.Clear();
-            oldNewPoints.Clear();
-            oldNewRooms.Clear();
+
+
+        public _Model DeepCopy(bool isTagNeeded = false) {
+            if (isTagNeeded) {
+                oldNewLines.Clear();
+                oldNewPoints.Clear();
+                oldNewRooms.Clear();
+            }
             List<_Room> newRooms = new List<_Room>();
             foreach (_Room room in rooms) {
                 _Room deepCopy = room.DeepCopy();
 
-                bool isroomthere = oldNewRooms.ContainsKey(deepCopy);
-                if (!isroomthere) {
-                    oldNewRooms.Add(room, deepCopy);
-                }
+                if (isTagNeeded) {
+                    bool isroomthere = oldNewRooms.ContainsKey(deepCopy);
+                    if (!isroomthere) {
+                        oldNewRooms.Add(room, deepCopy);
+                    }
 
-                for (var index = 0; index < room.Lines.Count; index++) {
-                    _Line i = room.Lines[index];
-                    _Line iCopy = deepCopy.Lines[index];
-                    bool ifs = oldNewLines.ContainsKey(i);
-                    if (!ifs) {
-                        oldNewLines.Add(i, iCopy);
+                    for (var index = 0; index < room.Lines.Count; index++) {
+                        _Line i = room.Lines[index];
+                        _Line iCopy = deepCopy.Lines[index];
+                        bool ifs = oldNewLines.ContainsKey(i);
+                        if (!ifs) {
+                            oldNewLines.Add(i, iCopy);
+                        }
                     }
                 }
 
@@ -63,7 +69,7 @@ namespace Diploma2.Model {
         }
         public _Model DeepCopy(_Line oldMyLine, out _Line newMyLine) {
 
-            _Model copy = this.DeepCopy();
+            _Model copy = this.DeepCopy(true);
             //then only need to find the needed line
 
             newMyLine = oldNewLines[oldMyLine];
@@ -75,17 +81,15 @@ namespace Diploma2.Model {
         }
         //READY
         public _Model DeepCopy(_Room oldMyRoom1, _Room oldMyRoom2, out _Room newMyRoom1, out _Room newMyRoom2) {
-
-            _Model copy = this.DeepCopy();
+            _Model copy = this.DeepCopy(true);
             newMyRoom1 = oldNewRooms[oldMyRoom1];
             newMyRoom2 = oldNewRooms[oldMyRoom2];
             return copy;
-
         }
 
         public _Model DeepCopy(_Room oldMyRoom1, out _Room newMyRoom1) {
 
-            _Model copy = this.DeepCopy();
+            _Model copy = this.DeepCopy(true);
 
             newMyRoom1 = oldNewRooms[oldMyRoom1];
             return copy;
@@ -184,7 +188,9 @@ namespace Diploma2.Model {
         private int moveStepsCount = 0;
 
         public void MoveLine(int distance, _Line lineToMove) {
-
+            if (lineToMove.length < 11) {
+                return;
+            }
             List<_Room> roomsTouchingStartPoint = new List<_Room>(); //the rooms need to have the line to care
             List<_Room> roomsTouchingEndPoint = new List<_Room>(); //if there are, we cant move the point, we need to copy
             List<_Room> roomsContainingTheLineToMove = new List<_Room>();                           //these rooms might need to change
@@ -199,7 +205,7 @@ namespace Diploma2.Model {
             l1.Name = $"New_Start_Line_{moveStepsCount}";
             l2.Name = $"New_End_Line_{moveStepsCount}";
 
-            fillRelatedRoomListInfomration(lineToMove, ref l1, ref l2, roomsTouchingStartPoint, roomsTouchingEndPoint, roomsContainingTheLineToMove);
+            fillRelatedRoomListInfomration(lineToMove, ref l1, ref l2, ref roomsTouchingStartPoint, ref roomsTouchingEndPoint, ref roomsContainingTheLineToMove);
 
             //this is the big function
             foreach (_Room room in roomsContainingTheLineToMove) {
@@ -212,46 +218,54 @@ namespace Diploma2.Model {
                     {
                         bool areweMovingOnLoopLine = IsOnLine(l1.EndPoint, lineInLoop);
                         //if there is a touching room, we need to keep the point. of course, might not in this room.
-                        if (roomsTouchingStartPoint.Any()) {
-                            if (!areweMovingOnLoopLine && !room.Lines.Contains(l1)) room.Lines.Add(l1);  //this makes it easier to remove the small lines later
-                            foreach (_Room room1 in roomsTouchingStartPoint) {
-                                if (!room.Lines.Contains(l1)) room1.Lines.Add(l1);
-                            }
-                        }
-                        else if (!roomsTouchingStartPoint.Any()) {
-                            _Point objA = lineInLoop.GetNV(true); //we need to either move it, if it is parallel, or keep it if it is merőleges
-                            _Point objB = lineToMove.GetNV(true); //THE LINE SHOULD MOVE - BOTH DIRECTIONS - MOVE P WITH MOVEVECTOR
+                        if (!roomsTouchingStartPoint.Any()) {
+                            _Point loopNormal = lineInLoop.GetNV(true); //we need to either move it, if it is parallel, or keep it if it is merőleges
+                            _Point moveNormal = lineToMove.GetNV(true); //THE LINE SHOULD MOVE - BOTH DIRECTIONS - MOVE P WITH MOVEVECTOR
 
-                            bool parallel = Equals(objA, objB) || Equals(objA * -1, objB);
+                            bool NOTparallel = !(Equals(loopNormal, moveNormal) || Equals(loopNormal , moveNormal * -1) || Equals(loopNormal * -1, moveNormal));
 
-                            if (lineInLoop.StartPoint.Equals(loopAndToMoveCommonPoint) && (parallel)){  //this is weird, are we sore, that we dont want parallel???
+                            if (lineInLoop.StartPoint.Equals(loopAndToMoveCommonPoint) && (NOTparallel)) {
                                 lineInLoop.StartPoint = lineInLoop.StartPoint.Move(moveVector);
                             }
 
-                            if (lineInLoop.EndPoint.Equals(loopAndToMoveCommonPoint) && (parallel)) {
+                            if (lineInLoop.EndPoint.Equals(loopAndToMoveCommonPoint) && (NOTparallel)) {
                                 lineInLoop.EndPoint = lineInLoop.EndPoint.Move(moveVector);
+                            }
+
+                            if (!NOTparallel)
+                            {
+                                room.Lines.Add(l1);
+                            }
+                        }
+                        if (roomsTouchingStartPoint.Any()) {
+                            if (!areweMovingOnLoopLine && !room.Lines.Contains(l1)) room.Lines.Add(l1);  //this makes it easier to remove the small lines later
+                            foreach (_Room room1 in roomsTouchingStartPoint) {
+                                if (!room1.Lines.Contains(l1)) room1.Lines.Add(l1);
                             }
                         }
                     }
 
                     if (loopAndToMoveCommonPoint != null && loopAndToMoveCommonPoint.Equals(lineToMove.EndPoint)) {
                         bool areweMovingOnLoopLine = _Model.IsOnLine(l2.EndPoint, lineInLoop);
-                        if (roomsTouchingEndPoint.Any()){
-                            if (!areweMovingOnLoopLine && !room.Lines.Contains(l2)) room.Lines.Add(l2);
-                            foreach (_Room room2 in roomsTouchingEndPoint) {
-                                if (!room.Lines.Contains(l2)) room2.Lines.Add(l2);
-                            }
-                        }
-                        else if (!roomsTouchingEndPoint.Any()) {
+                        if (!roomsTouchingEndPoint.Any()) {
                             _Point objA = lineInLoop.GetNV(true);
                             _Point objB = lineToMove.GetNV(true);
-                            bool parallel = Equals(objA, objB) || Equals(objA * -1, objB);
-                            if (lineInLoop.StartPoint.Equals(loopAndToMoveCommonPoint) && (parallel)) {
+                            bool NOTparallel = !(Equals(objA, objB) || Equals(objA, objB * -1) || Equals(objA * -1, objB));
+                            if (lineInLoop.StartPoint.Equals(loopAndToMoveCommonPoint) && (NOTparallel)) {
                                 lineInLoop.StartPoint = lineInLoop.StartPoint.Move(moveVector);
                             }
 
-                            if (lineInLoop.EndPoint.Equals(loopAndToMoveCommonPoint) && (parallel)) {
+                            if (lineInLoop.EndPoint.Equals(loopAndToMoveCommonPoint) && (NOTparallel)) {
                                 lineInLoop.EndPoint = lineInLoop.EndPoint.Move(moveVector);
+                            }
+                            if (!NOTparallel) {
+                                room.Lines.Add(l2);
+                            }
+                        }
+                        if (roomsTouchingEndPoint.Any()) {
+                            if (!areweMovingOnLoopLine && !room.Lines.Contains(l2)) room.Lines.Add(l2);
+                            foreach (_Room room2 in roomsTouchingEndPoint) {
+                                if (!room2.Lines.Contains(l2)) room2.Lines.Add(l2);
                             }
                         }
                     }
@@ -274,100 +288,63 @@ namespace Diploma2.Model {
             //        room.Lines.Add(movedLine);
             //    }
             //}
+
             //TODO: remove overlaps, if existing, this currently makes a loop
             //TODO: we only need to change rooms that care
-            foreach (_Room room in rooms) {
-                bool isComplete = room.CanGetBoundarySorted();
-                if (!isComplete) {
+            foreach (_Room room in roomsContainingTheLineToMove) {
 
-                    for (int i = 0; i < room.Lines.Count; i++) {
-                        _Line chosenLine = room.Lines.ElementAt(i);
-                        var connectsPoint = chosenLine.ConnectsPoint(l1);
-                        if (connectsPoint != null) {
-                            _Point otherPoint = l1.EndPoint.Equals(connectsPoint) ? l1.StartPoint : l1.EndPoint;
-                            if (IsOnLine(otherPoint, chosenLine)) {
-                                if (chosenLine.EndPoint.Equals(connectsPoint)) {
-                                    chosenLine.EndPoint = otherPoint;
-                                }
-                                else {
-                                    chosenLine.StartPoint = otherPoint;
-                                }
-                            }
-                        }
-                        connectsPoint = chosenLine.ConnectsPoint(l2);
-                        if (connectsPoint != null) {
-                            _Point otherPoint = l2.EndPoint.Equals(connectsPoint) ? l2.StartPoint : l2.EndPoint;
-                            if (IsOnLine(otherPoint, chosenLine)) {
-                                if (chosenLine.EndPoint.Equals(connectsPoint)) {
-                                    chosenLine.EndPoint = otherPoint;
-                                }
-                                else {
-                                    chosenLine.StartPoint = otherPoint;
-                                }
-                            }
-                        }
-                    }
-
-                    try {
-                        room.Lines.Remove(l1);
-                        isComplete = room.CanGetBoundarySorted();
-                        if (!isComplete) room.Lines.Add(l1);
-                    }
-                    catch (Exception e) {
-                    }
-                    try {
-                        room.Lines.Remove(l2);
-                        isComplete = room.CanGetBoundarySorted();
-                        if (!isComplete) room.Lines.Add(l2);
-                    }
-                    catch (Exception e) {
-                    }
-
-                    room.Lines.Add(l1);
-                    isComplete = room.CanGetBoundarySorted(); //the rooms might be with overlapping lines at this point, we need to handle that
-                    if (!isComplete) room.Lines.Remove(l1);
-                    else continue;
-
-                    room.Lines.Add(l2);
-                    isComplete = room.CanGetBoundarySorted();
-                    if (!isComplete) room.Lines.Remove(l1);
-                    else continue;
-
-                    room.Lines.Add(l1);
-                    room.Lines.Add(l2);
-                    isComplete = room.CanGetBoundarySorted();
-                    if (!isComplete) {
-                        room.Lines.Remove(l2);
-                        room.Lines.Remove(l1);
-                    }
-                    else continue;
-
-                    //this is supposed to get the containing redundancy... sould remove that logic from cangetboundarysorted
-
-
-
-                    //throw new Exception("room cannot be fixed in move step");
-                }
-
+                TryToDivideRoomLinesWithL1L2(room, l1, l2);
             }
 
-            foreach (_Room room in rooms) {
-                bool isComplete;
-                try {
-                    room.Lines.Remove(l1);
-                    isComplete = room.CanGetBoundarySorted();
-                    if (!isComplete) room.Lines.Add(l1);
-                }
-                catch (Exception e) {
-                }
-                try {
-                    room.Lines.Remove(l2);
-                    isComplete = room.CanGetBoundarySorted();
-                    if (!isComplete) room.Lines.Add(l2);
-                }
-                catch (Exception e) {
-                }
+            foreach (_Room room in roomsTouchingEndPoint) {
+                TryToDivideRoomLinesWithL1L2(room, l1, l2);
+                TryToRemoveRemainderLines(room, l1, l2);
             }
+
+            foreach (_Room room in roomsTouchingStartPoint) {
+                TryToDivideRoomLinesWithL1L2(room, l1, l2);
+                TryToRemoveRemainderLines(room, l1, l2);
+            }
+
+
+            //foreach (_Room room in rooms) {
+            //    bool isComplete = room.CanGetBoundarySorted();
+            //    if (!isComplete) {
+
+            //        for (int i = 0; i < room.Lines.Count; i++) {
+            //            _Line chosenLine = room.Lines.ElementAt(i);
+            //            var connectsPoint = chosenLine.ConnectsPoint(l1);
+            //            if (connectsPoint != null) {
+            //                _Point otherPoint = l1.EndPoint.Equals(connectsPoint) ? l1.StartPoint : l1.EndPoint;
+            //                if (IsOnLine(otherPoint, chosenLine)) {
+            //                    if (chosenLine.EndPoint.Equals(connectsPoint)) {
+            //                        chosenLine.EndPoint = otherPoint;
+            //                    }
+            //                    else {
+            //                        chosenLine.StartPoint = otherPoint;
+            //                    }
+            //                }
+            //            }
+            //            connectsPoint = chosenLine.ConnectsPoint(l2);
+            //            if (connectsPoint != null) {
+            //                _Point otherPoint = l2.EndPoint.Equals(connectsPoint) ? l2.StartPoint : l2.EndPoint;
+            //                if (IsOnLine(otherPoint, chosenLine)) {
+            //                    if (chosenLine.EndPoint.Equals(connectsPoint)) {
+            //                        chosenLine.EndPoint = otherPoint;
+            //                    }
+            //                    else {
+            //                        chosenLine.StartPoint = otherPoint;
+            //                    }
+            //                }
+            //            }
+            //        }
+
+
+
+            //        //throw new Exception("room cannot be fixed in move step");
+            //    }
+            //}
+
             //this handles null lines, can be removed at any time, probably should do it before sorting
             foreach (_Room room in rooms) {
                 for (var index = 0; index < room.Lines.Count; index++) {
@@ -387,36 +364,121 @@ namespace Diploma2.Model {
             moveStepsCount++;
         }
 
-        private void fillRelatedRoomListInfomration(_Line lineToMove, ref _Line l1, ref _Line l2, List<_Room> roomsTouchingStartPoint,
-            List<_Room> roomsTouchingEndPoint, List<_Room> roomsContainingTheLineToMove) {
+        private void TryToDivideRoomLinesWithL1L2(_Room room, _Line l1, _Line l2) {
+            bool isComplete = room.CanGetBoundarySorted(); //this might be bad
+            if (!isComplete) {
+                for (int i = 0; i < room.Lines.Count; i++) {
+                    _Line chosenLine = room.Lines.ElementAt(i);
+
+                    if (chosenLine.Equals(l1) || chosenLine.Equals(l2)) continue;
+
+                    var connectsPoint = chosenLine.ConnectsPoint(l1);
+                    if (connectsPoint != null) {
+                        _Point otherPoint = l1.EndPoint.Equals(connectsPoint) ? l1.StartPoint : l1.EndPoint;
+                        if (IsOnLine(otherPoint, chosenLine)) {
+                            if (chosenLine.EndPoint.Equals(connectsPoint)) {
+                                chosenLine.EndPoint = otherPoint;
+                            }
+                            else {
+                                chosenLine.StartPoint = otherPoint;
+                            }
+                        }
+                    }
+
+                    connectsPoint = chosenLine.ConnectsPoint(l2);
+                    if (connectsPoint != null) {
+                        _Point otherPoint = l2.EndPoint.Equals(connectsPoint) ? l2.StartPoint : l2.EndPoint;
+                        if (IsOnLine(otherPoint, chosenLine)) {
+                            if (chosenLine.EndPoint.Equals(connectsPoint)) {
+                                chosenLine.EndPoint = otherPoint;
+                            }
+                            else {
+                                chosenLine.StartPoint = otherPoint;
+                            }
+                        }
+                    }
+                }
+            }
+            isComplete = room.CanGetBoundarySorted(); //we need to check it after the split
+
+        }
+
+        private void TryToRemoveRemainderLines(_Room room, _Line l1, _Line l2) {
+            bool isComplete;
+            try {
+                if (room.Lines.Contains(l1)) {
+
+                    room.Lines.Remove(l1);
+                    isComplete = room.CanGetBoundarySorted();
+                    if (!isComplete) room.Lines.Add(l1);
+                }
+            }
+            catch (Exception e) {
+            }
+            try {
+                if (room.Lines.Contains(l2)) {
+                    room.Lines.Remove(l2);
+                    isComplete = room.CanGetBoundarySorted();
+                    if (!isComplete) room.Lines.Add(l2);
+
+                }
+            }
+            catch (Exception e) {
+            }
+
+            try {
+                if (room.Lines.Contains(l1) && room.Lines.Contains(l2)) {
+                    room.Lines.Remove(l1);
+                    room.Lines.Remove(l2);
+                    isComplete = room.CanGetBoundarySorted();
+                    if (!isComplete) room.Lines.Add(l1);
+                    if (!isComplete) room.Lines.Add(l2);
+
+                }
+            }
+            catch (Exception e) {
+            }
+        }
+
+        private void fillRelatedRoomListInfomration(_Line lineToMove, ref _Line l1, ref _Line l2, ref List<_Room> roomsTouchingStartPoint,
+            ref List<_Room> roomsTouchingEndPoint, ref List<_Room> roomsContainingTheLineToMove) {
             foreach (_Room room in rooms) {
                 // the lines are movedline, l1, l2 already existed, then find them
                 foreach (_Line line in room.Lines) {
                     if (line.IsTheSame(l1)) l1 = line;
                     if (line.IsTheSame(l2)) l2 = line;
 
-                    if ((line.StartPoint.Equals(lineToMove.StartPoint) || 
+                    if (line.Equals(lineToMove) && !roomsContainingTheLineToMove.Contains(room)) {
+                        roomsContainingTheLineToMove.Add(room); //  roomsContainingTheLineToMove = rooms.Where(i => i.Lines.Contains(lineToMove)).ToList();
+                    }
+                    if ((line.StartPoint.Equals(lineToMove.StartPoint) ||
                          line.EndPoint.Equals(lineToMove.StartPoint)) &&
-                        !line.Equals(lineToMove) && 
+                        !line.Equals(lineToMove) &&
                         !roomsTouchingStartPoint.Contains(room) &&
                         !roomsContainingTheLineToMove.Contains(room)) {
                         roomsTouchingStartPoint.Add(room); //this might cause redundancy
                     }
 
-                    if ((line.StartPoint.Equals(lineToMove.EndPoint) || 
+                    if ((line.StartPoint.Equals(lineToMove.EndPoint) ||
                          line.EndPoint.Equals(lineToMove.EndPoint)) &&
-                        !line.Equals(lineToMove) && 
+                        !line.Equals(lineToMove) &&
                         !roomsTouchingEndPoint.Contains(room) &&
                         !roomsContainingTheLineToMove.Contains(room)) {
                         roomsTouchingEndPoint.Add(room); //this might cause redundancy
                     }
 
-                    if (line.Equals(lineToMove) && !roomsContainingTheLineToMove.Contains(room)) {
-                        roomsContainingTheLineToMove.Add(room); //  roomsContainingTheLineToMove = rooms.Where(i => i.Lines.Contains(lineToMove)).ToList();
-                    }
                 }
             }
 
+            foreach (_Room room in roomsContainingTheLineToMove) {
+                if (roomsTouchingStartPoint.Contains(room)) {
+                    roomsTouchingStartPoint.Remove(room);
+                }
+
+                if (roomsTouchingEndPoint.Contains(room)) {
+                    roomsTouchingEndPoint.Remove(room);
+                }
+            }
             if (!roomsContainingTheLineToMove.Any())
                 throw new Exception("LineIsMissing"); //if there are no rooms, inconsistent state
         }

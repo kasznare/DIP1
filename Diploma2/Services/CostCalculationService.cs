@@ -17,10 +17,16 @@ namespace Diploma2.Services {
             double layoutcost = 0.0;
             double constaintcost = 0.0;
 
-            areacost = CalculateParameterCost();
-            layoutcost = CalculateLayoutCost();
-            constaintcost = CalculateConstraintCost();
-            summary = areacost + layoutcost + constaintcost;
+            try {
+                areacost = CalculateParameterCost();
+                layoutcost = CalculateLayoutCost();
+                constaintcost = CalculateConstraintCost();
+                summary = areacost + layoutcost + constaintcost;
+            }
+            catch (Exception)
+            {
+                summary = 100000000;
+            }
             
             return new double[] { summary, areacost, layoutcost, constaintcost };
         }

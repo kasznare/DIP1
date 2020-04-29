@@ -20,9 +20,9 @@ namespace Diploma2.Services {
         readonly object locker = new object();
 
         int ActualTreshold = 0;
-        int MaxTreshold = 1;
+        int MaxTreshold = 5;
         int CurrentIndex = 0;
-        int MaxIndex = 1;
+        int MaxIndex = 100;
         int baseMoveDistance = 10;
 
         bool isFinished = false;

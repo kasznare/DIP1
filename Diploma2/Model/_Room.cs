@@ -101,7 +101,21 @@ namespace Diploma2.Model {
                     //}
                 }
                 //TODO: here we only need to check that the list loops, so that the first and last line touch.
-                bool isGoodOrdering = orderedLines.First().Connects(orderedLines.Last());
+                _Point p1 = orderedLines.First().ConnectsPoint(orderedLines.Last());
+                _Point p2 = orderedLines.ElementAt(1).ConnectsPoint(orderedLines.ElementAt(0));
+                //so this is the point where the first and second line connect
+                //so p0 is where it all started. the last line should have p0
+                _Point p0 = orderedLines.First().StartPoint.Equals(p2)
+                    ? orderedLines.First().EndPoint
+                    : orderedLines.First().StartPoint;
+                bool isGoodOrdering = false;
+                if (p1 != null && p1.Equals(p0))
+                {
+                    isGoodOrdering = true;
+                }
+
+                
+                
                 if (!isGoodOrdering) {
                     throw new Exception("first and last line does not connect");
                 }

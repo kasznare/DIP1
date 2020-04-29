@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using WindowsFormsApp1;
 using WindowsFormsApp1.Simulation;
 using Diploma2.Model;
@@ -19,6 +20,7 @@ namespace GenerateTest {
         _Model m;
         ModelStorage ms = new ModelStorage();
 
+        private int numberofmodels = 0;
         [SetUp]
         public void Setup() {
             m = new _Model();
@@ -27,6 +29,43 @@ namespace GenerateTest {
         [Test]
         //[Attribute a=1]
         public void MoveLineInAllModel() {
+            List<_Model> contents = new List<_Model>();
+            foreach (string filename in Directory.GetFiles(@"C:\Users\Master\Desktop\Models"))
+            {
+                MessageBox.Show(filename);
+                if (!filename.EndsWith("json"))
+                {
+                    continue;
+                }
+                try
+                {
+                string json = File.ReadAllText(filename);
+                MessageBox.Show(json);
+                _Model account = JsonConvert.DeserializeObject<_Model>(json);
+                contents.Add(account);
+
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message + "\n" + e.StackTrace);
+                }
+            }
+
+            MessageBox.Show(contents.Count.ToString());
+            foreach (_Model m in contents)
+            {
+                _Model mcopy =m.DeepCopy();
+                List<_Line> lines = mcopy.AllLinesFlat();
+                for (var i = 0; i < lines.Count; i++) {
+                    _Line l = lines[i];
+                    mcopy.MoveLine(10, l);
+                    mcopy.MoveLine(-10, l);
+                    mcopy.MoveLine(-10, l);
+                    mcopy.MoveLine(10, l);
+                    
+                }
+
+            }
             //m = LoadModelFromJsonString();
             //Line l = Find200200400200Line();
             //m.MoveLine(10, l);
@@ -84,6 +123,7 @@ namespace GenerateTest {
                 }
 
                 new_Models = loop;
+                GC.Collect();
             }
 
             foreach (_Model _Model in all_Models) {

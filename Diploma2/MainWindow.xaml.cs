@@ -17,6 +17,8 @@ using Diploma2.Annotations;
 using Diploma2.Model;
 using Diploma2.Services;
 using Diploma2.Utilities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Action = System.Action;
 using ShapeLine = System.Windows.Shapes.Line;
 
@@ -292,5 +294,183 @@ namespace Diploma2 {
             simulation.UndoStep();
         }
 
+        private _Model m;
+        private void Gentest_OnClick(object sender, RoutedEventArgs e)
+        {
+
+            m = ModelConfigurations.InitTestModel();
+            List<_Model> new_Models = new List<_Model>();
+            new_Models.Add(m);
+            List<_Model> all_Models = new List<_Model>();
+            while (new_Models.Any()) {
+                List<_Model> loop = new List<_Model>();
+                foreach (_Model _Model in new_Models) {
+                    List<_Model> current_Models = AllRoomPairs(_Model);
+
+                    foreach (_Model current_Model in current_Models) {
+                        if (current_Model.rooms.Count > 1) {
+                            loop.Add(current_Model);
+                        }
+                    }
+
+                    all_Models.AddRange(current_Models);
+                }
+
+                new_Models = loop;
+                GC.Collect();
+            }
+
+            foreach (_Model _Model in all_Models) {
+                Ommitsteps(_Model);
+            }
+
+            foreach (_Model m1 in ms.getHistory()) {
+                SaveHistoryModel(m1, GenerateModelNameFromState(m1));
+            }
+        }
+        private string GenerateModelNameFromState(_Model currentModel) {
+            return
+                $"{currentModel.loadedModelType}_{currentModel.rooms.Count}_" +
+                $"{currentModel.AllLinesFlat().Count}";
+        }
+
+        public List<_Model> AllRoomPairs(_Model m_mod) {
+            List<_Model> returnList = new List<_Model>();
+            for (var i = 0; i < m_mod.rooms.Count; i++) {
+                _Room room = m_mod.rooms[i];
+                for (var j = i + 1; j < m_mod.rooms.Count; j++) {
+                    _Room modelRoom = m_mod.rooms[j];
+                    //if (room2.Guid == room1.Guid) continue;
+
+                    bool a = DoTheyHaveCommmonWall(room, modelRoom);
+                    if (!a) continue;
+
+                    else {
+                        _Room room2;
+                        _Room modelRoom2;
+                        _Model m_mod2 = m_mod.DeepCopy(room, modelRoom, out room2, out modelRoom2);
+
+                        _Model newModel = MergeRooms(m_mod2, room2, modelRoom2);
+                        returnList.Add(newModel);
+                    }
+                }
+            }
+
+            return returnList;
+        }
+
+        private _Model MergeRooms(_Model mMod, _Room room, _Room modelRoom) {
+            //Model m = mMod.DeepCopy();
+            mMod = RemoveCommonWalls(mMod, room, modelRoom);
+            //MergeBoundaryLineListToSmallerIdRooms();
+            return mMod;
+        }
+
+        private _Model RemoveCommonWalls(_Model m, _Room room1, _Room room2) {
+            List<_Line> common = room1.Lines.Intersect(room2.Lines).ToList();
+            foreach (_Line line in common) {
+                room1.Lines.Remove(line);
+                room2.Lines.Remove(line);
+            }
+            room1.Lines.AddRange(room2.Lines);
+            room2.Lines.AddRange(room1.Lines);
+
+            int result1 = room1.Number;
+            int result2 = room2.Number;
+            if (result1 < result2) {
+                m.rooms.Remove(room2);
+            }
+            else {
+                m.rooms.Remove(room1);
+            }
+
+            return m;
+        }
+
+
+        private bool DoTheyHaveCommmonWall(_Room room, _Room modelRoom) {
+            if (room.Lines.Intersect(modelRoom.Lines).Any()) return true;
+            return false;
+        }
+
+
+        public void Ommitsteps(_Model m_mod) {
+            ms.AddModel(m_mod.DeepCopy());
+
+            if (ExitCondition(m_mod)) return;
+
+            Ommit(m_mod.DeepCopy());
+
+        }
+
+        private void Ommit(_Model mMod) {
+            foreach (_Room room in mMod.rooms) {
+                _Room room2;
+                _Model m_mod2 = mMod.DeepCopy(room,  out room2);
+
+                m_mod2.rooms.Remove(room2);
+                Ommitsteps(m_mod2);
+            }
+
+        }
+
+        private bool ExitCondition(_Model model) {
+            if (m.rooms.Count == 1) return true;
+            else return false;
+        }
+
+        private string savepath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        private void SaveHistoryModel(_Model ms, string name) {
+            //string data = JsonConvert.SerializeObject(jsondata);
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.Formatting = Formatting.Indented;
+            serializer.Converters.Add(new JavaScriptDateTimeConverter());
+            serializer.NullValueHandling = NullValueHandling.Include;
+
+            using (StreamWriter sw = new StreamWriter($"{savepath}\\Models\\{name}.json"))
+            using (JsonWriter writer = new JsonTextWriter(sw)) {
+                serializer.Serialize(writer, ms);
+            }
+        }
+        ModelStorage ms = new ModelStorage();
+
+    }
+    internal class ModelStorage {
+        private List<_Model> history = new List<_Model>();
+        public ModelStorage() {
+        }
+
+        public void AddModel(_Model m) {
+            bool isEqual = false;
+            foreach (_Model model in history) {
+                isEqual = CheckEquivalence(m, model);
+                if (isEqual) break;
+                if (history.Count > 100000)
+                {
+                    isEqual = true;
+                    break;
+                }
+            }
+
+            if (!isEqual) {
+                history.Add(m);
+            }
+
+        }
+
+        public List<_Model> getHistory() {
+            return history;
+        }
+        private bool CheckEquivalence(_Model model, _Model model1) {
+            //if (model.rooms.Count == model1.rooms.Count)
+            //{
+            //    if (model.AllLinesFlat().Count == model1.AllLinesFlat().Count)
+            //    {
+            //        return true;
+            //    }
+            //}
+            //TODO: implement equivalence checking, but test generation is complete even when redundant.
+            return false;
+        }
     }
 }

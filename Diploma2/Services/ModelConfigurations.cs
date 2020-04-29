@@ -143,6 +143,7 @@ namespace Diploma2.Services {
 
             _Line l26 = new _Line(a2, a6);
             _Line l610 = new _Line(a6, a10);
+            l610.Name = "key";
             _Line l1014 = new _Line(a10, a14);
 
             _Line l37 = new _Line(a3, a7);

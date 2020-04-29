@@ -88,6 +88,8 @@ namespace Diploma2.Model {
             return p2;
         }
 
+        public double length => GetLength();
+
         public double GetLength() {
             double x1 = StartPoint.X;
             double x2 = EndPoint.X;
