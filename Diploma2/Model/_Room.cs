@@ -12,26 +12,13 @@ namespace Diploma2.Model {
         public _Room(List<_Line> newLines) {
             lines = newLines;
         }
-
-        public override string ToString()
-        {
-            return Name+"_"+Number.ToString();
-        }
-
         public _Room() {
 
         }
 
-        public List<_Line> Lines
-        {
-            get { return lines; }
-            set
-            {
-                lines = value; 
-                OnPropertyChanged("Lines");
-            }
+        public override string ToString() {
+            return Name + "_" + Number.ToString();
         }
-
         public _Room DeepCopy() {
             List<_Line> newLines = new List<_Line>();
             foreach (_Line line in lines) {
@@ -47,12 +34,20 @@ namespace Diploma2.Model {
         }
 
 
-
         private List<_Point> Points = new List<_Point>();
+        public List<_Line> Lines {
+            get { return lines; }
+            set {
+                lines = value;
+                OnPropertyChanged("Lines");
+            }
+        }
+
         private List<_Line> lines = new List<_Line>();
         public _RoomType type { get; set; }
-        public bool isStartRoom { get; internal set; }
+        public bool isStartRoom { get; set; }
 
+     
         public List<_Point> GetSortedBoundaryPoints() {
             SortPoints();
             return Points;
@@ -60,76 +55,63 @@ namespace Diploma2.Model {
         public List<_Point> GetPoints() {
             return Points;
         }
+
+
+
+        /// <summary>
+        /// this function tries to sort lines, but it can throw exception when it fails
+        /// </summary>
         private void SortLines() {
             List<_Line> orderedLines = new List<_Line>();
-            //todo: store the first point and the last point
-            try
-            {
-                int actualIndex = 0;//the basis of sorting is to loop and keep this actualindex 
-                int boundCount = Lines.Count;
-                for (int i = 0; i < boundCount; i++) {
-                    _Line loopLine = Lines[actualIndex];
-                    if (loopLine.StartPoint.Equals(loopLine.EndPoint)) continue; //we remove null lines this way
+            int actualIndex = 0;//the basis of sorting is to loop and keep this actualindex 
+            int boundCount = Lines.Count;
 
-                    orderedLines.Add(loopLine);
-                    actualIndex = 0;
-                    for (var j = 0; j < boundCount; j++) {
-                        _Line innerLoopLine = Lines[j];
-                        if (orderedLines.Contains(innerLoopLine)) {
-                            actualIndex++; //so skip this line, this is bad
-                            continue;
-                        }
-                        //from these next statments, only one can be true
-                        if (Equals(innerLoopLine.StartPoint, loopLine.StartPoint) && !Equals(innerLoopLine.EndPoint, loopLine.EndPoint)) {
-                            break;
-                        }
+            for (int i = 0; i < boundCount; i++) {
+                _Line loopLine = Lines[actualIndex];
+                if (loopLine.StartPoint.Equals(loopLine.EndPoint)) continue; //we remove null lines this way
 
-                        if (Equals(innerLoopLine.StartPoint, loopLine.EndPoint) && !Equals(innerLoopLine.EndPoint, loopLine.StartPoint)) {
-                            break;
-                        }
-
-                        if (Equals(innerLoopLine.EndPoint, loopLine.EndPoint) && !Equals(innerLoopLine.StartPoint, loopLine.StartPoint)) {
-                            break;
-                        }
-
-                        if (Equals(innerLoopLine.EndPoint, loopLine.StartPoint) && !Equals(innerLoopLine.StartPoint, loopLine.EndPoint)) {
-                            break;
-                        }
-
-                        actualIndex++;
+                orderedLines.Add(loopLine);
+                actualIndex = 0;
+                for (var j = 0; j < boundCount; j++) {
+                    _Line innerLoopLine = Lines[j];
+                    if (orderedLines.Contains(innerLoopLine)) {
+                        actualIndex++; //so skip this line
+                        continue;
                     }
-                    //if (actualIndex > boundCount) {
-                    //    throw new Exception("LineOrderingFailed");
-                    //}
-                }
-                //TODO: here we only need to check that the list loops, so that the first and last line touch.
-                _Point p1 = orderedLines.First().ConnectsPoint(orderedLines.Last());
-                _Point p2 = orderedLines.ElementAt(1).ConnectsPoint(orderedLines.ElementAt(0));
-                //so this is the point where the first and second line connect
-                //so p0 is where it all started. the last line should have p0
-                _Point p0 = orderedLines.First().StartPoint.Equals(p2)
-                    ? orderedLines.First().EndPoint
-                    : orderedLines.First().StartPoint;
-                bool isGoodOrdering = false;
-                if (p1 != null && p1.Equals(p0))
-                {
-                    isGoodOrdering = true;
-                }
+                    //from these next statments, only one can be true
+                    if (Equals(innerLoopLine.StartPoint, loopLine.StartPoint) && !Equals(innerLoopLine.EndPoint, loopLine.EndPoint)) break;
 
-                
-                
-                if (!isGoodOrdering) {
-                    throw new Exception("first and last line does not connect");
+                    if (Equals(innerLoopLine.StartPoint, loopLine.EndPoint) && !Equals(innerLoopLine.EndPoint, loopLine.StartPoint)) break;
+
+                    if (Equals(innerLoopLine.EndPoint, loopLine.EndPoint) && !Equals(innerLoopLine.StartPoint, loopLine.StartPoint)) break;
+
+                    if (Equals(innerLoopLine.EndPoint, loopLine.StartPoint) && !Equals(innerLoopLine.StartPoint, loopLine.EndPoint)) break;
+
+                    actualIndex++;
                 }
-               
-                Lines = orderedLines; //this step should persist.
+              
             }
-            catch (Exception e)
-            {
-                throw;
+            _Point p1 = orderedLines.First().ConnectsPoint(orderedLines.Last());
+            _Point p2 = orderedLines.ElementAt(1).ConnectsPoint(orderedLines.ElementAt(0));
+            //so this is the point where the first and second line connect
+            //so p0 is where it all started. the last line should have p0
+            _Point p0 = orderedLines.First().StartPoint.Equals(p2)
+                ? orderedLines.First().EndPoint
+                : orderedLines.First().StartPoint;
+
+            bool isGoodOrdering = p1 != null && p1.Equals(p0);
+
+
+            if (!isGoodOrdering) {
+                throw new Exception("first and last line does not connect");
             }
-            
+
+            Lines = orderedLines; 
         }
+        /// <summary>
+        /// This calls sortlines, too
+        /// and overrides Points
+        /// </summary>
         private void SortPoints() {
             SortLines();
             Points = new List<_Point>();
@@ -141,7 +123,13 @@ namespace Diploma2.Model {
                 Points.Add(commonMyPoint);
             }
 
+            #region MyRegion
+
+            
+
+            #endregion
         }
+
 
         private static _Point FindCommonPointOnTwoLines(_Line firstMyLine, _Line nextMyLine) {
             _Point commonMyPoint = null;
@@ -167,89 +155,23 @@ namespace Diploma2.Model {
         public bool CanGetBoundarySorted() {
             try {
                 SortPoints();
-
-                //ThisIsDoingSomething();
-
-                //for (var index = 0; index < Lines.Count; index++)
-                //{
-                //    _Line line = Lines[index];
-                //    foreach (_Line line1 in linesAdded)
-                //    {
-                //        if (line.IsTheSame(line1))
-                //        {
-                //            Lines.Remove(line);
-                //            lines.Remove(line1);
-                //        }
-
-                //    }
-                //}
-                //check that there is no overlap
-                //if one of the points is on an other line, and not at an endpoint, there is overlap
-
                 return true;
             }
-            catch (Exception e)
-            {
-                //MessageBox.Show(e.Message);
+            catch (Exception e) {
+                Logger.WriteLog(e);
                 return false;
             }
         }
 
-        private void ThisIsDoingSomething()
-        {
-            List<_Line> linesAdded = new List<_Line>();
-            for (var index = 0; index < Lines.Count; index++)
-            {
-                _Line line = Lines[index];
-                for (var i = 0; i < Points.Count; i++)
-                {
-                    _Point point = Points[i];
-                    if (_Model.IsOnLine(point, line) && !Equals(point, line.StartPoint) && !Equals(point, line.EndPoint))
-                    {
-                        //this means there is redundancy
-                        //this point should be a splitter on the line, that contains it.
-                        lines.Remove(line);
-                        _Line l1 = new _Line(point, line.StartPoint) {Name = line.Name, Guid = line.Guid, Number = line.Number};
-                        _Line l2 = new _Line(point, line.EndPoint) {Name = line.Name, Guid = line.Guid, Number = line.Number};
-
-                        _Line already1 = lines.FirstOrDefault(j => j.IsTheSame(l1));
-                        _Line already2 = lines.FirstOrDefault(j => j.IsTheSame(l2));
-                        //if this does not work, check for length
-                        if (already1 != null) //if in, then it is the short one, then remove it
-                        {
-                            lines.Remove(already1);
-                        }
-                        else
-                        {
-                            lines.Add(l1);
-                        }
-
-                        if (already2 != null)
-                        {
-                            lines.Remove(already2);
-                        }
-                        else
-                        {
-                            lines.Add(l2);
-                        }
-
-                        //then we hope, that redundancy is removed
-                        break; //this might be bad
-                    }
-                }
-            }
-        }
-
+        
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public double CalculateArea()
-        {
+        public double CalculateArea() {
 
             List<_Point> bp = GetPoints();
 
@@ -303,9 +225,8 @@ namespace Diploma2.Model {
                 double[] X = bp.Select(i => i.X).ToArray();
                 double[] Y = bp.Select(i => i.Y).ToArray();
 
-                if (!X.Any() || !Y.Any())
-                {
-                    throw new Exception("bad");
+                if (!X.Any() || !Y.Any()) {
+                    throw new Exception("bad proportion");
                 }
                 _Point max = new _Point(X.Max(), Y.Max());
                 _Point min = new _Point(X.Min(), Y.Min());
@@ -323,11 +244,11 @@ namespace Diploma2.Model {
             return proportion;
         }
 
-        public static void ChangeAllParams(ref _Room keep, _Room getDataFrom)
-        {
+        public static void ChangeAllParams(ref _Room keep, _Room getDataFrom) {
             keep.Number = getDataFrom.Number;
             keep.Name = getDataFrom.Name;
             keep.type = getDataFrom.type;
+            keep.Guid = getDataFrom.Guid;
         }
     }
 }

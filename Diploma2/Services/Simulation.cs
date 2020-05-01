@@ -11,9 +11,7 @@ using Diploma2.Utilities;
 
 namespace Diploma2.Services {
     public class Simulation {
-
         public delegate void StatusUpdateHandler(object sender, ProgressEventArgs e);
-
         public _Model Model { get; set; }
         public Action ActualAction { get; set; }
         public event StatusUpdateHandler ModelChanged;
@@ -46,16 +44,16 @@ namespace Diploma2.Services {
             while (!isFinished && !isTimeout && !isTreshold && !IsStopped) {
                 Actions.Clear();
                 SaveState();
-                actualCost = CostCalculationService.CalculateCost(Model).ElementAt(0);
+                actualCost = CostCalculationService.CalculateCostNew(Model).SummaryCost;
                 CalculateCostsForState();
                 MakeAStepByTheCalculatedCosts();
                 HandleModelChangeUpdate();
                 Thread.Sleep(5);
                 CurrentIndex++;
-                if (CurrentIndex > MaxIndex) {
+                if (CurrentIndex >= MaxIndex) {
                     isFinished = true;
                 }
-                if (st.ElapsedMilliseconds > 60000) {
+                if (st.ElapsedMilliseconds > 10000) {
                     isTimeout = true;
                 }
                 if (ActualTreshold >= MaxTreshold) {
@@ -77,7 +75,7 @@ namespace Diploma2.Services {
 
         public void UndoStep()
         {
-            LoadState(modelCopyHistory.ElementAt(CurrentIndex-1));
+            Model = modelCopyHistory.ElementAt(CurrentIndex-1);
             HandleModelChangeUpdate();
         }
         private void HandleModelChangeUpdate() {
@@ -113,7 +111,7 @@ namespace Diploma2.Services {
                     _Model tempModel = Model.DeepCopy(r1, r2, out r1target, out r2target);
                     tempModel.SwitchRooms(ref r1target, ref r2target);
                     if (!tempModel.IsInInvalidState) {
-                        double cost = CostCalculationService.CalculateCost(tempModel).First();
+                        Cost cost = CostCalculationService.CalculateCostNew(tempModel);
                         lock (locker) {
                             Actions.Add(new Switch(ref r1, ref r2, cost));
                         }
@@ -136,12 +134,13 @@ namespace Diploma2.Services {
                 tempModel.MoveLine(baseMoveDistance, newMyLine);
                 if (tempModel.IsInInvalidState) continue;
 
-                double[] costs = CostCalculationService.CalculateCost(tempModel);
-                double summary = costs[0];
-                double areacost = costs[1];
-                double layoutcost = costs[2];
+                //double[] costs = CostCalculationService.CalculateCost(tempModel);
+                Cost costsnew = CostCalculationService.CalculateCostNew(tempModel);
+                //double summary = costs[0];
+                //double areacost = costs[1];
+                //double layoutcost = costs[2];
                 lock (locker) {
-                    Actions.Add(new Move(myLine, summary, areacost, layoutcost, baseMoveDistance));
+                    Actions.Add(new Move(myLine, costsnew, baseMoveDistance));
                 }
             }
             //});
@@ -154,12 +153,14 @@ namespace Diploma2.Services {
                 _Model tempModel = Model.DeepCopy(myLine, out newMyLine);
                 tempModel.MoveLine(-baseMoveDistance, newMyLine);
                 if (tempModel.IsInInvalidState) continue;
-                double[] costs = CostCalculationService.CalculateCost(tempModel);
-                double summary = costs[0];
-                double areacost = costs[1];
-                double layoutcost = costs[2];
+               // double[] costs = CostCalculationService.CalculateCost(tempModel);
+                Cost costsnew = CostCalculationService.CalculateCostNew(tempModel);
+                //double summary = costs[0];
+                //double areacost = costs[1];
+                //double layoutcost = costs[2];
                 lock (locker) {
-                    Actions.Add(new Move(myLine, summary, areacost, layoutcost, -baseMoveDistance));
+                    //Actions.Add(new Move(myLine, summary, areacost, layoutcost, -baseMoveDistance));
+                    Actions.Add(new Move(myLine, costsnew, -baseMoveDistance));
                 }
             }
             //});
@@ -167,9 +168,6 @@ namespace Diploma2.Services {
 
         public void SaveState() {
             modelCopyHistory.Add(Model.DeepCopy());
-        }
-        public void LoadState(_Model m) {
-            Model = m;
         }
 
         private void MakeAStepByTheCalculatedCosts() {
@@ -186,7 +184,7 @@ namespace Diploma2.Services {
         private Action FindStep() {
             List<Action> sorted = Actions.OrderBy(i => i.cost).ToList();
             //Action a = sorted.FirstOrDefault();
-            int j = r.Next(0, Math.Min(5, sorted.Count));
+            int j = r.Next(0, Math.Min(0, sorted.Count));
             ActualAction = sorted.ElementAt(j);
             if (actualCost >= ActualAction.cost) {
                 actualCost = ActualAction.cost;
@@ -197,36 +195,36 @@ namespace Diploma2.Services {
             return null;
         }
 
-        public void Split(int splitPercentage, _Line lineGridSelectedItem) {
-            Action a = new Split(splitPercentage, lineGridSelectedItem);
-            a.Step(Model);
-            double[] costs = CostCalculationService.CalculateCost(Model);
+        //public void Split(int splitPercentage, _Line lineGridSelectedItem) {
+        //    Action a = new Split(splitPercentage, lineGridSelectedItem);
+        //    a.Step(Model);
+        //    double[] costs = CostCalculationService.CalculateCost(Model);
 
-            actualCost = costs[0];
-            actualAreaCost = costs[1];
-            actualLayoutCost = costs[2];
-            HandleModelChangeUpdate();
-        }
-        public void Move(_Line lineGridSelectedItem, int movedistance) {
-            Action a = new Move(lineGridSelectedItem, movedistance);
-            a.Step(Model);
-            double[] costs = CostCalculationService.CalculateCost(Model);
+        //    actualCost = costs[0];
+        //    actualAreaCost = costs[1];
+        //    actualLayoutCost = costs[2];
+        //    HandleModelChangeUpdate();
+        //}
+        //public void Move(_Line lineGridSelectedItem, int movedistance) {
+        //    Action a = new Move(lineGridSelectedItem, movedistance);
+        //    a.Step(Model);
+        //    double[] costs = CostCalculationService.CalculateCost(Model);
 
-            actualCost = costs[0];
-            actualAreaCost = costs[1];
-            actualLayoutCost = costs[2];
-            HandleModelChangeUpdate();
-        }
+        //    actualCost = costs[0];
+        //    actualAreaCost = costs[1];
+        //    actualLayoutCost = costs[2];
+        //    HandleModelChangeUpdate();
+        //}
 
-        public void SwitchRoom(ref _Room r1, ref _Room r2) {
-            Action a = new Switch(ref r1, ref r2);
-            a.Step(Model);
-            double[] costs = CostCalculationService.CalculateCost(Model);
+        //public void SwitchRoom(ref _Room r1, ref _Room r2) {
+        //    Action a = new Switch(ref r1, ref r2);
+        //    a.Step(Model);
+        //    double[] costs = CostCalculationService.CalculateCost(Model);
 
-            actualCost = costs[0];
-            actualAreaCost = costs[1];
-            actualLayoutCost = costs[2];
-            HandleModelChangeUpdate();
-        }
+        //    actualCost = costs[0];
+        //    actualAreaCost = costs[1];
+        //    actualLayoutCost = costs[2];
+        //    HandleModelChangeUpdate();
+        //}
     }
 }

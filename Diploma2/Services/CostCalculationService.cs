@@ -7,29 +7,33 @@ using Diploma2.Model;
 
 namespace Diploma2.Services {
     public class CostCalculationService {
-
+        //TODO: this might be problematic, that it is static
+        public static Cost C { get; set; }
         public static _Model localModel { get; set; }
         public static double[] CalculateCost(_Model m) {
             //NOTE: cost calculation would be more flexible, if i could rapidly replace functions
             localModel = m;
-            double summary = 0.0;
+            double summary = 100000000;
             double areacost = 0.0;
             double layoutcost = 0.0;
             double constaintcost = 0.0;
 
-            try {
-                areacost = CalculateParameterCost();
-                layoutcost = CalculateLayoutCost();
-                constaintcost = CalculateConstraintCost();
-                summary = areacost + layoutcost + constaintcost;
-            }
-            catch (Exception)
-            {
-                throw;
-                summary = 100000000;
-            }
-            
-            return new double[] { summary, areacost, layoutcost, constaintcost };
+            areacost = CalculateParameterCost();
+            layoutcost = CalculateLayoutCost();
+            constaintcost = CalculateConstraintCost();
+            summary = areacost + layoutcost + constaintcost;
+
+            return new[] { summary, areacost, layoutcost, constaintcost };
+        }
+        public static Cost CalculateCostNew(_Model m) {
+            localModel = m;
+            C = new Cost(-1, 0, 0, 0, 0);
+
+            C.AreaCost = CalculateParameterCost();
+            C.LayoutCost = CalculateLayoutCost();
+            C.ConstaintCost = CalculateConstraintCost();
+
+            return C;
         }
         private static double CalculateConstraintCost() {
             return 0.0;
@@ -56,10 +60,9 @@ namespace Diploma2.Services {
 
             //TODO: this fails when switched with simulation
             foreach (_Room room in localModel.rooms) {
-                _RoomType type = room.type;
-                if (type == null) {
-                    type = _RoomType.BedRoom;
-                }
+
+                _RoomType type = room.type ?? _RoomType.BedRoom;
+
                 double actualprop = room.CalculateProportion();
                 if (actualprop > type.proportion) {
                     summary += Math.Pow(2, Math.Abs(-type.proportion + actualprop));
@@ -104,14 +107,12 @@ namespace Diploma2.Services {
 
 
 
-            
+
             //bellmann ford, dijktra
             //szomszédossági mátrix
 
-            foreach (_Room room in localModel.rooms)
-            {
-                foreach (_Room localModelRoom in localModel.rooms)
-                {
+            foreach (_Room room in localModel.rooms) {
+                foreach (_Room localModelRoom in localModel.rooms) {
                     bool common = room.Lines.Intersect(localModelRoom.Lines).Any();
 
                 }

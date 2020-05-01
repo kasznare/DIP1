@@ -8,6 +8,8 @@ namespace Diploma2.Services
         public double cost;
         public double areacost;
         public double layoutcost;
+        public double constaintCost;
+        public Cost Cost;
         public override string ToString() {
             return this.GetType() + "-" + cost.ToString();
         }
@@ -34,6 +36,15 @@ namespace Diploma2.Services
             this.areacost = areacost;
             this.layoutcost = layoutcost;
             this.moveDistance = moveDistance;
+        }
+        public Move(_Line myLine, Cost c, int moveDistance) {
+            this.myLine = myLine;
+            this.cost = c.SummaryCost;
+            this.areacost = c.AreaCost;
+            this.layoutcost = c.LayoutCost;
+            this.constaintCost = c.ConstaintCost;
+            this.moveDistance = moveDistance;
+            Cost = c;
         }
 
         public override void Step(_Model m) {
@@ -62,6 +73,12 @@ namespace Diploma2.Services
             this.r1 = r1;
             this.r2 = r2;
             this.cost = cost;
+        }
+        public Switch(ref _Room r1, ref _Room r2, Cost cost) {
+            this.r1 = r1;
+            this.r2 = r2;
+            this.cost = cost.SummaryCost;
+            Cost = cost;
         }
 
         public Switch(ref _Room r1, ref _Room r2) {

@@ -69,7 +69,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\Costs.cs" />
+    <Compile Include="Model\Cost.cs" />
     <Compile Include="Model\LineAndCost.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\Action.cs" />

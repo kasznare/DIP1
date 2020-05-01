@@ -1,9 +1,11 @@
 ﻿using Diploma2.Services;
 
 namespace Diploma2.Model {
-    public class Costs {
+    public class Cost {
         public int Index { get; set; }
-        public double SummaryCost { get; set; }
+        public double SummaryCost {
+            get { return AreaCost + LayoutCost + ConstaintCost; }
+        }
 
         public double AreaCost { get; set; }
 
@@ -13,10 +15,9 @@ namespace Diploma2.Model {
 
         public Action lastAction { get; set; }
 
-        public Costs(int index, double summary, double areacost, double layoutcost, double constaintcost, Action a=null)
+        public Cost(int index, double summary, double areacost, double layoutcost, double constaintcost, Action a=null)
         {
             this.Index = index;
-            this.SummaryCost = summary;
             AreaCost = areacost;
             LayoutCost = layoutcost;
             ConstaintCost = constaintcost;

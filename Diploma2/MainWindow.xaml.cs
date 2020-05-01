@@ -36,7 +36,7 @@ namespace Diploma2 {
         public ObservableCollection<_Room> Rooms { get; set; } = new ObservableCollection<_Room>();
         public ObservableCollection<_Model> modelHistory { get; set; } = new ObservableCollection<_Model>();
         public _Model model { get; set; }
-        public ObservableCollection<Costs> SimulationCosts { get; set; } = new ObservableCollection<Costs>();
+        public ObservableCollection<Cost> SimulationCosts { get; set; } = new ObservableCollection<Cost>();
         public Simulation simulation = new Simulation();
         public ObservableCollection<LineAndCost> LineAndCostActualStep { get; set; } = new ObservableCollection<LineAndCost>();
 
@@ -78,7 +78,7 @@ namespace Diploma2 {
         public MainWindow() {
             DataContext = this;
             InitializeComponent();
-            model = ModelConfigurations.InitTestModel();
+            model = ModelConfigurations.InitSimpleModel();
           
             LoadDataFromModel();
             simulation.Model = model;
@@ -267,7 +267,7 @@ namespace Diploma2 {
                     //SaveStateToPng();
                     modelHistory.Add(model);
                     model = e.model;
-                    SimulationCosts.Add(new Costs(e.simIndex, e.cost, e.areacost, e.layoutcost, 0, e.stepAction));
+                    SimulationCosts.Add(new Cost(e.simIndex, e.cost, e.areacost, e.layoutcost, 0, e.stepAction));
                     LoadDataFromModel();
                     Paint();
 
