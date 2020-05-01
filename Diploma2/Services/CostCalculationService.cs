@@ -25,6 +25,7 @@ namespace Diploma2.Services {
             }
             catch (Exception)
             {
+                throw;
                 summary = 100000000;
             }
             
@@ -93,9 +94,31 @@ namespace Diploma2.Services {
             asd.Add(_RoomType.RestRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, -100 } });
             asd.Add(_RoomType.CorridorRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, -100 }, { _RoomType.BedRoom, -100 }, { _RoomType.RestRoom, -100 } });
 
+            //TODO: what rooms are adjacent?
+            // ____________________________
+            // |         |        |        |
+            // |         |        |        |
+            // |     2   |    1,3 |   2    |
+            // |         |        |        |
+            // |_________|________|________|
+
+
+
+            
+            //bellmann ford, dijktra
+            //szomszédossági mátrix
+
+            foreach (_Room room in localModel.rooms)
+            {
+                foreach (_Room localModelRoom in localModel.rooms)
+                {
+                    bool common = room.Lines.Intersect(localModelRoom.Lines).Any();
+
+                }
+            }
 
             double layoutcost = 0.0;
-            //TODO:here is problematic, that i dont know degree, fix this
+            //TODO:here is problematic, that i dont know degree, fix this ---number of lines
             //foreach (_Line modelLine in localModel.AllLinesFlat()) {
             //    var count = modelLine.relatedRooms.Count;
             //    if (count > 1) {

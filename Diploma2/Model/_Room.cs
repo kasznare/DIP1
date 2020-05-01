@@ -42,8 +42,10 @@ namespace Diploma2.Model {
             deepCopy.Name = Name;
             deepCopy.Number = Number;
             deepCopy.type = type;
+            deepCopy.Points = Points;
             return deepCopy;
         }
+
 
 
         private List<_Point> Points = new List<_Point>();
@@ -248,6 +250,7 @@ namespace Diploma2.Model {
 
         public double CalculateArea()
         {
+
             List<_Point> bp = GetPoints();
 
             if (bp.Count == 0) {

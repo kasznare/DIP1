@@ -39,10 +39,10 @@ namespace GenerateTest {
                 }
                 try
                 {
-                string json = File.ReadAllText(filename);
-                MessageBox.Show(json);
-                _Model account = JsonConvert.DeserializeObject<_Model>(json);
-                contents.Add(account);
+                    string json = File.ReadAllText(filename);
+                    MessageBox.Show(json);
+                    _Model account = JsonConvert.DeserializeObject<_Model>(json);
+                    contents.Add(account);
 
                 }
                 catch (Exception e)

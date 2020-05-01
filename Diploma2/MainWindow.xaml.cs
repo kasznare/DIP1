@@ -69,8 +69,6 @@ namespace Diploma2 {
                 selectedPointIndex = value;
                 OnPropertyChanged();
                 Paint();
-
-
             }
         }
 
@@ -81,10 +79,7 @@ namespace Diploma2 {
             DataContext = this;
             InitializeComponent();
             model = ModelConfigurations.InitTestModel();
-            foreach (var room in model.rooms)
-            {
-                room.CanGetBoundarySorted();
-            }
+          
             LoadDataFromModel();
             simulation.Model = model;
             simulation.ModelChanged += ModelChangeHandler;
@@ -93,7 +88,7 @@ namespace Diploma2 {
 
         private void LoadModels() {
             //Model = ModelConfigurations.InitSimplestModel();
-            model = ModelConfigurations.InitTestModel();
+            model = ModelConfigurations.InitSimpleModel();
             LoadDataFromModel();
         }
 
@@ -167,6 +162,16 @@ namespace Diploma2 {
 
             isPainting = false;
         }
+        private void LoadDataFromModel() {
+            Points = new ObservableCollection<_Point>(model.AllPointsFlat());
+            Lines = new ObservableCollection<_Line>(model.AllLinesFlat());
+            Rooms = model.rooms;
+            LineGrid.ItemsSource = Lines;
+            PointGrid.ItemsSource = Points;
+            RoomGrid.ItemsSource = null;
+            RoomGrid.ItemsSource = Rooms;
+        }
+        #region UI eventhandlers
 
         private void LoadModel_OnClick(object sender, RoutedEventArgs e) {
             LoadModels();
@@ -178,21 +183,11 @@ namespace Diploma2 {
             }
             else {
                 model.MoveLine(10, selectedLines.FirstOrDefault());
-
             }
             LoadDataFromModel();
             Paint();
         }
 
-        private void LoadDataFromModel() {
-            Points = new ObservableCollection<_Point>(model.AllPointsFlat());
-            Lines = new ObservableCollection<_Line>(model.AllLinesFlat());
-            Rooms = model.rooms;
-            LineGrid.ItemsSource = Lines;
-            PointGrid.ItemsSource = Points;
-            RoomGrid.ItemsSource = null;
-            RoomGrid.ItemsSource = Rooms;
-        }
 
         private void Exit_OnClick(object sender, RoutedEventArgs e) {
             this.Close();
@@ -250,12 +245,11 @@ namespace Diploma2 {
             selectedLineIndices.Clear();
             selectedLines.Clear();
             var ined = LineGrid.SelectedIndex;
-            if (ined!=-1)
-            {
-            selectedLineIndices.Add(ined);
-            selectedLines.Add(Lines.ElementAt(ined));
-            Paint();
-                
+            if (ined != -1) {
+                selectedLineIndices.Add(ined);
+                selectedLines.Add(Lines.ElementAt(ined));
+                Paint();
+
             }
         }
 
@@ -263,6 +257,7 @@ namespace Diploma2 {
             SelectedPointIndex = PointGrid.SelectedIndex;
         }
 
+        #endregion
         private void ModelChangeHandler(object sender, ProgressEventArgs e) {
 
             Dispatcher.BeginInvoke(new Action(() => {
@@ -333,6 +328,8 @@ namespace Diploma2 {
                 $"{currentModel.loadedModelType}_{currentModel.rooms.Count}_" +
                 $"{currentModel.AllLinesFlat().Count}";
         }
+
+        #region GenerateAllModels
 
         public List<_Model> AllRoomPairs(_Model m_mod) {
             List<_Model> returnList = new List<_Model>();
@@ -406,7 +403,7 @@ namespace Diploma2 {
         private void Ommit(_Model mMod) {
             foreach (_Room room in mMod.rooms) {
                 _Room room2;
-                _Model m_mod2 = mMod.DeepCopy(room,  out room2);
+                _Model m_mod2 = mMod.DeepCopy(room, out room2);
 
                 m_mod2.rooms.Remove(room2);
                 Ommitsteps(m_mod2);
@@ -434,6 +431,7 @@ namespace Diploma2 {
         }
         ModelStorage ms = new ModelStorage();
 
+        #endregion
     }
     internal class ModelStorage {
         private List<_Model> history = new List<_Model>();

@@ -274,77 +274,26 @@ namespace Diploma2.Model {
                 room.Lines.Add(movedLine);
             }
 
-            ////MIGHT BE UNNESSESARY
-            //_Line l5 = null;                                                             //lets start with if the line already existed fully
-            //foreach (_Line line in AllLinesFlat()) {
-            //    if (line.Guid != movedLine.Guid && line.IsTheSame(movedLine)) {
-            //        l5 = line;
-            //        break;                                                               //TODO: here we could allow multiple
-            //    }
-            //}
-            //foreach (_Room room in rooms) {
-            //    if (room.Lines.Contains(l5)) {
-            //        room.Lines.Remove(l5);                                                  //Should we handle points?
-            //        room.Lines.Add(movedLine);
-            //    }
-            //}
-
-            //TODO: remove overlaps, if existing, this currently makes a loop
-            //TODO: we only need to change rooms that care
+           
             foreach (_Room room in roomsContainingTheLineToMove) {
 
                 TryToDivideRoomLinesWithL1L2(room, l1, l2);
+                bool shouldBeTrue = room.CanGetBoundarySorted();
             }
 
             foreach (_Room room in roomsTouchingEndPoint) {
                 TryToDivideRoomLinesWithL1L2(room, l1, l2);
                 TryToRemoveRemainderLines(room, l1, l2);
+                bool shouldBeTrue = room.CanGetBoundarySorted();
             }
 
             foreach (_Room room in roomsTouchingStartPoint) {
                 TryToDivideRoomLinesWithL1L2(room, l1, l2);
                 TryToRemoveRemainderLines(room, l1, l2);
+                bool shouldBeTrue = room.CanGetBoundarySorted();
             }
 
-
-            //foreach (_Room room in rooms) {
-            //    bool isComplete = room.CanGetBoundarySorted();
-            //    if (!isComplete) {
-
-            //        for (int i = 0; i < room.Lines.Count; i++) {
-            //            _Line chosenLine = room.Lines.ElementAt(i);
-            //            var connectsPoint = chosenLine.ConnectsPoint(l1);
-            //            if (connectsPoint != null) {
-            //                _Point otherPoint = l1.EndPoint.Equals(connectsPoint) ? l1.StartPoint : l1.EndPoint;
-            //                if (IsOnLine(otherPoint, chosenLine)) {
-            //                    if (chosenLine.EndPoint.Equals(connectsPoint)) {
-            //                        chosenLine.EndPoint = otherPoint;
-            //                    }
-            //                    else {
-            //                        chosenLine.StartPoint = otherPoint;
-            //                    }
-            //                }
-            //            }
-            //            connectsPoint = chosenLine.ConnectsPoint(l2);
-            //            if (connectsPoint != null) {
-            //                _Point otherPoint = l2.EndPoint.Equals(connectsPoint) ? l2.StartPoint : l2.EndPoint;
-            //                if (IsOnLine(otherPoint, chosenLine)) {
-            //                    if (chosenLine.EndPoint.Equals(connectsPoint)) {
-            //                        chosenLine.EndPoint = otherPoint;
-            //                    }
-            //                    else {
-            //                        chosenLine.StartPoint = otherPoint;
-            //                    }
-            //                }
-            //            }
-            //        }
-
-
-
-            //        //throw new Exception("room cannot be fixed in move step");
-            //    }
-            //}
-
+            
             //this handles null lines, can be removed at any time, probably should do it before sorting
             foreach (_Room room in rooms) {
                 for (var index = 0; index < room.Lines.Count; index++) {
@@ -355,11 +304,7 @@ namespace Diploma2.Model {
                 }
             }
             GC.Collect();
-            //at this point we only need to solve
-            //1. same line already existed before - fully or partially
-            //2. new point was not needed
-            //we need to handle created lines with no rooms
-            //we still need to find if there are any rooms just touching the line.
+         
 
             moveStepsCount++;
         }

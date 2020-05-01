@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow"
         Height="800"
-        Width="1000"
+        Width="1200"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="None"
@@ -16,10 +16,6 @@
         Background="Black">
 
   <DockPanel>
-    <!--<StatusBar DockPanel.Dock="Bottom" Height="20">
-          <Label Height="15"
-                 Content="{Binding StatusMessage, Mode=OneWay, IsAsync=True, UpdateSourceTrigger=PropertyChanged}"></Label>
-    </StatusBar>-->
     <TabControl Name="TabControl"
                 Margin='0,0,0,-318'>
       <TabItem Header='Graphicsimulation'
@@ -27,10 +23,11 @@
         <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width='1*'></ColumnDefinition>
-            <ColumnDefinition Width='2*'></ColumnDefinition>
+            <ColumnDefinition Width='3*'></ColumnDefinition>
             <ColumnDefinition Width='2*'></ColumnDefinition>
           </Grid.ColumnDefinitions>
-          
+          <GridSplitter Grid.Column="0" Grid.Row="0" Width="1" Background="Black"></GridSplitter>
+          <GridSplitter Grid.Column="1" Grid.Row="0" Width="1" Background="Black"></GridSplitter>
           <StackPanel>
             <Button Content="Start Simulation"
                     Height="50"
@@ -74,6 +71,40 @@
                 </TransformGroup>
               </Canvas.RenderTransform>
             </Canvas>
+            <TextBlock Text="Costs"
+                       Foreground="White"
+                       FontSize="30"></TextBlock>
+            <DataGrid  Name="Costs"
+                       ItemsSource="{Binding SimulationCosts, IsAsync=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                       HorizontalAlignment="Stretch"
+                       Height="300"
+                       AutoGenerateColumns="False"
+                       SelectionUnit="FullRow"
+                       SelectedCellsChanged="RoomGrid_OnSelectedCellsChanged"
+                       VerticalAlignment="Stretch">
+
+              <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Index"
+                                        Width="200">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <ItemsControl ItemsSource="{Binding Index}" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="SummaryCost"
+                                        Width="100">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding SummaryCost}"
+                                 TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+              </DataGrid.Columns>
+
+            </DataGrid>
             <TextBlock Text="History"
                        Foreground="White"
                        FontSize="30"></TextBlock>
@@ -113,34 +144,25 @@
          
           <StackPanel Grid.Column="2">
             <StackPanel  Grid.Column="2"
-                         Grid.Row="0">
-              <TextBlock Text="Pontok"
+                         Grid.Row="1">
+              <TextBlock Text="Szobák"
                          Foreground="White"
                          FontSize="30"></TextBlock>
-              <DataGrid  Name="PointGrid"
-                         AutoGenerateColumns="False"
-                         ItemsSource="{Binding Points, IsAsync=True, Mode=OneWay}"
+              <DataGrid  Name="RoomGrid"
+                         ItemsSource="{Binding Rooms, IsAsync=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"
-                         Height="300"
+                         Height="400"
+                         AutoGenerateColumns="False"
                          SelectionUnit="FullRow"
-SelectedCellsChanged="PointGrid_OnSelectedCellsChanged"
+                         SelectedCellsChanged="RoomGrid_OnSelectedCellsChanged"
                          VerticalAlignment="Stretch">
+
                 <DataGrid.Columns>
-                  <DataGridTemplateColumn Header="X"
-                                          Width="65">
+                  <DataGridTemplateColumn Header="Linesimulation"
+                                          Width="200">
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate>
-                        <TextBlock Text="{Binding X}"
-                                   TextWrapping="Wrap" />
-                      </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                  </DataGridTemplateColumn>
-                  <DataGridTemplateColumn Header="Y"
-                                          Width="50">
-                    <DataGridTemplateColumn.CellTemplate>
-                      <DataTemplate>
-                        <TextBlock Text="{Binding Y}"
-                                   TextWrapping="Wrap" />
+                        <ItemsControl ItemsSource="{Binding Lines}" />
                       </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
@@ -153,6 +175,7 @@ SelectedCellsChanged="PointGrid_OnSelectedCellsChanged"
                       </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
+               
                   <DataGridTemplateColumn Header="Number"
                                           Width="100">
                     <DataGridTemplateColumn.CellTemplate>
@@ -163,7 +186,7 @@ SelectedCellsChanged="PointGrid_OnSelectedCellsChanged"
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
                   <DataGridTemplateColumn Header="Guid"
-                                          Width="300">
+                                          Width="*">
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate>
                         <TextBlock Text="{Binding Guid}"
@@ -172,6 +195,7 @@ SelectedCellsChanged="PointGrid_OnSelectedCellsChanged"
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
                 </DataGrid.Columns>
+
               </DataGrid>
 
             </StackPanel>
@@ -240,25 +264,34 @@ SelectedCellsChanged="LineGrid_OnSelectedCellsChanged"
 
             </StackPanel>
             <StackPanel  Grid.Column="2"
-                         Grid.Row="1">
-              <TextBlock Text="Szobák"
+                         Grid.Row="0">
+              <TextBlock Text="Pontok"
                          Foreground="White"
                          FontSize="30"></TextBlock>
-              <DataGrid  Name="RoomGrid"
-                         ItemsSource="{Binding Rooms, IsAsync=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                         HorizontalAlignment="Stretch"
-                         Height="400"
+              <DataGrid  Name="PointGrid"
                          AutoGenerateColumns="False"
+                         ItemsSource="{Binding Points, IsAsync=True, Mode=OneWay}"
+                         HorizontalAlignment="Stretch"
+                         Height="300"
                          SelectionUnit="FullRow"
-                         SelectedCellsChanged="RoomGrid_OnSelectedCellsChanged"
+SelectedCellsChanged="PointGrid_OnSelectedCellsChanged"
                          VerticalAlignment="Stretch">
-
                 <DataGrid.Columns>
-                  <DataGridTemplateColumn Header="Linesimulation"
-                                          Width="200">
+                  <DataGridTemplateColumn Header="X"
+                                          Width="65">
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate>
-                        <ItemsControl ItemsSource="{Binding Lines}" />
+                        <TextBlock Text="{Binding X}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="Y"
+                                          Width="50">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Y}"
+                                   TextWrapping="Wrap" />
                       </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
@@ -271,7 +304,6 @@ SelectedCellsChanged="LineGrid_OnSelectedCellsChanged"
                       </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
-               
                   <DataGridTemplateColumn Header="Number"
                                           Width="100">
                     <DataGridTemplateColumn.CellTemplate>
@@ -282,7 +314,7 @@ SelectedCellsChanged="LineGrid_OnSelectedCellsChanged"
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
                   <DataGridTemplateColumn Header="Guid"
-                                          Width="*">
+                                          Width="300">
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate>
                         <TextBlock Text="{Binding Guid}"
@@ -291,7 +323,6 @@ SelectedCellsChanged="LineGrid_OnSelectedCellsChanged"
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
                 </DataGrid.Columns>
-
               </DataGrid>
 
             </StackPanel>

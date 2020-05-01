@@ -18,6 +18,9 @@ namespace Diploma2.Services {
             _Room _Room = new _Room {Name = "FirstRoom", Number = 1, type = _RoomType.LivingRoom, isStartRoom = true};
             _Room.Lines = ( new List<_Line>(){line1,line2,line3,line4});
             m.rooms.Add(_Room);
+            foreach (var room in m.rooms) {
+                room.CanGetBoundarySorted();
+            }
             return m;
         }
         public static _Model InitSimpleModel() {
@@ -45,6 +48,9 @@ namespace Diploma2.Services {
             m.rooms.Add(first);
             m.rooms.Add(second);
 
+            foreach (var room in m.rooms) {
+                room.CanGetBoundarySorted();
+            }
             return m;
         }
 
@@ -187,6 +193,9 @@ namespace Diploma2.Services {
             m.rooms.Add(eight);
             m.rooms.Add(nineth);
 
+            foreach (var room in m.rooms) {
+                room.CanGetBoundarySorted();
+            }
 
             return m;
 
