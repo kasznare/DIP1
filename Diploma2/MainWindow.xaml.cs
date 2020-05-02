@@ -437,7 +437,7 @@ namespace Diploma2 {
                     //SaveStateToPng();
                     modelHistory.Add(model);
                     model = e.model;
-                    SimulationCosts.Add(new Cost(e.simIndex, e.cost, e.areacost, e.layoutcost, 0, e.stepAction));
+                    SimulationCosts.Add(new Cost(e.simIndex, e.summarycost, e.areacost, e.layoutcost, 0, e.stepAction));
                     LoadDataFromModel();
                     Paint();
                 }

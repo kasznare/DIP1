@@ -23,75 +23,62 @@ namespace Diploma2.Services {
         int MaxIndex = 10;
         int baseMoveDistance = 10;
 
-        bool isFinished = false;
-        bool isTimeout = false;
-        bool isTreshold = false;
-        bool IsStopped  = false;
+        ExitCondition exitCondition = ExitCondition.Running;
 
-        double actualCost = 1000000;
-        double actualAreaCost;
-        double actualLayoutCost;
+        Cost actualCost = new Cost(0, 100000, 100000, 0, 0);
 
         public ObservableCollection<_Model> modelCopyHistory = new ObservableCollection<_Model>();
-        public Dictionary<Action, double> ActionsByCosts = new Dictionary<Action, double>();
+        public Dictionary<Action, Cost> ActionsByCosts = new Dictionary<Action, Cost>();
         public List<Action> Actions = new List<Action>();
-        public List<Dictionary<Action, double>> history = new List<Dictionary<Action, double>>();
-        
+        public List<Dictionary<Action, Cost>> history = new List<Dictionary<Action, Cost>>();
+
         Stopwatch st = new Stopwatch();
         public void RunSteps() {
             st.Start();
 
-            while (!isFinished && !isTimeout && !isTreshold && !IsStopped) {
+            while (exitCondition == ExitCondition.Running) {
                 Actions.Clear();
                 SaveState();
-                actualCost = CostCalculationService.CalculateCostNew(Model).SummaryCost;
+                actualCost = CostCalculationService.CalculateCostNew(Model);
                 CalculateCostsForState();
                 MakeAStepByTheCalculatedCosts();
                 HandleModelChangeUpdate();
-                Thread.Sleep(5);
+                //Thread.Sleep(5);
                 CurrentIndex++;
                 if (CurrentIndex >= MaxIndex) {
-                    isFinished = true;
+                    exitCondition = ExitCondition.isFinished;
                 }
                 if (st.ElapsedMilliseconds > 10000) {
-                    isTimeout = true;
+                    exitCondition = ExitCondition.isTimeout;
                 }
                 if (ActualTreshold >= MaxTreshold) {
-                    isTreshold = true;
+                    exitCondition = ExitCondition.isTreshold;
                 }
             }
 
-            Logger.WriteLog($"Run Ended.\nFinished: {isFinished}\nTimeout: {isTimeout}\nTreshold: {isTreshold}\nStopped manually: {IsStopped}");
-            
+            Logger.WriteLog($"Run Ended.\nExitCondition : {exitCondition}");
+
             ActualTreshold = 0;
-            isFinished = false;
-            isTimeout = false;
-            isTreshold = false;
-            IsStopped = false;
             MaxIndex += MaxIndex;
 
             st.Reset();
         }
 
-        public void UndoStep()
-        {
-            Model = modelCopyHistory.ElementAt(CurrentIndex-1);
+        public void UndoStep() {
+            Model = modelCopyHistory.ElementAt(CurrentIndex - 1);
             HandleModelChangeUpdate();
         }
         private void HandleModelChangeUpdate() {
             if (ModelChanged == null) return;
             ProgressEventArgs args = new ProgressEventArgs(Model, actualCost, CurrentIndex);
-            args.areacost = actualAreaCost;
-            args.layoutcost = actualLayoutCost;
             args.stepAction = ActualAction;
             ModelChanged(this, args);
         }
 
         private void CalculateCostsForState() {
-            ActionsByCosts = new Dictionary<Action, double>();
-
+            history.Add(ActionsByCosts);
+            ActionsByCosts = new Dictionary<Action, Cost>();
             CalculateMoveCosts();
-
             //CalculateSplitCosts();
             CalculateSwitchCosts();
         }
@@ -125,7 +112,7 @@ namespace Diploma2.Services {
 
             //Parallel.For(0, Model.modelLines.Count,
             //    index => {
-            var allLinesFlat = Model.AllLinesFlat();
+            List<_Line> allLinesFlat = Model.AllLinesFlat();
             for (int index = 0; index < allLinesFlat.Count; index++) {
 
                 _Line myLine = allLinesFlat.ElementAt(index);
@@ -134,11 +121,8 @@ namespace Diploma2.Services {
                 tempModel.MoveLine(baseMoveDistance, newMyLine);
                 if (tempModel.IsInInvalidState) continue;
 
-                //double[] costs = CostCalculationService.CalculateCost(tempModel);
                 Cost costsnew = CostCalculationService.CalculateCostNew(tempModel);
-                //double summary = costs[0];
-                //double areacost = costs[1];
-                //double layoutcost = costs[2];
+
                 lock (locker) {
                     Actions.Add(new Move(myLine, costsnew, baseMoveDistance));
                 }
@@ -153,13 +137,9 @@ namespace Diploma2.Services {
                 _Model tempModel = Model.DeepCopy(myLine, out newMyLine);
                 tempModel.MoveLine(-baseMoveDistance, newMyLine);
                 if (tempModel.IsInInvalidState) continue;
-               // double[] costs = CostCalculationService.CalculateCost(tempModel);
+
                 Cost costsnew = CostCalculationService.CalculateCostNew(tempModel);
-                //double summary = costs[0];
-                //double areacost = costs[1];
-                //double layoutcost = costs[2];
                 lock (locker) {
-                    //Actions.Add(new Move(myLine, summary, areacost, layoutcost, -baseMoveDistance));
                     Actions.Add(new Move(myLine, costsnew, -baseMoveDistance));
                 }
             }
@@ -182,14 +162,13 @@ namespace Diploma2.Services {
 
         Random r = new Random(30);
         private Action FindStep() {
-            List<Action> sorted = Actions.OrderBy(i => i.cost).ToList();
+            List<Action> sorted = Actions.OrderBy(i => i.Cost.SummaryCost).ToList();
             //Action a = sorted.FirstOrDefault();
             int j = r.Next(0, Math.Min(0, sorted.Count));
             ActualAction = sorted.ElementAt(j);
-            if (actualCost >= ActualAction.cost) {
-                actualCost = ActualAction.cost;
-                actualAreaCost = ActualAction.areacost;
-                actualLayoutCost = ActualAction.layoutcost;
+            //TODO: here maybe we should return
+            if (actualCost.SummaryCost >= ActualAction.Cost.SummaryCost) {
+                actualCost = ActualAction.Cost;
                 return ActualAction;
             }
             return null;

@@ -76,6 +76,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ModelStorage.cs" />
+    <Compile Include="Model\ExitCondition.cs" />
     <Compile Include="Model\Cost.cs" />
     <Compile Include="Model\LineAndCost.cs" />
     <Compile Include="Properties\Annotations.cs" />

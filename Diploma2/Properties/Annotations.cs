@@ -147,7 +147,7 @@ namespace Diploma2.Annotations
   ///     public const string STRING_CONST = "1";
   ///   }
   ///
-  ///   public class Class1
+  ///   public class ExitCondition
   ///   {
   ///     [ValueProvider("TestNamespace.Constants")] public int myField;
   ///     public void Foo([ValueProvider("TestNamespace.Constants")] string str) { }

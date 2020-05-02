@@ -11,7 +11,7 @@ namespace Diploma2.Services {
         public static Cost C { get; set; }
         public static _Model localModel { get; set; }
         public static double[] CalculateCost(_Model m) {
-            //NOTE: cost calculation would be more flexible, if i could rapidly replace functions
+            //NOTE: summarycost calculation would be more flexible, if i could rapidly replace functions
             localModel = m;
             double summary = 100000000;
             double areacost = 0.0;
