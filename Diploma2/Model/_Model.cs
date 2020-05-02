@@ -13,6 +13,7 @@ namespace Diploma2.Model {
         public object loadedModelType { get; internal set; }
         public bool IsInInvalidState { get; internal set; }
 
+        public int[,] AdjacencyMatrix { get; set; }
         public _Model() {
             rooms = new ObservableCollection<_Room>();
         }
@@ -21,6 +22,21 @@ namespace Diploma2.Model {
         }
 
 
+        public void FillAdjacencyMatrix()
+        {
+            AdjacencyMatrix = new int[rooms.Count,rooms.Count];
+            for (int i = 0; i < rooms.Count; i++)
+            {
+                for (int j = i+1; j < rooms.Count; j++)
+                {
+                    if (rooms[i].Lines.Intersect(rooms[j].Lines).Any())
+                    {
+                        AdjacencyMatrix[i,j] = 1;
+                    }
+                }
+            }
+            //stop
+        }
         [JsonIgnore]
         [IgnoreDataMember]
         private Dictionary<_Room, _Room> oldNewRooms = new Dictionary<_Room, _Room>();

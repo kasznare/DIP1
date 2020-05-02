@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Odbc;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -17,6 +18,11 @@ using Diploma2.Annotations;
 using Diploma2.Model;
 using Diploma2.Services;
 using Diploma2.Utilities;
+using Diploma2.Views;
+using LiveCharts;
+using LiveCharts.Helpers;
+using LiveCharts.Wpf;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Action = System.Action;
@@ -27,6 +33,9 @@ namespace Diploma2 {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged {
+
+        #region Variables
+
         private bool isPainting;
         private int selectedLineIndex = -1;
         public int selectedPointIndex = -1;
@@ -35,11 +44,13 @@ namespace Diploma2 {
         public ObservableCollection<_Line> Lines { get; set; } = new ObservableCollection<_Line>();
         public ObservableCollection<_Room> Rooms { get; set; } = new ObservableCollection<_Room>();
         public ObservableCollection<_Model> modelHistory { get; set; } = new ObservableCollection<_Model>();
+        private _Model GeneratingBase { get; set; }
         public _Model model { get; set; }
         public ObservableCollection<Cost> SimulationCosts { get; set; } = new ObservableCollection<Cost>();
         public Simulation simulation = new Simulation();
         public ObservableCollection<LineAndCost> LineAndCostActualStep { get; set; } = new ObservableCollection<LineAndCost>();
-
+        List<int> selectedLineIndices = new List<int>();
+        List<_Line> selectedLines = new List<_Line>();
         public ObservableCollection<_RoomType> roomtypes { get; set; } = new ObservableCollection<_RoomType>(_RoomType.getRoomTypes());
         public int LineGridSelectedIndex { get; set; }
         private int actualSimulationThreshold = 0;
@@ -47,7 +58,9 @@ namespace Diploma2 {
         public int actualSimulationIndex = 0;
         readonly object locker = new object();
         public int moveDistance = 10;
+        ModelStorage ms = new ModelStorage();
 
+        #endregion
         public int SelectedLineIndex {
             get {
                 return selectedLineIndex;
@@ -72,14 +85,11 @@ namespace Diploma2 {
             }
         }
 
-        private void Log(string message) {
-            if (message != null && message != StatusMessage) StatusMessage = message;
-        }
         public MainWindow() {
             DataContext = this;
             InitializeComponent();
             model = ModelConfigurations.InitSimpleModel();
-          
+
             LoadDataFromModel();
             simulation.Model = model;
             simulation.ModelChanged += ModelChangeHandler;
@@ -91,9 +101,6 @@ namespace Diploma2 {
             model = ModelConfigurations.InitSimpleModel();
             LoadDataFromModel();
         }
-
-        List<int> selectedLineIndices = new List<int>();
-        List<_Line> selectedLines = new List<_Line>();
 
         private void Paint() {
             isPainting = true;
@@ -188,7 +195,6 @@ namespace Diploma2 {
             Paint();
         }
 
-
         private void Exit_OnClick(object sender, RoutedEventArgs e) {
             this.Close();
         }
@@ -215,13 +221,6 @@ namespace Diploma2 {
                     this.Close();
                     break;
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void RoomGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
@@ -256,27 +255,6 @@ namespace Diploma2 {
         private void PointGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
             SelectedPointIndex = PointGrid.SelectedIndex;
         }
-
-        #endregion
-        private void ModelChangeHandler(object sender, ProgressEventArgs e) {
-
-            Dispatcher.BeginInvoke(new Action(() => {
-
-                lock (locker) {
-
-                    //SaveStateToPng();
-                    modelHistory.Add(model);
-                    model = e.model;
-                    SimulationCosts.Add(new Cost(e.simIndex, e.cost, e.areacost, e.layoutcost, 0, e.stepAction));
-                    LoadDataFromModel();
-                    Paint();
-
-
-                }
-            }), DispatcherPriority.SystemIdle);
-
-        }
-
         private void StartSimulation_OnClick(object sender, RoutedEventArgs e) {
             simulation.Model = model;
             Paint();
@@ -284,18 +262,33 @@ namespace Diploma2 {
             Thread t = new Thread(simulation.RunSteps);
             t.Start();
         }
-
         private void UndoStep_OnClick(object sender, RoutedEventArgs e) {
             simulation.UndoStep();
         }
 
-        private _Model m;
-        private void Gentest_OnClick(object sender, RoutedEventArgs e)
-        {
 
-            m = ModelConfigurations.InitTestModel();
+        private void SaveToJson_OnClick(object sender, RoutedEventArgs e) {
+            SaveHistoryModel(model, GenerateModelNameFromState(model));
+        }
+
+        private void LoadFromJson_OnClick(object sender, RoutedEventArgs e) {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.InitialDirectory = $"{savepath}\\Models";
+            ofd.ShowDialog();
+
+            string openthis = ofd.FileName;
+            string json = File.ReadAllText(openthis);
+            _Model account = JsonConvert.DeserializeObject<_Model>(json);
+            model = account;
+            LoadDataFromModel();
+            Paint();
+        }
+
+        #region GenerateAllModels
+        private void Gentest_OnClick(object sender, RoutedEventArgs e) {
+            GeneratingBase = ModelConfigurations.InitTestModel();
             List<_Model> new_Models = new List<_Model>();
-            new_Models.Add(m);
+            new_Models.Add(GeneratingBase);
             List<_Model> all_Models = new List<_Model>();
             while (new_Models.Any()) {
                 List<_Model> loop = new List<_Model>();
@@ -328,8 +321,6 @@ namespace Diploma2 {
                 $"{currentModel.loadedModelType}_{currentModel.rooms.Count}_" +
                 $"{currentModel.AllLinesFlat().Count}";
         }
-
-        #region GenerateAllModels
 
         public List<_Model> AllRoomPairs(_Model m_mod) {
             List<_Model> returnList = new List<_Model>();
@@ -412,7 +403,7 @@ namespace Diploma2 {
         }
 
         private bool ExitCondition(_Model model) {
-            if (m.rooms.Count == 1) return true;
+            if (GeneratingBase.rooms.Count == 1) return true;
             else return false;
         }
 
@@ -429,46 +420,84 @@ namespace Diploma2 {
                 serializer.Serialize(writer, ms);
             }
         }
-        ModelStorage ms = new ModelStorage();
 
         #endregion
-    }
-    internal class ModelStorage {
-        private List<_Model> history = new List<_Model>();
-        public ModelStorage() {
-        }
+        #endregion
 
-        public void AddModel(_Model m) {
-            bool isEqual = false;
-            foreach (_Model model in history) {
-                isEqual = CheckEquivalence(m, model);
-                if (isEqual) break;
-                if (history.Count > 100000)
-                {
-                    isEqual = true;
-                    break;
+        public SeriesCollection SeriesCollection { get; set; }
+        public string[] Labels { get; set; }
+        public Func<double, string> YFormatter { get; set; }
+
+        private void ModelChangeHandler(object sender, ProgressEventArgs e) {
+
+            Dispatcher.BeginInvoke(new Action(() => {
+
+                lock (locker) {
+
+                    //SaveStateToPng();
+                    modelHistory.Add(model);
+                    model = e.model;
+                    SimulationCosts.Add(new Cost(e.simIndex, e.cost, e.areacost, e.layoutcost, 0, e.stepAction));
+                    LoadDataFromModel();
+                    Paint();
                 }
-            }
-
-            if (!isEqual) {
-                history.Add(m);
-            }
+            }), DispatcherPriority.Normal); //changed from idle
 
         }
 
-        public List<_Model> getHistory() {
-            return history;
+        public void Draw()
+        {
+            double[] sum = SimulationCosts.Select(i => i.SummaryCost).ToArray();
+            double[] area = SimulationCosts.Select(i => i.AreaCost).ToArray();
+            double[] layout = SimulationCosts.Select(i => i.LayoutCost).ToArray();
+            string[] index = SimulationCosts.Select(i => i.Index.ToString()).ToArray();
+
+            SeriesCollection = new SeriesCollection
+            {
+                new LineSeries
+                {
+                    Title = "SummaryCosts",
+                    //Values = new ChartValues<double> { 4, 6, 5, 2 ,4 }
+                    Values =  sum.AsChartValues()
+                },
+                new LineSeries
+                {
+                    Title = "AreaCosts",
+                    //Values = new ChartValues<double> { 6, 7, 3, 4 ,6 },
+                    Values = area.AsChartValues(),
+                    PointGeometry = null
+                },
+                new LineSeries
+                {
+                    Title = "LayoutCosts",
+                    //Values = new ChartValues<double> { 4,2,7,2,7 },
+                    Values =layout.AsChartValues(),
+                    PointGeometry = DefaultGeometries.Square,
+                    PointGeometrySize = 15
+                }
+            };
+
+            //Labels = new[] { "Jan", "Feb", "Mar", "Apr", "May" };
+            Labels = index;
+            YFormatter = value => value.ToString("C");
         }
-        private bool CheckEquivalence(_Model model, _Model model1) {
-            //if (model.rooms.Count == model1.rooms.Count)
-            //{
-            //    if (model.AllLinesFlat().Count == model1.AllLinesFlat().Count)
-            //    {
-            //        return true;
-            //    }
-            //}
-            //TODO: implement equivalence checking, but test generation is complete even when redundant.
-            return false;
+
+        #region Mandatory stuff
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
+        #endregion
+
+        private void DrawChart_OnClick(object sender, RoutedEventArgs e)
+        {
+            Draw();
+            Chart.Series = SeriesCollection;
         }
     }
 }

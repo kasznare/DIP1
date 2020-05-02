@@ -4,6 +4,8 @@ namespace Diploma2.Model {
     public class _Line : _GeometryBase {
         public _Point StartPoint { get; set; }
         public _Point EndPoint { get; set; }
+        public double length => GetLength();
+
         public _Line(_Point startPoint, _Point endPoint) {
             StartPoint = startPoint;
             EndPoint = endPoint;
@@ -11,23 +13,11 @@ namespace Diploma2.Model {
 
         public _Line DeepCopy()
         {
-            _Line deepCopy = new _Line(StartPoint.DeepCopy(), EndPoint.DeepCopy());
-            deepCopy.Name = Name;
-            deepCopy.Number = Number;
+            _Line deepCopy = new _Line(StartPoint.DeepCopy(), EndPoint.DeepCopy()) {Name = Name, Number = Number};
             return deepCopy;
         }
 
-        public override bool Equals(object obj)
-        {
-            //Check for null and compare RunSteps-time types.
-            if ((obj == null) || !this.GetType().Equals(obj.GetType())) {
-                return false;
-            }
-            else {
-                _Line l = (_Line)obj;
-                return (StartPoint.Equals(l.StartPoint) && (EndPoint.Equals(l.EndPoint))) || (StartPoint.Equals(l.EndPoint) && (EndPoint.Equals(l.StartPoint)));
-            }
-        }
+      
 
         public bool IsTheSame(_Line lineToMove) {
             if (lineToMove.StartPoint.Equals( this.StartPoint)
@@ -52,11 +42,16 @@ namespace Diploma2.Model {
             return null;
         }
 
-        internal void Move(_Point moveVector) {
+        public void Move(_Point moveVector) {
             EndPoint = EndPoint.Move(moveVector);
             StartPoint = StartPoint.Move(moveVector);
         }
 
+        /// <summary>
+        /// return normal vector of given line
+        /// </summary>
+        /// <param name="isNormalized"></param>
+        /// <returns></returns>
         public _Point GetNV(bool isNormalized = false) { //if we define dx = x2 - x1 and dy = y2 - y1, then the normals are(-dy, dx) and(dy, -dx).
             double dx = StartPoint.X - EndPoint.X;
             double dy = StartPoint.Y - EndPoint.Y;
@@ -67,11 +62,6 @@ namespace Diploma2.Model {
             else {
                 return Normalize(p);
             }
-        }
-
-        public bool isParallel(_Line line)
-        {
-            return false;
         }
 
         public _Line Normalize(_Line _Line) {
@@ -88,7 +78,6 @@ namespace Diploma2.Model {
             return p2;
         }
 
-        public double length => GetLength();
 
         public double GetLength() {
             double x1 = StartPoint.X;
@@ -98,9 +87,20 @@ namespace Diploma2.Model {
             return Math.Sqrt(Math.Abs(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2)));
         }
 
-
-        public override string ToString() {
-            return $"From({StartPoint.X},{StartPoint.Y}) to ({EndPoint.X},{EndPoint.Y})";
+        #region Overrides
+        public override bool Equals(object obj) {
+            //Check for null and compare RunSteps-time types.
+            if ((obj == null) || !this.GetType().Equals(obj.GetType())) {
+                return false;
+            }
+            else {
+                _Line l = (_Line)obj;
+                return (StartPoint.Equals(l.StartPoint) && (EndPoint.Equals(l.EndPoint))) || (StartPoint.Equals(l.EndPoint) && (EndPoint.Equals(l.StartPoint)));
+            }
         }
+        public override string ToString() {
+            return $"Start({StartPoint.X},{StartPoint.Y}) - End({EndPoint.X},{EndPoint.Y})";
+        }
+        #endregion
     }
 }

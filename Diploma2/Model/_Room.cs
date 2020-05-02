@@ -9,30 +9,17 @@ using Diploma2.Utilities;
 
 namespace Diploma2.Model {
     public class _Room : _GeometryBase, INotifyPropertyChanged {
+
+        #region Constructors
         public _Room(List<_Line> newLines) {
             lines = newLines;
         }
         public _Room() {
 
         }
+        #endregion
 
-        public override string ToString() {
-            return Name + "_" + Number.ToString();
-        }
-        public _Room DeepCopy() {
-            List<_Line> newLines = new List<_Line>();
-            foreach (_Line line in lines) {
-                newLines.Add(line.DeepCopy());
-            }
-
-            _Room deepCopy = new _Room(newLines);
-            deepCopy.Name = Name;
-            deepCopy.Number = Number;
-            deepCopy.type = type;
-            deepCopy.Points = Points;
-            return deepCopy;
-        }
-
+        #region Properties
 
         private List<_Point> Points = new List<_Point>();
         public List<_Line> Lines {
@@ -46,8 +33,29 @@ namespace Diploma2.Model {
         private List<_Line> lines = new List<_Line>();
         public _RoomType type { get; set; }
         public bool isStartRoom { get; set; }
+        
 
-     
+        #endregion
+        public _Room DeepCopy() {
+            List<_Line> newLines = new List<_Line>();
+            foreach (_Line line in lines) {
+                newLines.Add(line.DeepCopy());
+            }
+
+            _Room deepCopy = new _Room(newLines);
+            deepCopy.Name = Name;
+            deepCopy.Number = Number;
+            deepCopy.type = type;
+            deepCopy.Points = Points;
+            return deepCopy;
+        }
+        public static void ChangeAllParams(ref _Room keep, _Room getDataFrom) {
+            keep.Number = getDataFrom.Number;
+            keep.Name = getDataFrom.Name;
+            keep.type = getDataFrom.type;
+            keep.Guid = getDataFrom.Guid;
+        }
+
         public List<_Point> GetSortedBoundaryPoints() {
             SortPoints();
             return Points;
@@ -56,12 +64,10 @@ namespace Diploma2.Model {
             return Points;
         }
 
-
-
         /// <summary>
         /// this function tries to sort lines, but it can throw exception when it fails
         /// </summary>
-        private void SortLines() {
+        public void SortLines() {
             List<_Line> orderedLines = new List<_Line>();
             int actualIndex = 0;//the basis of sorting is to loop and keep this actualindex 
             int boundCount = Lines.Count;
@@ -108,11 +114,12 @@ namespace Diploma2.Model {
 
             Lines = orderedLines; 
         }
+
         /// <summary>
         /// This calls sortlines, too
         /// and overrides Points
         /// </summary>
-        private void SortPoints() {
+        public void SortPoints() {
             SortLines();
             Points = new List<_Point>();
 
@@ -122,15 +129,24 @@ namespace Diploma2.Model {
                 _Point commonMyPoint = FindCommonPointOnTwoLines(firstMyLine, nextMyLine);
                 Points.Add(commonMyPoint);
             }
-
-            #region MyRegion
-
-            
-
-            #endregion
         }
 
+        /// <summary>
+        /// Tries to sort the lines
+        /// </summary>
+        /// <returns>If lines are sortable</returns>
+        public bool CanGetBoundarySorted() {
+            try {
+                SortPoints();
+                return true;
+            }
+            catch (Exception e) {
+                Logger.WriteLog(e);
+                return false;
+            }
+        }
 
+        //TODO: this seems redundant, line has the same function (connectspoint)
         private static _Point FindCommonPointOnTwoLines(_Line firstMyLine, _Line nextMyLine) {
             _Point commonMyPoint = null;
             if (Equals(firstMyLine.StartPoint, nextMyLine.StartPoint)) {
@@ -151,26 +167,7 @@ namespace Diploma2.Model {
             }
             return commonMyPoint;
         }
-
-        public bool CanGetBoundarySorted() {
-            try {
-                SortPoints();
-                return true;
-            }
-            catch (Exception e) {
-                Logger.WriteLog(e);
-                return false;
-            }
-        }
-
-        
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
+    
         public double CalculateArea() {
 
             List<_Point> bp = GetPoints();
@@ -244,11 +241,18 @@ namespace Diploma2.Model {
             return proportion;
         }
 
-        public static void ChangeAllParams(ref _Room keep, _Room getDataFrom) {
-            keep.Number = getDataFrom.Number;
-            keep.Name = getDataFrom.Name;
-            keep.type = getDataFrom.type;
-            keep.Guid = getDataFrom.Guid;
+        #region Basic operations and overrides
+        public override string ToString() {
+            return Name + "_" + Number;
         }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
+        #endregion
     }
 }

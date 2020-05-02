@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Diploma2"
+        xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
         Title="MainWindow"
         Height="800"
@@ -50,6 +51,14 @@
                     Name="gentest"
                     Click="Gentest_OnClick"
                     Height="50"></Button>
+            <Button Content="Save state to JSON"
+                    Name="SaveToJson"
+                    Click="SaveToJson_OnClick"
+                    Height="50"></Button>
+            <Button Content="Load state from JSON"
+                    Name="LoadFromJson"
+                    Click="LoadFromJson_OnClick"
+                    Height="50"></Button>
             <Button Content="Exit"
                     Name="Exit"
                     Click="Exit_OnClick"
@@ -85,7 +94,7 @@
 
               <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Index"
-                                        Width="200">
+                                        Width="100">
                   <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
                       <ItemsControl ItemsSource="{Binding Index}" />
@@ -101,7 +110,24 @@
                     </DataTemplate>
                   </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-
+                <DataGridTemplateColumn Header="AreaCost"
+                                        Width="100">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding AreaCost}"
+                                 TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="LayoutCost"
+                                        Width="100">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding LayoutCost}"
+                                 TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
               </DataGrid.Columns>
 
             </DataGrid>
@@ -331,8 +357,8 @@ SelectedCellsChanged="PointGrid_OnSelectedCellsChanged"
 
         </Grid>
       </TabItem>
-      <TabItem Header='Data'
-               Name='Data'>
+      <TabItem Header='Graph'
+               Name='Graph'>
         <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width='1*'></ColumnDefinition>
@@ -342,6 +368,22 @@ SelectedCellsChanged="PointGrid_OnSelectedCellsChanged"
             <RowDefinition Height='1*'></RowDefinition>
             <RowDefinition Height='1*'></RowDefinition>
           </Grid.RowDefinitions>
+          <Button Content="Draw"
+                  Name="DrawChart"
+                  Grid.Row="1 "
+                  Click="DrawChart_OnClick"
+                  Height="50"></Button>
+          <wpf:CartesianChart Series="{Binding SeriesCollection}"
+                            Name="Chart"  LegendLocation="Right">
+            <wpf:CartesianChart.AxisY>
+              <wpf:Axis Title="Sales"
+                        LabelFormatter="{Binding YFormatter}"></wpf:Axis>
+            </wpf:CartesianChart.AxisY>
+            <wpf:CartesianChart.AxisX>
+              <wpf:Axis Title="Month"
+                        Labels="{Binding Labels}"></wpf:Axis>
+            </wpf:CartesianChart.AxisX>
+          </wpf:CartesianChart>
 
         </Grid>
       </TabItem>

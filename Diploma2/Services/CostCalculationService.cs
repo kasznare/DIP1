@@ -27,6 +27,8 @@ namespace Diploma2.Services {
         }
         public static Cost CalculateCostNew(_Model m) {
             localModel = m;
+            localModel.FillAdjacencyMatrix();
+
             C = new Cost(-1, 0, 0, 0, 0);
 
             C.AreaCost = CalculateParameterCost();
@@ -107,18 +109,24 @@ namespace Diploma2.Services {
 
 
 
-
             //bellmann ford, dijktra
             //szomszédossági mátrix
+            double layoutcost = 0.0;
 
-            foreach (_Room room in localModel.rooms) {
-                foreach (_Room localModelRoom in localModel.rooms) {
-                    bool common = room.Lines.Intersect(localModelRoom.Lines).Any();
-
+            for (var i = 0; i < localModel.rooms.Count; i++)
+            {
+                _Room room = localModel.rooms[i];
+                for (var j = i+1; j < localModel.rooms.Count; j++)
+                {
+                    _Room localModelRoom = localModel.rooms[j];
+                    if (localModel.AdjacencyMatrix[i,j] == 1)
+                    {
+                        layoutcost += asd[room.type][localModelRoom.type]*100;
+                    }
                 }
             }
 
-            double layoutcost = 0.0;
+            layoutcost += 0.0;
             //TODO:here is problematic, that i dont know degree, fix this ---number of lines
             //foreach (_Line modelLine in localModel.AllLinesFlat()) {
             //    var count = modelLine.relatedRooms.Count;
