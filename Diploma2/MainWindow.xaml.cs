@@ -89,7 +89,7 @@ namespace Diploma2 {
             DataContext = this;
             InitializeComponent();
             model = ModelConfigurations.InitSimpleModel();
-
+            CostCalculationService.InitializeASD();
             LoadDataFromModel();
             simulation.Model = model;
             simulation.ModelChanged += ModelChangeHandler;
@@ -437,7 +437,7 @@ namespace Diploma2 {
                     //SaveStateToPng();
                     modelHistory.Add(model);
                     model = e.model;
-                    SimulationCosts.Add(new Cost(e.simIndex, e.summarycost, e.areacost, e.layoutcost, 0, e.stepAction));
+                    SimulationCosts.Add(e.Cost );
                     LoadDataFromModel();
                     Paint();
                 }

@@ -81,6 +81,17 @@ namespace Diploma2.Services {
 
             return Math.Round(summary, 2);
         }
+
+        public static Dictionary<_RoomType, Dictionary<_RoomType, int>> asd = new Dictionary<_RoomType, Dictionary<_RoomType, int>>();
+
+        public static void InitializeASD() {
+            asd.Add(_RoomType.LivingRoom, new Dictionary<_RoomType, int>() { { _RoomType.Kitchen, -20 }, { _RoomType.BedRoom, -20 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, -100 } });
+            asd.Add(_RoomType.Kitchen, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -20 }, { _RoomType.BedRoom, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, 100 } });
+            asd.Add(_RoomType.BedRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -20 }, { _RoomType.Kitchen, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, -100 } });
+            asd.Add(_RoomType.RestRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, -100 } });
+            asd.Add(_RoomType.CorridorRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, -100 }, { _RoomType.BedRoom, -100 }, { _RoomType.RestRoom, -100 } });
+
+        }
         private static double CalculateLayoutCost() {
             double wallLength = 0.0;
             foreach (_Line seg in localModel.AllLinesFlat()) {
@@ -92,65 +103,27 @@ namespace Diploma2.Services {
                 }
             }
 
-            Dictionary<_RoomType, Dictionary<_RoomType, int>> asd = new Dictionary<_RoomType, Dictionary<_RoomType, int>>();
-            asd.Add(_RoomType.LivingRoom, new Dictionary<_RoomType, int>() { { _RoomType.Kitchen, -20 }, { _RoomType.BedRoom, -20 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, -100 } });
-            asd.Add(_RoomType.Kitchen, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -20 }, { _RoomType.BedRoom, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, 100 } });
-            asd.Add(_RoomType.BedRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -20 }, { _RoomType.Kitchen, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, -100 } });
-            asd.Add(_RoomType.RestRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, -100 } });
-            asd.Add(_RoomType.CorridorRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, -100 }, { _RoomType.BedRoom, -100 }, { _RoomType.RestRoom, -100 } });
+
 
             //TODO: what rooms are adjacent?
-            // ____________________________
             // |         |        |        |
             // |         |        |        |
             // |     2   |    1,3 |   2    |
             // |         |        |        |
             // |_________|________|________|
-
-
-
             //bellmann ford, dijktra
             //szomszédossági mátrix
             double layoutcost = 0.0;
 
-            for (var i = 0; i < localModel.rooms.Count; i++)
-            {
+            for (var i = 0; i < localModel.rooms.Count; i++) {
                 _Room room = localModel.rooms[i];
-                for (var j = i+1; j < localModel.rooms.Count; j++)
-                {
+                for (var j = i + 1; j < localModel.rooms.Count; j++) {
                     _Room localModelRoom = localModel.rooms[j];
-                    if (localModel.AdjacencyMatrix[i,j] == 1)
-                    {
-                        layoutcost += asd[room.type][localModelRoom.type]*100;
+                    if (localModel.AdjacencyMatrix[i, j] == 1) {
+                        layoutcost += asd[room.type][localModelRoom.type] * 100;
                     }
                 }
             }
-
-            layoutcost += 0.0;
-            //TODO:here is problematic, that i dont know degree, fix this ---number of lines
-            //foreach (_Line modelLine in localModel.AllLinesFlat()) {
-            //    var count = modelLine.relatedRooms.Count;
-            //    if (count > 1) {
-            //        for (var index = 0; index < count; index++) {
-            //            MyRoom r1 = modelLine.relatedRooms[index];
-            //            for (int i = index + 1; i < count; i++) {
-            //                //TODO: make a 2D grid and choose based on the combination. I dont know the solution
-            //                MyRoom r2 = modelLine.relatedRooms[i];
-
-            //                Dictionary<RoomType, int> asd2 = new Dictionary<RoomType, int>();
-            //                bool isIn = asd.TryGetValue(r1.type, out asd2);
-
-            //                if (isIn) {
-            //                    int value = 0;
-            //                    bool isInOther = asd2.TryGetValue(r2.type, out value);
-            //                    layoutcost += value;
-            //                }
-
-            //            }
-            //        }
-            //        //have linear 2fold combination of list, and calculate value based on the 2d array/datasheet
-            //    }
-            //}
 
             //elrendezésszintű
             double passagewaycost = 0.0;

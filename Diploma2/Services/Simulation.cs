@@ -87,15 +87,11 @@ namespace Diploma2.Services {
         }
         private void CalculateSwitchCosts() {
             int rooms = Model.rooms.Count;
-            //Parallel.For(0, rooms, index => {
             for (int index = 0; index < rooms; index++) {
                 for (int secondindex = index + 1; secondindex < rooms; secondindex++) {
-                    //Parallel.For(index + 1, rooms, secondindex => {
                     _Room r1 = Model.rooms.ElementAt(index);
                     _Room r2 = Model.rooms.ElementAt(secondindex);
-                    _Room r1target = null;
-                    _Room r2target = null;
-                    _Model tempModel = Model.DeepCopy(r1, r2, out r1target, out r2target);
+                    _Model tempModel = Model.DeepCopy(r1, r2, out _Room r1target, out _Room r2target);
                     tempModel.SwitchRooms(ref r1target, ref r2target);
                     if (!tempModel.IsInInvalidState) {
                         Cost cost = CostCalculationService.CalculateCostNew(tempModel);
@@ -103,21 +99,15 @@ namespace Diploma2.Services {
                             Actions.Add(new Switch(ref r1, ref r2, cost));
                         }
                     }
-                    //});
                 }
             }
-            //});
         }
         private void CalculateMoveCosts() {
-
-            //Parallel.For(0, Model.modelLines.Count,
-            //    index => {
             List<_Line> allLinesFlat = Model.AllLinesFlat();
             for (int index = 0; index < allLinesFlat.Count; index++) {
 
                 _Line myLine = allLinesFlat.ElementAt(index);
-                _Line newMyLine = null;
-                _Model tempModel = Model.DeepCopy(myLine, out newMyLine);
+                _Model tempModel = Model.DeepCopy(myLine, out _Line newMyLine);
                 tempModel.MoveLine(baseMoveDistance, newMyLine);
                 if (tempModel.IsInInvalidState) continue;
 
@@ -127,14 +117,11 @@ namespace Diploma2.Services {
                     Actions.Add(new Move(myLine, costsnew, baseMoveDistance));
                 }
             }
-            //});
-            //Parallel.For(0, Model.modelLines.Count,
-            //    index => {
+           
             for (int index = 0; index < allLinesFlat.Count; index++) {
 
                 _Line myLine = allLinesFlat.ElementAt(index);
-                _Line newMyLine = null;
-                _Model tempModel = Model.DeepCopy(myLine, out newMyLine);
+                _Model tempModel = Model.DeepCopy(myLine, out _Line newMyLine);
                 tempModel.MoveLine(-baseMoveDistance, newMyLine);
                 if (tempModel.IsInInvalidState) continue;
 
@@ -143,7 +130,7 @@ namespace Diploma2.Services {
                     Actions.Add(new Move(myLine, costsnew, -baseMoveDistance));
                 }
             }
-            //});
+            
         }
 
         public void SaveState() {
