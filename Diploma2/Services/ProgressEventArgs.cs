@@ -18,5 +18,13 @@ namespace Diploma2.Services
             model = status;
             simIndex = index;
         }
+
+        public ProgressEventArgs(_Model status, Cost c, int index, Action a) {
+            //summarycost = actualcost;
+            Cost = c;
+            model = status;
+            simIndex = index;
+            stepAction = a;
+        }
     }
 }

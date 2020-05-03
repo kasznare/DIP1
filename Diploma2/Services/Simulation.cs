@@ -44,7 +44,6 @@ namespace Diploma2.Services {
                 MakeAStepByTheCalculatedCosts();
                 HandleModelChangeUpdate();
                 //Thread.Sleep(5);
-                CurrentIndex++;
                 if (CurrentIndex >= MaxIndex) {
                     exitCondition = ExitCondition.isFinished;
                 }
@@ -54,6 +53,7 @@ namespace Diploma2.Services {
                 if (ActualTreshold >= MaxTreshold) {
                     exitCondition = ExitCondition.isTreshold;
                 }
+                CurrentIndex++;
             }
 
             Logger.WriteLog($"Run Ended.\nExitCondition : {exitCondition}");
@@ -70,14 +70,13 @@ namespace Diploma2.Services {
         }
         private void HandleModelChangeUpdate() {
             if (ModelChanged == null) return;
-            ProgressEventArgs args = new ProgressEventArgs(Model, actualCost, CurrentIndex);
-            args.stepAction = ActualAction;
+            ProgressEventArgs args = new ProgressEventArgs(Model, actualCost, CurrentIndex, ActualAction);
             ModelChanged(this, args);
         }
 
         private void CalculateCostsForState() {
             history.Add(ActionsByCosts);
-            ActionsByCosts = new Dictionary<Action, Cost>();
+            ActionsByCosts.Clear();
             CalculateMoveCosts();
             //CalculateSplitCosts();
             CalculateSwitchCosts();
