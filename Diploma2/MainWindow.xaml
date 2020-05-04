@@ -376,11 +376,11 @@ SelectedCellsChanged="PointGrid_OnSelectedCellsChanged"
           <wpf:CartesianChart Series="{Binding SeriesCollection}"
                             Name="Chart"  LegendLocation="Right">
             <wpf:CartesianChart.AxisY>
-              <wpf:Axis Title="Sales"
+              <wpf:Axis Title="Cost"
                         LabelFormatter="{Binding YFormatter}"></wpf:Axis>
             </wpf:CartesianChart.AxisY>
             <wpf:CartesianChart.AxisX>
-              <wpf:Axis Title="Month"
+              <wpf:Axis Title="Index"
                         Labels="{Binding Labels}"></wpf:Axis>
             </wpf:CartesianChart.AxisX>
           </wpf:CartesianChart>

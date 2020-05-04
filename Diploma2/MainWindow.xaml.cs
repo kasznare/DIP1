@@ -18,7 +18,6 @@ using Diploma2.Annotations;
 using Diploma2.Model;
 using Diploma2.Services;
 using Diploma2.Utilities;
-using Diploma2.Views;
 using LiveCharts;
 using LiveCharts.Helpers;
 using LiveCharts.Wpf;

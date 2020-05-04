@@ -89,9 +89,6 @@
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\MyInterlockedExchangeExampleClass.cs" />
     <Compile Include="Utilities\Utils.cs" />
-    <Compile Include="Views\CostDiagram.xaml.cs">
-      <DependentUpon>CostDiagram.xaml</DependentUpon>
-    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -104,10 +101,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\CostDiagram.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\_GeometryBase.cs" />

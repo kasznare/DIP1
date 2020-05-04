@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Windows.Controls;
-using Newtonsoft.Json;
 
-namespace Diploma2.Model {
+namespace Diploma2.Model
+{
     public class _Model {
         public List<Action> actionHistory { get; set; }
         public ObservableCollection<_Room> rooms { get; set; }
@@ -205,7 +205,7 @@ namespace Diploma2.Model {
 
         public void MoveLine(int distance, _Line lineToMove) {
             if (lineToMove.length < 11) {
-                return;
+                //return;
             }
             List<_Room> roomsTouchingStartPoint = new List<_Room>(); //the rooms need to have the line to care
             List<_Room> roomsTouchingEndPoint = new List<_Room>(); //if there are, we cant move the point, we need to copy
@@ -223,8 +223,11 @@ namespace Diploma2.Model {
 
             fillRelatedRoomListInfomration(lineToMove, ref l1, ref l2, ref roomsTouchingStartPoint, ref roomsTouchingEndPoint, ref roomsContainingTheLineToMove);
 
+            List<_Line> linesToRemove = new List<_Line>();
             //this is the big function
             foreach (_Room room in roomsContainingTheLineToMove) {
+                bool shouldBeTrue = room.CanGetBoundarySorted();
+                int linetoMoveOriginal = room.Lines.FindIndex(a => a.Equals(lineToMove));
                 room.Lines.Remove(lineToMove);
                 int linesCount = room.Lines.Count;
                 for (var index = 0; index < linesCount; index++) {
@@ -247,8 +250,15 @@ namespace Diploma2.Model {
                             if (lineInLoop.EndPoint.Equals(loopAndToMoveCommonPoint) && (NOTparallel)) {
                                 lineInLoop.EndPoint = lineInLoop.EndPoint.Move(moveVector);
                             }
-
-                            if (!NOTparallel)
+                            if (lineInLoop.StartPoint.Equals(lineInLoop.EndPoint))
+                            {
+                                linesToRemove.Add(lineInLoop);
+                            }
+                            if (lineInLoop.StartPoint.Equals(loopAndToMoveCommonPoint) && !NOTparallel)
+                            {
+                                room.Lines.Add(l1);
+                            }
+                            if (lineInLoop.EndPoint.Equals(loopAndToMoveCommonPoint) && !NOTparallel)
                             {
                                 room.Lines.Add(l1);
                             }
@@ -274,7 +284,15 @@ namespace Diploma2.Model {
                             if (lineInLoop.EndPoint.Equals(loopAndToMoveCommonPoint) && (NOTparallel)) {
                                 lineInLoop.EndPoint = lineInLoop.EndPoint.Move(moveVector);
                             }
-                            if (!NOTparallel) {
+                            if (lineInLoop.StartPoint.Equals(lineInLoop.EndPoint))
+                            {
+                                linesToRemove.Add(lineInLoop);
+                            }
+                            if (lineInLoop.StartPoint.Equals(loopAndToMoveCommonPoint) && !NOTparallel) {
+                                room.Lines.Add(l2);
+                            }
+                            if (lineInLoop.EndPoint.Equals(loopAndToMoveCommonPoint) && !NOTparallel)
+                            {
                                 room.Lines.Add(l2);
                             }
                         }
@@ -287,31 +305,53 @@ namespace Diploma2.Model {
                     }
                 }
 
-                room.Lines.Add(movedLine);
+
+                room.Lines.Insert(linetoMoveOriginal,movedLine);
+                foreach (var line in linesToRemove)
+                {
+                    room.Lines.Remove(line);
+                }
+                shouldBeTrue = room.CanGetBoundarySorted();
             }
 
-           
+            
             foreach (_Room room in roomsContainingTheLineToMove) {
-
-                TryToDivideRoomLinesWithL1L2(room, l1, l2);
+                
                 bool shouldBeTrue = room.CanGetBoundarySorted();
+                TryToDivideRoomLinesWithL1L2(room, l1, l2);
+                shouldBeTrue = room.CanGetBoundarySorted();
+                if (!shouldBeTrue)
+                {
+                    throw new Exception("should be sortable, if i cant figure it out, mark as invalid state");
+                }
             }
 
             foreach (_Room room in roomsTouchingEndPoint) {
                 TryToDivideRoomLinesWithL1L2(room, l1, l2);
                 TryToRemoveRemainderLines(room, l1, l2);
                 bool shouldBeTrue = room.CanGetBoundarySorted();
+                if (!shouldBeTrue)
+                {
+                    throw new Exception("should be sortable, if i cant figure it out, mark as invalid state");
+                }
             }
 
             foreach (_Room room in roomsTouchingStartPoint) {
                 TryToDivideRoomLinesWithL1L2(room, l1, l2);
                 TryToRemoveRemainderLines(room, l1, l2);
                 bool shouldBeTrue = room.CanGetBoundarySorted();
+                if (!shouldBeTrue)
+                {
+                    throw new Exception("should be sortable, if i cant figure it out, mark as invalid state");
+                }
             }
 
-            
+            List<_Room> sumrooms = new List<_Room>();
+            sumrooms.AddRange(roomsContainingTheLineToMove);
+            sumrooms.AddRange(roomsTouchingStartPoint);
+            sumrooms.AddRange(roomsTouchingEndPoint);
             //this handles null lines, can be removed at any time, probably should do it before sorting
-            foreach (_Room room in rooms) {
+            foreach (_Room room in sumrooms) {
                 for (var index = 0; index < room.Lines.Count; index++) {
                     _Line roomLine = room.Lines[index];
                     if (roomLine.StartPoint.Equals(roomLine.EndPoint)) {
@@ -319,8 +359,9 @@ namespace Diploma2.Model {
                     }
                 }
             }
-            GC.Collect();
-         
+            //GC.Collect();
+            //only need to join the same line
+            //but why after? we could handle upon creation
 
             moveStepsCount++;
         }
@@ -440,7 +481,7 @@ namespace Diploma2.Model {
                     roomsTouchingEndPoint.Remove(room);
                 }
             }
-            if (!roomsContainingTheLineToMove.Any())
+            if (!roomsContainingTheLineToMove.Any()) 
                 throw new Exception("LineIsMissing"); //if there are no rooms, inconsistent state
         }
 

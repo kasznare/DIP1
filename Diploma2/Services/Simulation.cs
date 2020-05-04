@@ -20,7 +20,7 @@ namespace Diploma2.Services {
         int ActualTreshold = 0;
         int MaxTreshold = 5;
         int CurrentIndex = 0;
-        int MaxIndex = 10;
+        int MaxIndex = 100;
         int baseMoveDistance = 10;
 
         ExitCondition exitCondition = ExitCondition.Running;
@@ -57,7 +57,7 @@ namespace Diploma2.Services {
             }
 
             Logger.WriteLog($"Run Ended.\nExitCondition : {exitCondition}");
-
+            exitCondition = ExitCondition.Running;
             ActualTreshold = 0;
             MaxIndex += MaxIndex;
 
@@ -125,6 +125,7 @@ namespace Diploma2.Services {
                 if (tempModel.IsInInvalidState) continue;
 
                 Cost costsnew = CostCalculationService.CalculateCostNew(tempModel);
+
                 lock (locker) {
                     Actions.Add(new Move(myLine, costsnew, -baseMoveDistance));
                 }
@@ -150,7 +151,7 @@ namespace Diploma2.Services {
         private Action FindStep() {
             List<Action> sorted = Actions.OrderBy(i => i.Cost.SummaryCost).ToList();
             //Action a = sorted.FirstOrDefault();
-            int j = r.Next(0, Math.Min(0, sorted.Count));
+            int j = r.Next(0, Math.Min(1, sorted.Count));
             ActualAction = sorted.ElementAt(j);
             //TODO: here maybe we should return
             if (actualCost.SummaryCost >= ActualAction.Cost.SummaryCost) {

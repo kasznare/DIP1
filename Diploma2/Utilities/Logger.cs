@@ -92,7 +92,15 @@ namespace Diploma2.Utilities {
                     file = File.AppendText(LocalLogPath + LogName);
                 }
 
-                file.WriteLineAsync($"{DateTime.Now.ToString(@"yyyy.MM.dd. HH:mm:ss")} : ...");
+                try
+                {
+                    file.WriteLineAsync($"{DateTime.Now.ToString(@"yyyy.MM.dd. HH:mm:ss")} : ...");
+
+                }
+                catch (Exception e)
+                {
+                    
+                }
             }
         }
         private static void CloseLogAndThread() {

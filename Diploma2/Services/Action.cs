@@ -48,9 +48,9 @@ namespace Diploma2.Services
         }
 
         public override void Step(_Model m) {
-            Logger.WriteLog("Before transform" + myLine);
+            //Logger.WriteLog("Before transform" + myLine);
             m.MoveLine(moveDistance, myLine);
-            Logger.WriteLog("After transform" + myLine);
+            //Logger.WriteLog("After transform" + myLine);
         }
     }
     public class Split : Action {
@@ -69,11 +69,11 @@ namespace Diploma2.Services
         private _Room r1;
         private _Room r2;
 
-        public Switch(ref _Room r1, ref _Room r2, double cost) {
-            this.r1 = r1;
-            this.r2 = r2;
-            this.cost = cost;
-        }
+        //public Switch(ref _Room r1, ref _Room r2, double cost) {
+        //    this.r1 = r1;
+        //    this.r2 = r2;
+        //    this.cost = cost;
+        //}
         public Switch(ref _Room r1, ref _Room r2, Cost cost) {
             this.r1 = r1;
             this.r2 = r2;
