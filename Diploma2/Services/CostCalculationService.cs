@@ -5,12 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Diploma2.Model;
 
-namespace Diploma2.Services {
-    public class CostCalculationService {
+namespace Diploma2.Services
+{
+    public class CostCalculationService
+    {
         //TODO: this might be problematic, that it is static
         public static Cost C { get; set; }
         public static _Model localModel { get; set; }
-        public static double[] CalculateCost(_Model m) {
+        public static double[] CalculateCost(_Model m)
+        {
             //NOTE: summarycost calculation would be more flexible, if i could rapidly replace functions
             localModel = m;
             double summary = 100000000;
@@ -25,10 +28,11 @@ namespace Diploma2.Services {
 
             return new[] { summary, areacost, layoutcost, constaintcost };
         }
-        public static Cost CalculateCostNew(_Model m) {
+        public static Cost CalculateCostNew(_Model m)
+        {
             localModel = m;
             localModel.FillAdjacencyMatrix();
-
+            localModel.CalculateRelatedRoomsForLines();
             C = new Cost(-1, 0, 0, 0, 0);
 
             C.AreaCost = CalculateParameterCost();
@@ -37,44 +41,54 @@ namespace Diploma2.Services {
 
             return C;
         }
-        private static double CalculateConstraintCost() {
+        private static double CalculateConstraintCost()
+        {
             return 0.0;
         }
-        private static double CalculateParameterCost() {
+        private static double CalculateParameterCost()
+        {
             double summary = 0.0;
 
             //this part is responsible for measuring deviance from the given room standards
-            foreach (var room in localModel.rooms) {
+            foreach (var room in localModel.rooms)
+            {
                 double actualarea = room.CalculateArea();
 
                 _RoomType type = room.type ?? _RoomType.BedRoom;
 
-                if (Math.Abs(actualarea - type.areamax) > 0.01 || Math.Abs(actualarea - type.areamin) > 0.01) {
+                if (Math.Abs(actualarea - type.areamax) > 0.01 || Math.Abs(actualarea - type.areamin) > 0.01)
+                {
 
-                    if (actualarea < type.areamin) {
+                    if (actualarea < type.areamin)
+                    {
                         summary += Math.Pow(type.areamin - actualarea, 5);
                     }
-                    else if (actualarea > type.areamax) {
+                    else if (actualarea > type.areamax)
+                    {
                         summary += Math.Pow(-type.areamax + actualarea, 5);
                     }
                 }
             }
 
             //TODO: this fails when switched with simulation
-            foreach (_Room room in localModel.rooms) {
+            foreach (_Room room in localModel.rooms)
+            {
 
                 _RoomType type = room.type ?? _RoomType.BedRoom;
 
                 double actualprop = room.CalculateProportion();
-                if (actualprop > type.proportion) {
+                if (actualprop > type.proportion)
+                {
                     summary += Math.Pow(2, Math.Abs(-type.proportion + actualprop));
                 }
             }
 
             //punish more edges
-            foreach (_Room room in localModel.rooms) {
+            foreach (_Room room in localModel.rooms)
+            {
                 double countCost = room.GetPoints().Count;
-                if (countCost > 6) {
+                if (countCost > 6)
+                {
                     summary += Math.Pow(2, countCost - 6);
                 }
             }
@@ -84,7 +98,8 @@ namespace Diploma2.Services {
 
         public static Dictionary<_RoomType, Dictionary<_RoomType, int>> asd = new Dictionary<_RoomType, Dictionary<_RoomType, int>>();
 
-        public static void InitializeASD() {
+        public static void InitializeASD()
+        {
             asd.Add(_RoomType.LivingRoom, new Dictionary<_RoomType, int>() { { _RoomType.Kitchen, -20 }, { _RoomType.BedRoom, -20 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.LivingRoom, -20 }, { _RoomType.RestRoom, -100 } });
             asd.Add(_RoomType.Kitchen, new Dictionary<_RoomType, int>() { { _RoomType.Kitchen, -20 }, { _RoomType.LivingRoom, -20 }, { _RoomType.BedRoom, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, 100 } });
             asd.Add(_RoomType.BedRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -20 }, { _RoomType.Kitchen, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.BedRoom, -100 }, { _RoomType.RestRoom, -100 } });
@@ -92,13 +107,28 @@ namespace Diploma2.Services {
             asd.Add(_RoomType.CorridorRoom, new Dictionary<_RoomType, int>() { { _RoomType.CorridorRoom, -100 }, { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, -100 }, { _RoomType.BedRoom, -100 }, { _RoomType.RestRoom, -100 } });
 
         }
-        private static double CalculateLayoutCost() {
+        private static double CalculateLayoutCost()
+        {
             double wallLength = 0.0;
-            foreach (_Line seg in localModel.AllLinesFlat()) {
+            foreach (_Line seg in localModel.AllLinesFlat())
+            {
                 {
-                    if (seg.GetLength() > 0) {
+                    double d = seg.GetLength();
+                    if (d > 0)
+                    {
+                        if (seg.relatedrooms.Count < 1)            //i need to calculate exterior walls with different cost
+                        {
+                            wallLength += Math.Sqrt((d / 100)) * 10;
+                        }
+                        else
+                        {
+                            wallLength += Math.Sqrt((d / 100)) * 3;
+                        }
+                    }
 
-                        wallLength += Math.Sqrt((seg.GetLength() / 100)) * 3;
+                    if (d<30) //WE dont like small walls
+                    {
+                        wallLength += Math.Sqrt((d / 100)) * 100;
                     }
                 }
             }
@@ -115,12 +145,15 @@ namespace Diploma2.Services {
             //szomszédossági mátrix
             double layoutcost = 0.0;
 
-            for (var i = 0; i < localModel.rooms.Count; i++) {
+            for (var i = 0; i < localModel.rooms.Count; i++)
+            {
                 _Room room = localModel.rooms[i];
-                for (var j = i + 1; j < localModel.rooms.Count; j++) {
+                for (var j = i + 1; j < localModel.rooms.Count; j++)
+                {
                     _Room localModelRoom = localModel.rooms[j];
-                    if (localModel.AdjacencyMatrix[i, j] == 1) {
-                        layoutcost += asd[room.type][localModelRoom.type] * 100;
+                    if (localModel.AdjacencyMatrix[i, j] == 1)
+                    {
+                        layoutcost += asd[room.type][localModelRoom.type] * 10;
                     }
                 }
             }
@@ -137,7 +170,8 @@ namespace Diploma2.Services {
             summary = Math.Round(summary, 2);
             return summary;
         }
-        private static double CalculatePassageWayCost() {
+        private static double CalculatePassageWayCost()
+        {
             //bejárhatóság
             double cost = 0.0;
             Dictionary<int, List<_Room>> processedRooms = new Dictionary<int, List<_Room>>();

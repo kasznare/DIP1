@@ -92,11 +92,11 @@ namespace Diploma2.Services {
                     _Room r2 = Model.rooms.ElementAt(secondindex);
                     _Model tempModel = Model.DeepCopy(r1, r2, out _Room r1target, out _Room r2target);
                     tempModel.SwitchRooms(ref r1target, ref r2target);
-                    if (!tempModel.IsInInvalidState) {
-                        Cost cost = CostCalculationService.CalculateCostNew(tempModel);
-                        lock (locker) {
-                            Actions.Add(new Switch(ref r1, ref r2, cost));
-                        }
+                    if (tempModel.IsInInvalidState) continue;
+
+                    Cost cost = CostCalculationService.CalculateCostNew(tempModel);
+                    lock (locker) {
+                        Actions.Add(new Switch(ref r1, ref r2, cost));
                     }
                 }
             }
@@ -151,7 +151,7 @@ namespace Diploma2.Services {
         private Action FindStep() {
             List<Action> sorted = Actions.OrderBy(i => i.Cost.SummaryCost).ToList();
             //Action a = sorted.FirstOrDefault();
-            int j = r.Next(0, Math.Min(0, sorted.Count));
+            int j = r.Next(0, Math.Min(3, sorted.Count));
             ActualAction = sorted.ElementAt(j);
             //TODO: here maybe we should return
             if (actualCost.SummaryCost >= ActualAction.Cost.SummaryCost) {

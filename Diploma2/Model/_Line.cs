@@ -1,11 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Diploma2.Model {
     public class _Line : _GeometryBase {
         public _Point StartPoint { get; set; }
         public _Point EndPoint { get; set; }
+        public bool HasDoor { get; set; }
         public double length => GetLength();
 
+        [JsonIgnore]
+        [IgnoreDataMember]
+        public List<_Room> relatedrooms { get; set; } = new List<_Room>();
         public _Line(_Point startPoint, _Point endPoint) {
             StartPoint = startPoint;
             EndPoint = endPoint;

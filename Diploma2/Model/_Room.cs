@@ -243,7 +243,7 @@ namespace Diploma2.Model {
 
         #region Basic operations and overrides
         public override string ToString() {
-            return Name + "_" + Number;
+            return Name + "_" + Number + "_" + type;
         }
         public event PropertyChangedEventHandler PropertyChanged;
 

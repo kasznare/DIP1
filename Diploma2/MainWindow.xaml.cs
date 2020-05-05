@@ -276,6 +276,10 @@ namespace Diploma2 {
             ofd.ShowDialog();
 
             string openthis = ofd.FileName;
+            if (String.IsNullOrWhiteSpace(openthis))
+            {
+                return;
+            }
             string json = File.ReadAllText(openthis);
             _Model account = JsonConvert.DeserializeObject<_Model>(json);
             model = account;
