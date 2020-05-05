@@ -151,7 +151,7 @@ namespace Diploma2.Services {
         private Action FindStep() {
             List<Action> sorted = Actions.OrderBy(i => i.Cost.SummaryCost).ToList();
             //Action a = sorted.FirstOrDefault();
-            int j = r.Next(0, Math.Min(1, sorted.Count));
+            int j = r.Next(0, Math.Min(0, sorted.Count));
             ActualAction = sorted.ElementAt(j);
             //TODO: here maybe we should return
             if (actualCost.SummaryCost >= ActualAction.Cost.SummaryCost) {
@@ -194,3 +194,4 @@ namespace Diploma2.Services {
         //}
     }
 }
+

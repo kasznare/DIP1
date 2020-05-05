@@ -84,10 +84,10 @@ namespace Diploma2.Services {
             _Line l95 = new _Line(a9, a5);
 
 
-            _Room first = new _Room { Name = "FirstRoom", Number = 1 };
-            _Room second = new _Room { Name = "SecondRoom", Number = 2 };
-            _Room third = new _Room { Name = "ThirdRoom", Number = 3 };
-            _Room fourth = new _Room { Name = "FourthRoom", Number = 4 };
+            _Room first = new _Room { Name = "FirstRoom", Number = 1 , type = _RoomType.Kitchen };
+            _Room second = new _Room { Name = "SecondRoom", Number = 2 , type = _RoomType.LivingRoom};
+            _Room third = new _Room { Name = "ThirdRoom", Number = 3 , type = _RoomType.BedRoom };
+            _Room fourth = new _Room { Name = "FourthRoom", Number = 4, type = _RoomType.RestRoom };
             first.Lines = (new List<_Line>() { l12, l23, l34, l41 });
             second.Lines = (new List<_Line>() { l35, l56, l64, l34 });
             third.Lines = (new List<_Line>() { l23, l27, l78, l83 });
@@ -97,7 +97,10 @@ namespace Diploma2.Services {
             m.rooms.Add(second);
             m.rooms.Add(third);
             m.rooms.Add(fourth);
-
+            foreach (var room in m.rooms)
+            {
+                room.CanGetBoundarySorted();
+            }
             return m;
         }
 

@@ -87,7 +87,7 @@ namespace Diploma2 {
         public MainWindow() {
             DataContext = this;
             InitializeComponent();
-            model = ModelConfigurations.InitSimpleModel();
+            model = ModelConfigurations.InitNormalModel();
             CostCalculationService.InitializeASD();
             LoadDataFromModel();
             simulation.Model = model;

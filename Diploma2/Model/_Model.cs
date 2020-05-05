@@ -235,14 +235,14 @@ namespace Diploma2.Model
                     _Point loopAndToMoveCommonPoint = lineInLoop.ConnectsPoint(lineToMove);
                     if (loopAndToMoveCommonPoint != null && loopAndToMoveCommonPoint.Equals(lineToMove.StartPoint)) //there is common point with startpoint, so this line touched the old startpoint
                     {
-                        bool areweMovingOnLoopLine = IsOnLine(l1.EndPoint, lineInLoop);
+                        bool areweMovingOnLoopLine = IsOnLineButNotEndPoint(l1.EndPoint, lineInLoop);
                         //if there is a touching room, we need to keep the point. of course, might not in this room.
                         if (!roomsTouchingStartPoint.Any()) {
                             _Point loopNormal = lineInLoop.GetNV(true); //we need to either move it, if it is parallel, or keep it if it is merőleges
                             _Point moveNormal = lineToMove.GetNV(true); //THE LINE SHOULD MOVE - BOTH DIRECTIONS - MOVE P WITH MOVEVECTOR
 
-                            bool NOTparallel = !(Equals(loopNormal, moveNormal) || Equals(loopNormal , moveNormal * -1) || Equals(loopNormal * -1, moveNormal));
-
+                            bool NOTparallel = AreNotParralel(loopNormal, moveNormal);
+                               
                             if (lineInLoop.StartPoint.Equals(loopAndToMoveCommonPoint) && (NOTparallel)) {
                                 lineInLoop.StartPoint = lineInLoop.StartPoint.Move(moveVector);
                             }
@@ -254,17 +254,16 @@ namespace Diploma2.Model
                             {
                                 linesToRemove.Add(lineInLoop);
                             }
-                            if (lineInLoop.StartPoint.Equals(loopAndToMoveCommonPoint) && !NOTparallel)
-                            {
-                                room.Lines.Add(l1);
-                            }
-                            if (lineInLoop.EndPoint.Equals(loopAndToMoveCommonPoint) && !NOTparallel)
+                            if ((lineInLoop.StartPoint.Equals(loopAndToMoveCommonPoint) || lineInLoop.EndPoint.Equals(loopAndToMoveCommonPoint)) && !NOTparallel && !l1.StartPoint.Equals(l1.EndPoint))
                             {
                                 room.Lines.Add(l1);
                             }
                         }
-                        if (roomsTouchingStartPoint.Any()) {
-                            if (!areweMovingOnLoopLine && !room.Lines.Contains(l1)) room.Lines.Add(l1);  //this makes it easier to remove the small lines later
+                        //TODO:if there is room, we may move it, if there is no perpendicular line in that room -- but be careful of that other room
+                        if (roomsTouchingStartPoint.Any() && !l1.StartPoint.Equals(l1.EndPoint)) {
+                            if (!areweMovingOnLoopLine && !room.Lines.Contains(l1)) {
+                                room.Lines.Add(l1);  //this makes it easier to remove the small lines later
+                            }
                             foreach (_Room room1 in roomsTouchingStartPoint) {
                                 if (!room1.Lines.Contains(l1)) room1.Lines.Add(l1);
                             }
@@ -272,11 +271,11 @@ namespace Diploma2.Model
                     }
 
                     if (loopAndToMoveCommonPoint != null && loopAndToMoveCommonPoint.Equals(lineToMove.EndPoint)) {
-                        bool areweMovingOnLoopLine = _Model.IsOnLine(l2.EndPoint, lineInLoop);
+                        bool areweMovingOnLoopLine = _Model.IsOnLineButNotEndPoint(l2.EndPoint, lineInLoop);
                         if (!roomsTouchingEndPoint.Any()) {
                             _Point objA = lineInLoop.GetNV(true);
                             _Point objB = lineToMove.GetNV(true);
-                            bool NOTparallel = !(Equals(objA, objB) || Equals(objA, objB * -1) || Equals(objA * -1, objB));
+                            bool NOTparallel = AreNotParralel(objA, objB);
                             if (lineInLoop.StartPoint.Equals(loopAndToMoveCommonPoint) && (NOTparallel)) {
                                 lineInLoop.StartPoint = lineInLoop.StartPoint.Move(moveVector);
                             }
@@ -288,16 +287,15 @@ namespace Diploma2.Model
                             {
                                 linesToRemove.Add(lineInLoop);
                             }
-                            if (lineInLoop.StartPoint.Equals(loopAndToMoveCommonPoint) && !NOTparallel) {
+                            if ((lineInLoop.EndPoint.Equals(loopAndToMoveCommonPoint) || lineInLoop.StartPoint.Equals(loopAndToMoveCommonPoint)) && !NOTparallel&&!l2.StartPoint.Equals(l2.EndPoint)) {
                                 room.Lines.Add(l2);
                             }
-                            if (lineInLoop.EndPoint.Equals(loopAndToMoveCommonPoint) && !NOTparallel)
-                            {
-                                room.Lines.Add(l2);
-                            }
+                           
                         }
-                        if (roomsTouchingEndPoint.Any()) {
-                            if (!areweMovingOnLoopLine && !room.Lines.Contains(l2)) room.Lines.Add(l2);
+                        if (roomsTouchingEndPoint.Any()&&!l2.StartPoint.Equals(l2.EndPoint)) {
+                            if (!areweMovingOnLoopLine && !room.Lines.Contains(l2)){
+                                room.Lines.Add(l2);
+                            }
                             foreach (_Room room2 in roomsTouchingEndPoint) {
                                 if (!room2.Lines.Contains(l2)) room2.Lines.Add(l2);
                             }
@@ -364,6 +362,11 @@ namespace Diploma2.Model
             //but why after? we could handle upon creation
 
             moveStepsCount++;
+        }
+
+        private bool AreNotParralel(_Point loopNormal, _Point moveNormal)
+        {
+            return !(Equals(loopNormal, moveNormal) || Equals(loopNormal, moveNormal * -1) || Equals(loopNormal * -1, moveNormal));
         }
 
         private void TryToDivideRoomLinesWithL1L2(_Room room, _Line l1, _Line l2) {
@@ -457,7 +460,7 @@ namespace Diploma2.Model
                          line.EndPoint.Equals(lineToMove.StartPoint)) &&
                         !line.Equals(lineToMove) &&
                         !roomsTouchingStartPoint.Contains(room) &&
-                        !roomsContainingTheLineToMove.Contains(room)) {
+                        !roomsContainingTheLineToMove.Contains(room) ) {
                         roomsTouchingStartPoint.Add(room); //this might cause redundancy
                     }
 
@@ -506,6 +509,12 @@ namespace Diploma2.Model
         }
 
         public static bool IsOnLine(_Point myPoint, _Line myLine) {
+            return PointOnLine2D(myPoint, myLine.StartPoint, myLine.EndPoint);
+        }
+        public static bool IsOnLineButNotEndPoint(_Point myPoint, _Line myLine)
+        {
+            if (myLine.EndPoint.Equals(myPoint) || myLine.StartPoint.Equals(myPoint)) return false;
+          
             return PointOnLine2D(myPoint, myLine.StartPoint, myLine.EndPoint);
         }
         public static bool PointOnLine2D(_Point p, _Point a, _Point b, float t = 1E-03f) {

@@ -85,11 +85,11 @@ namespace Diploma2.Services {
         public static Dictionary<_RoomType, Dictionary<_RoomType, int>> asd = new Dictionary<_RoomType, Dictionary<_RoomType, int>>();
 
         public static void InitializeASD() {
-            asd.Add(_RoomType.LivingRoom, new Dictionary<_RoomType, int>() { { _RoomType.Kitchen, -20 }, { _RoomType.BedRoom, -20 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, -100 } });
-            asd.Add(_RoomType.Kitchen, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -20 }, { _RoomType.BedRoom, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, 100 } });
-            asd.Add(_RoomType.BedRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -20 }, { _RoomType.Kitchen, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, -100 } });
-            asd.Add(_RoomType.RestRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, -100 } });
-            asd.Add(_RoomType.CorridorRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, -100 }, { _RoomType.BedRoom, -100 }, { _RoomType.RestRoom, -100 } });
+            asd.Add(_RoomType.LivingRoom, new Dictionary<_RoomType, int>() { { _RoomType.Kitchen, -20 }, { _RoomType.BedRoom, -20 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.LivingRoom, -20 }, { _RoomType.RestRoom, -100 } });
+            asd.Add(_RoomType.Kitchen, new Dictionary<_RoomType, int>() { { _RoomType.Kitchen, -20 }, { _RoomType.LivingRoom, -20 }, { _RoomType.BedRoom, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.RestRoom, 100 } });
+            asd.Add(_RoomType.BedRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -20 }, { _RoomType.Kitchen, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.BedRoom, -100 }, { _RoomType.RestRoom, -100 } });
+            asd.Add(_RoomType.RestRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.BedRoom, -100 }, { _RoomType.RestRoom, -100 } });
+            asd.Add(_RoomType.CorridorRoom, new Dictionary<_RoomType, int>() { { _RoomType.CorridorRoom, -100 }, { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, -100 }, { _RoomType.BedRoom, -100 }, { _RoomType.RestRoom, -100 } });
 
         }
         private static double CalculateLayoutCost() {

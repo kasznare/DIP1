@@ -132,7 +132,7 @@ namespace Diploma2.Model {
         }
 
         /// <summary>
-        /// Tries to sort the lines
+        /// Tries to sort the lines, CAN NOT HANDLE LINES WITH SAME START+END
         /// </summary>
         /// <returns>If lines are sortable</returns>
         public bool CanGetBoundarySorted() {
