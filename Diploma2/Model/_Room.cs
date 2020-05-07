@@ -168,6 +168,8 @@ namespace Diploma2.Model {
             return commonMyPoint;
         }
 
+        public double Area { get; set; }
+
         public double CalculateArea() {
 
             List<_Point> bp = GetPoints();
@@ -184,6 +186,8 @@ namespace Diploma2.Model {
                 throw new Exception("Area is too small: " + area);
             }
 
+            Area = area / 10000;
+            OnPropertyChanged(nameof(Area));
             return area / 10000; //this is for unit conversion
         }
         /// <summary>

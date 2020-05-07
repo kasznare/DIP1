@@ -109,6 +109,8 @@ namespace Diploma2
             Paint();
         }
 
+      
+
         private void LoadModels()
         {
             //Model = ModelConfigurations.InitSimplestModel();

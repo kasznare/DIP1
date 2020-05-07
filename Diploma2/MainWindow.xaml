@@ -69,6 +69,50 @@
                     Name="Exit"
                     Click="Exit_OnClick"
                     Height="50"></Button>
+            <TextBlock Text="RoomTypes"
+                       Foreground="White"
+                       FontSize="30" />
+            <DataGrid  x:Name="RoomTypesDG"
+                       ItemsSource="{Binding roomtypes, IsAsync=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                       HorizontalAlignment="Stretch"
+                       Height="300"
+                       AutoGenerateColumns="False"
+                       SelectionUnit="FullRow"
+                       SelectedCellsChanged="RoomGrid_OnSelectedCellsChanged"
+                       VerticalAlignment="Stretch">
+
+              <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Name"
+                                        Width="100">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding roomname}"
+                                 TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="AreaMin"
+                                        Width="50">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding areamin}"
+                                 TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="AreaMax"
+                                        Width="50">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding areamax}"
+                                 TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+              </DataGrid.Columns>
+
+            </DataGrid>
           </StackPanel>
 
           <StackPanel  Grid.Column="1"
@@ -200,6 +244,16 @@
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
 
+                  <DataGridTemplateColumn Header="Area"
+                                          Width="30">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding Area}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+
                   <DataGridTemplateColumn Header="Name"
                                           Width="100">
                     <DataGridTemplateColumn.CellTemplate>
@@ -209,9 +263,18 @@
                       </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="Type"
+                                          Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <TextBlock Text="{Binding type}"
+                                   TextWrapping="Wrap" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
 
                   <DataGridTemplateColumn Header="Number"
-                                          Width="100">
+                                          Width="30">
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate>
                         <TextBlock Text="{Binding Number}"
