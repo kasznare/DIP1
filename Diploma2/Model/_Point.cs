@@ -1,5 +1,7 @@
-﻿namespace Diploma2.Model {
-    public class _Point {
+﻿using System;
+
+namespace Diploma2.Model {
+    public class _Point:_GeometryBase {
         public double[] XY => new double[]{X,Y};
 
         public double X { get; set; }
@@ -33,7 +35,7 @@
             }
             else {
                 _Point p = (_Point)obj;
-                return (X == p.X) && (Y == p.Y);
+                return (Math.Abs(X - p.X) < 0.01) && (Math.Abs(Y - p.Y) < 0.01);
             }
         }
 

@@ -167,7 +167,7 @@ namespace Diploma2.Model {
             }
             return commonMyPoint;
         }
-    
+
         public double CalculateArea() {
 
             List<_Point> bp = GetPoints();
@@ -228,6 +228,7 @@ namespace Diploma2.Model {
                 _Point max = new _Point(X.Max(), Y.Max());
                 _Point min = new _Point(X.Min(), Y.Min());
 
+                //TODO: avoid <80cm room sides
 
                 proportion = (max.X - min.X) / (max.Y - min.Y);
                 if (proportion < 1 && Math.Abs(proportion) > 0.01) {

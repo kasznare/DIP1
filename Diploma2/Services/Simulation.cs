@@ -6,11 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using Diploma2.Model;
 using Diploma2.Utilities;
 
-namespace Diploma2.Services {
-    public class Simulation {
+namespace Diploma2.Services
+{
+    public class Simulation
+    {
         public delegate void StatusUpdateHandler(object sender, ProgressEventArgs e);
         public _Model Model { get; set; }
         public Action ActualAction { get; set; }
@@ -30,27 +33,40 @@ namespace Diploma2.Services {
         public ObservableCollection<_Model> modelCopyHistory = new ObservableCollection<_Model>();
         public Dictionary<Action, Cost> ActionsByCosts = new Dictionary<Action, Cost>();
         public List<Action> Actions = new List<Action>();
+        public List<Action> DoorActions = new List<Action>();
         public List<Dictionary<Action, Cost>> history = new List<Dictionary<Action, Cost>>();
 
         Stopwatch st = new Stopwatch();
-        public void RunSteps() {
+        public void RunSteps()
+        {
             st.Start();
 
-            while (exitCondition == ExitCondition.Running) {
+            while (exitCondition == ExitCondition.Running)
+            {
                 Actions.Clear();
+                DoorActions.Clear();
                 SaveState();
                 actualCost = CostCalculationService.CalculateCostNew(Model);
+
                 CalculateCostsForState();
                 MakeAStepByTheCalculatedCosts();
+
+
+                CalculateDoorCosts();
+                MakeStepByDoorChanges();
+
                 HandleModelChangeUpdate();
-                //Thread.Sleep(5);
-                if (CurrentIndex >= MaxIndex) {
+
+                if (CurrentIndex >= MaxIndex)
+                {
                     exitCondition = ExitCondition.isFinished;
                 }
-                if (st.ElapsedMilliseconds > 10000) {
+                if (st.ElapsedMilliseconds > 10000)
+                {
                     exitCondition = ExitCondition.isTimeout;
                 }
-                if (ActualTreshold >= MaxTreshold) {
+                if (ActualTreshold >= MaxTreshold)
+                {
                     exitCondition = ExitCondition.isTreshold;
                 }
                 CurrentIndex++;
@@ -64,30 +80,74 @@ namespace Diploma2.Services {
             st.Reset();
         }
 
-        public void UndoStep() {
+
+
+
+        public void UndoStep()
+        {
             Model = modelCopyHistory.ElementAt(CurrentIndex - 1);
             HandleModelChangeUpdate();
         }
-        private void HandleModelChangeUpdate() {
+        private void HandleModelChangeUpdate()
+        {
             if (ModelChanged == null) return;
             ProgressEventArgs args = new ProgressEventArgs(Model, actualCost, CurrentIndex, ActualAction);
             ModelChanged(this, args);
         }
 
-        private void CalculateCostsForState() {
+        private void CalculateCostsForState()
+        {
             history.Add(ActionsByCosts);
             ActionsByCosts.Clear();
             CalculateMoveCosts();
-            //CalculateSplitCosts();
+            //CalculateSplitCosts(); TODO: do I need this anyway??
             CalculateSwitchCosts();
         }
-        private void CalculateSplitCosts() {
+
+        private void CalculateDoorCosts()
+        {
+            //calculate every possible scenario, every yesno, the outer lines are not nessesary 2,3,7,8
+            _Model tempModel = Model;//.DeepCopy();
+            List<_Line> allLinesFlat = tempModel.AllLinesFlat();
+
+            int[] arr = Enumerable.Range(0, allLinesFlat.Count).ToArray();
+
+            //TODO: we could ommit outside lines
+            List<int[]> indicesToSetAsDoors = CFG.printCombination(arr, allLinesFlat.Count, Model.rooms.Count);
+            for (int index = 0; index < indicesToSetAsDoors.Count; index++)
+            {
+                List<_Line> currentLines = new List<_Line>();
+                int[] elementAt = indicesToSetAsDoors.ElementAt(index);
+               
+
+                if (elementAt.Contains(1) && elementAt.Contains(2) && elementAt.Contains(7) && elementAt.Contains(8))
+                {
+                    int breakpointint = 0;
+                }
+
+                foreach (int i in elementAt)
+                {
+                    currentLines.Add(allLinesFlat.ElementAt(i));
+                }
+                tempModel.MakeLineDoor(currentLines);
+                Cost c = CostCalculationService.CalculateDoorCost(tempModel);
+
+                DoorActions.Add(new MakeDoor(currentLines, c));
+            }
+
+            int breakpoint = DoorActions.Count;
+        }
+        private void CalculateSplitCosts()
+        {
             throw new NotImplementedException();
         }
-        private void CalculateSwitchCosts() {
+        private void CalculateSwitchCosts()
+        {
             int rooms = Model.rooms.Count;
-            for (int index = 0; index < rooms; index++) {
-                for (int secondindex = index + 1; secondindex < rooms; secondindex++) {
+            for (int index = 0; index < rooms; index++)
+            {
+                for (int secondindex = index + 1; secondindex < rooms; secondindex++)
+                {
                     _Room r1 = Model.rooms.ElementAt(index);
                     _Room r2 = Model.rooms.ElementAt(secondindex);
                     _Model tempModel = Model.DeepCopy(r1, r2, out _Room r1target, out _Room r2target);
@@ -95,15 +155,18 @@ namespace Diploma2.Services {
                     if (tempModel.IsInInvalidState) continue;
 
                     Cost cost = CostCalculationService.CalculateCostNew(tempModel);
-                    lock (locker) {
+                    lock (locker)
+                    {
                         Actions.Add(new Switch(ref r1, ref r2, cost));
                     }
                 }
             }
         }
-        private void CalculateMoveCosts() {
+        private void CalculateMoveCosts()
+        {
             List<_Line> allLinesFlat = Model.AllLinesFlat();
-            for (int index = 0; index < allLinesFlat.Count; index++) {
+            for (int index = 0; index < allLinesFlat.Count; index++)
+            {
 
                 _Line myLine = allLinesFlat.ElementAt(index);
                 _Model tempModel = Model.DeepCopy(myLine, out _Line newMyLine);
@@ -112,12 +175,14 @@ namespace Diploma2.Services {
 
                 Cost costsnew = CostCalculationService.CalculateCostNew(tempModel);
 
-                lock (locker) {
+                lock (locker)
+                {
                     Actions.Add(new Move(myLine, costsnew, baseMoveDistance));
                 }
             }
-           
-            for (int index = 0; index < allLinesFlat.Count; index++) {
+
+            for (int index = 0; index < allLinesFlat.Count; index++)
+            {
 
                 _Line myLine = allLinesFlat.ElementAt(index);
                 _Model tempModel = Model.DeepCopy(myLine, out _Line newMyLine);
@@ -126,35 +191,54 @@ namespace Diploma2.Services {
 
                 Cost costsnew = CostCalculationService.CalculateCostNew(tempModel);
 
-                lock (locker) {
+                lock (locker)
+                {
                     Actions.Add(new Move(myLine, costsnew, -baseMoveDistance));
                 }
             }
-            
+
         }
 
-        public void SaveState() {
+        public void SaveState()
+        {
             modelCopyHistory.Add(Model.DeepCopy());
         }
-
-        private void MakeAStepByTheCalculatedCosts() {
-            Action a = FindStep();
-            if (a != null) {
+        private void MakeStepByDoorChanges()
+        {
+            List<Action> sorted = DoorActions.OrderBy(i => i.Cost.SummaryCost).ToList();
+            Action a = sorted.ElementAt(0);
+            if (a != null)
+            {
                 a.Step(Model);
             }
-            else {
+            else
+            {
+                ActualTreshold++;
+            }
+        }
+        private void MakeAStepByTheCalculatedCosts()
+        {
+            Action a = FindStep();
+            if (a != null)
+            {
+                a.Step(Model);
+            }
+            else
+            {
                 ActualTreshold++;
             }
         }
 
         Random r = new Random(30);
-        private Action FindStep() {
-            List<Action> sorted = Actions.OrderBy(i => i.Cost.SummaryCost).ToList();
+        private Action FindStep()
+        {
+            List<Action> sorted = Actions.OrderBy(i => i.Cost.SummaryCost).ToList(); //TODO: is it descending or ascending??? the simulation converges...
             //Action a = sorted.FirstOrDefault();
             int j = r.Next(0, Math.Min(3, sorted.Count));
             ActualAction = sorted.ElementAt(j);
             //TODO: here maybe we should return
-            if (actualCost.SummaryCost >= ActualAction.Cost.SummaryCost) {
+            if (actualCost.SummaryCost >= ActualAction.Cost.SummaryCost)
+            {
                 actualCost = ActualAction.Cost;
                 return ActualAction;
             }

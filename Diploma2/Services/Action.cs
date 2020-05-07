@@ -1,4 +1,5 @@
-﻿using Diploma2.Model;
+﻿using System.Collections.Generic;
+using Diploma2.Model;
 using Diploma2.Utilities;
 
 namespace Diploma2.Services
@@ -63,6 +64,26 @@ namespace Diploma2.Services
 
         public override void Step(_Model m) {
             m.SplitLine(split, myLine);
+        }
+    }
+
+    public class MakeDoor : Action
+    {
+        private List<_Line> makeDoor;
+
+        public MakeDoor(List<_Line> makeDoor, Cost cost)
+        {
+            this.makeDoor = makeDoor;
+            Cost = cost;
+        }
+        public override void Step(_Model m)
+        {
+            m.MakeLineDoor(makeDoor);
+        }
+
+        public override string ToString()
+        {
+            return "Makedoor_"+Cost.SummaryCost;
         }
     }
     public class Switch : Action {

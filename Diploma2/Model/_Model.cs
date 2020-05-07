@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
+using Diploma2.Services;
+using Action = System.Action;
 
 namespace Diploma2.Model
 {
@@ -15,6 +17,8 @@ namespace Diploma2.Model
         public bool IsInInvalidState { get; internal set; }
 
         public int[,] AdjacencyMatrix { get; set; }
+        public int[,] TransparencyMatrix { get; set; }
+        public int[] DepthMatrix { get; set; }
         public _Model()
         {
             rooms = new ObservableCollection<_Room>();
@@ -38,7 +42,31 @@ namespace Diploma2.Model
                     }
                 }
             }
-            //stop
+        }
+        public void FillTransparencyMatrix()
+        {
+            TransparencyMatrix = new int[rooms.Count, rooms.Count];
+            for (int i = 0; i < rooms.Count; i++)
+            {
+                for (int j = i + 1; j < rooms.Count; j++)
+                {
+                    IEnumerable<_Line> enumerable = rooms[i].Lines.Intersect(rooms[j].Lines);
+                    if (enumerable.Any())
+                    {
+                        int k = 1;
+                    }
+                    if (enumerable.Any(k => k.HasDoor))
+                    {
+                        TransparencyMatrix[i, j] = 1;
+                    }
+                }
+            }
+        }
+
+        public void FillDepthArray()
+        {
+            CFG c = new CFG();
+            DepthMatrix = c.dijkstra(TransparencyMatrix,0, rooms.Count);
         }
         [JsonIgnore]
         [IgnoreDataMember]
@@ -660,7 +688,6 @@ namespace Diploma2.Model
         //TODO: later we dont need to calculate all rooms all the time, only what can change, and that we know from the roomsthatcare
         public void CalculateRelatedRoomsForLines()
         {
-
             foreach (_Room room in rooms)
             {
                 foreach (_Line roomLine in room.Lines)
@@ -676,6 +703,26 @@ namespace Diploma2.Model
                     if (!roomLine.relatedrooms.Contains(room))
                     {
                         roomLine.relatedrooms.Add(room);
+                    }
+                }
+            }
+        }
+
+
+
+        public void MakeLineDoor(List<_Line> makeDoor)
+        {
+            foreach (var room in rooms)
+            {
+                foreach (var line in room.Lines)
+                {
+                    if (line.length>80 && makeDoor.Contains(line))
+                    {
+                        line.HasDoor = true;
+                    }
+                    else
+                    {
+                        line.HasDoor = false;
                     }
                 }
             }

@@ -27,14 +27,20 @@
             <ColumnDefinition Width='3*'></ColumnDefinition>
             <ColumnDefinition Width='2*'></ColumnDefinition>
           </Grid.ColumnDefinitions>
-          <GridSplitter Grid.Column="0" Grid.Row="0" Width="1" Background="Black"></GridSplitter>
-          <GridSplitter Grid.Column="1" Grid.Row="0" Width="1" Background="Black"></GridSplitter>
+          <GridSplitter Grid.Column="0"
+                        Grid.Row="0"
+                        Width="1"
+                        Background="Black"></GridSplitter>
+          <GridSplitter Grid.Column="1"
+                        Grid.Row="0"
+                        Width="1"
+                        Background="Black"></GridSplitter>
           <StackPanel>
             <Button Content="Start Simulation"
                     Height="50"
                     Name="StartSimulation"
                     Click="StartSimulation_OnClick"></Button>
-           
+
             <Button Content="Undo step"
                     Height="50"
                     Name="UndoStep"
@@ -67,23 +73,24 @@
 
           <StackPanel  Grid.Column="1"
                        Grid.Row="0">
-            <Canvas Name="testcanvas"
-                    Height="300"
-                    Margin="0,400,0,0"
-                    Grid.ColumnSpan='2'
-                    Grid.Column='1'>
+            <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Visible" Height="500">
+            <Canvas x:Name="testcanvas"
+                    Height="500"
+                    Margin="50,500,0,0">
               <!--RenderTransformOrigin="0,0"-->
               <Canvas.RenderTransform>
-                <TransformGroup>
+                <!--<TransformGroup>-->
                   <ScaleTransform ScaleY="-1"
                                   ScaleX="1" />
-                </TransformGroup>
+                <!--</TransformGroup>-->
               </Canvas.RenderTransform>
             </Canvas>
+
+            </ScrollViewer>
             <TextBlock Text="Costs"
                        Foreground="White"
-                       FontSize="30"></TextBlock>
-            <DataGrid  Name="Costs"
+                       FontSize="30" />
+            <DataGrid  x:Name="Costs"
                        ItemsSource="{Binding SimulationCosts, IsAsync=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                        HorizontalAlignment="Stretch"
                        Height="300"
@@ -133,8 +140,8 @@
             </DataGrid>
             <TextBlock Text="History"
                        Foreground="White"
-                       FontSize="30"></TextBlock>
-            <DataGrid  Name="history"
+                       FontSize="30" />
+            <DataGrid  x:Name="history"
                        ItemsSource="{Binding modelHistory, IsAsync=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                        HorizontalAlignment="Stretch"
                        Height="300"
@@ -167,14 +174,14 @@
             </DataGrid>
 
           </StackPanel>
-         
+
           <StackPanel Grid.Column="2">
             <StackPanel  Grid.Column="2"
                          Grid.Row="1">
               <TextBlock Text="Szobák"
                          Foreground="White"
                          FontSize="30"></TextBlock>
-              <DataGrid  Name="RoomGrid"
+              <DataGrid  x:Name="RoomGrid"
                          ItemsSource="{Binding Rooms, IsAsync=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Stretch"
                          Height="400"
@@ -192,6 +199,7 @@
                       </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
+
                   <DataGridTemplateColumn Header="Name"
                                           Width="100">
                     <DataGridTemplateColumn.CellTemplate>
@@ -201,7 +209,7 @@
                       </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                   </DataGridTemplateColumn>
-               
+
                   <DataGridTemplateColumn Header="Number"
                                           Width="100">
                     <DataGridTemplateColumn.CellTemplate>
@@ -235,8 +243,9 @@
                          HorizontalAlignment="Stretch"
                          Height="300"
                          SelectionUnit="FullRow"
-SelectedCellsChanged="LineGrid_OnSelectedCellsChanged"
+                         SelectedCellsChanged="LineGrid_OnSelectedCellsChanged"
                          SelectedIndex="{Binding selectedLineIndex, UpdateSourceTrigger=PropertyChanged}"
+                         AutoGenerateColumns='False'
                          VerticalAlignment="Stretch">
 
                 <DataGrid.Columns>
@@ -300,7 +309,7 @@ SelectedCellsChanged="LineGrid_OnSelectedCellsChanged"
                          HorizontalAlignment="Stretch"
                          Height="300"
                          SelectionUnit="FullRow"
-SelectedCellsChanged="PointGrid_OnSelectedCellsChanged"
+                         SelectedCellsChanged="PointGrid_OnSelectedCellsChanged"
                          VerticalAlignment="Stretch">
                 <DataGrid.Columns>
                   <DataGridTemplateColumn Header="X"
@@ -374,7 +383,8 @@ SelectedCellsChanged="PointGrid_OnSelectedCellsChanged"
                   Click="DrawChart_OnClick"
                   Height="50"></Button>
           <wpf:CartesianChart Series="{Binding SeriesCollection}"
-                            Name="Chart"  LegendLocation="Right">
+                              Name="Chart"
+                              LegendLocation="Right">
             <wpf:CartesianChart.AxisY>
               <wpf:Axis Title="Cost"
                         LabelFormatter="{Binding YFormatter}"></wpf:Axis>

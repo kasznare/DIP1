@@ -32,6 +32,7 @@ namespace Diploma2.Services
         {
             localModel = m;
             localModel.FillAdjacencyMatrix();
+            //localModel.FillDepthArray();
             localModel.CalculateRelatedRoomsForLines();
             C = new Cost(-1, 0, 0, 0, 0);
 
@@ -39,6 +40,19 @@ namespace Diploma2.Services
             C.LayoutCost = CalculateLayoutCost();
             C.ConstaintCost = CalculateConstraintCost();
 
+            return C;
+        }
+
+        public static Cost CalculateDoorCost(_Model m)
+        {
+            localModel = m;
+            localModel.FillAdjacencyMatrix(); //TODO: this might not be needed at all
+            localModel.FillTransparencyMatrix();
+            localModel.CalculateRelatedRoomsForLines(); //not sure about the ordering
+            localModel.FillDepthArray();
+            C = new Cost(-1, 0, 0, 0, 0);
+
+            C.LayoutCost = CalculateDoorCost();
             return C;
         }
         private static double CalculateConstraintCost()
@@ -159,27 +173,58 @@ namespace Diploma2.Services
             }
 
             //elrendezésszintű
-            double passagewaycost = 0.0;
-            passagewaycost = CalculatePassageWayCost();
+           
             //ajtókat, nyílásokat letenni...(kérdés)
             //bejárhatóság generálás
             double privacygradientcost = 0.0;
             //kerületszámítás
             //minimális optimum kerület = sqrt(minden szoba area összege)*4
-            double summary = passagewaycost + privacygradientcost + wallLength + layoutcost;
+            double summary = privacygradientcost + wallLength + layoutcost;
             summary = Math.Round(summary, 2);
             return summary;
         }
-        private static double CalculatePassageWayCost()
+        private static double CalculateDoorCost()
         {
             //bejárhatóság
             double cost = 0.0;
-            Dictionary<int, List<_Room>> processedRooms = new Dictionary<int, List<_Room>>();
+            //Dictionary<int, List<_Room>> processedRooms = new Dictionary<int, List<_Room>>();
 
-            int accessRoomDepth = 0;
-            List<_Room> actualRooms = localModel.rooms.Where(i => i.isStartRoom).ToList();
-            processedRooms.Add(accessRoomDepth, actualRooms);
+            //int accessRoomDepth = 0;
+            //List<_Room> actualRooms = localModel.rooms.Where(i => i.isStartRoom).ToList();
+            //processedRooms.Add(accessRoomDepth, actualRooms);
 
+            int doorCount = 0;
+            foreach (_Room room in localModel.rooms)
+            {
+                foreach (_Line roomLine in room.Lines)
+                {
+                    if (roomLine.HasDoor) doorCount++;
+                }
+            }
+
+            cost += doorCount * 100;
+
+            if (doorCount > localModel.rooms.Count)
+            {
+                cost += Math.Pow(2, doorCount - localModel.rooms.Count);
+            }
+            //TODO: dikhstra
+
+            for (var i = 0; i < localModel.rooms.Count; i++)
+            {
+                _Room room = localModel.rooms[i];
+                int depth = localModel.DepthMatrix[i];
+                if (room.type.privacy > depth && depth < 100)
+                {
+                    cost += Math.Pow(2, room.type.privacy - depth);
+                }
+
+                if (depth > 100)
+                {
+                    cost += 1000000;
+                }
+            }
+            //todo: what if unreachable? check it! that is bad.
 
             //bejárhatóságra ez elég
             //már feldolgozott elemek

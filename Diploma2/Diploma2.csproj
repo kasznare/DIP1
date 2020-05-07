@@ -81,6 +81,7 @@
     <Compile Include="Model\LineAndCost.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\Action.cs" />
+    <Compile Include="Services\CFG.cs" />
     <Compile Include="Services\CostCalculationService.cs" />
     <Compile Include="Services\ModelConfigurations.cs" />
     <Compile Include="Services\ProgressEventArgs.cs" />
@@ -126,6 +127,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Model.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

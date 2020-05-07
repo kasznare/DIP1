@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Odbc;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -25,13 +26,19 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Action = System.Action;
+using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
+using Color = System.Windows.Media.Color;
+using Point = System.Windows.Point;
 using ShapeLine = System.Windows.Shapes.Line;
 
-namespace Diploma2 {
+namespace Diploma2
+{
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged {
+    public partial class MainWindow : Window, INotifyPropertyChanged
+    {
 
         #region Variables
 
@@ -60,31 +67,38 @@ namespace Diploma2 {
         ModelStorage ms = new ModelStorage();
 
         #endregion
-        public int SelectedLineIndex {
-            get {
+        public int SelectedLineIndex
+        {
+            get
+            {
                 return selectedLineIndex;
 
             }
-            set {
+            set
+            {
                 selectedLineIndex = value;
                 OnPropertyChanged();
                 Paint();
             }
         }
 
-        public int SelectedPointIndex {
-            get {
+        public int SelectedPointIndex
+        {
+            get
+            {
                 return selectedPointIndex;
 
             }
-            set {
+            set
+            {
                 selectedPointIndex = value;
                 OnPropertyChanged();
                 Paint();
             }
         }
 
-        public MainWindow() {
+        public MainWindow()
+        {
             DataContext = this;
             InitializeComponent();
             model = ModelConfigurations.InitNormalModel();
@@ -95,46 +109,92 @@ namespace Diploma2 {
             Paint();
         }
 
-        private void LoadModels() {
+        private void LoadModels()
+        {
             //Model = ModelConfigurations.InitSimplestModel();
             model = ModelConfigurations.InitSimpleModel();
             LoadDataFromModel();
         }
 
-        private void Paint() {
+        private void Paint()
+        {
             isPainting = true;
             testcanvas.Children.Clear();
-
+            foreach (_Room room in Rooms)
+            {
+                try
+                {
+                    List<_Point> boundaries = room.GetPoints();
+                    if (!boundaries.Any()) continue;
+                    //List<PointF> convertedPoints = boundaries.Select(i => new PointF((float) i.X, (float) i.Y)).ToList();
+                    List<Point> convertedPointsForPolygon = boundaries.Select(i => new Point( i.X, i.Y)).ToList();
+                    //System.Drawing.PointF center = Utils.GetCentroid(convertedPoints);
+                    Polygon p = new Polygon();
+                    p.Points = new PointCollection(convertedPointsForPolygon);
+                    p.Fill = new SolidColorBrush(room.type.fillColor.ToMediaColor());
+                    p.Opacity = 0.25;
+                    p.ToolTip = room.ToString();
+                    
+                    testcanvas.Children.Add(p);
+                }
+                catch (Exception e)
+                {
+                    Logger.WriteLog(e);
+                }
+            }
             var allLinesFlat = model.AllLinesFlat();
-            for (var i = 0; i < allLinesFlat.Count; i++) {
+            Brush LinesolidColorBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
+            Brush LinesolidColorBrush2 = Brushes.Red;
+            for (var i = 0; i < allLinesFlat.Count; i++)
+            {
                 _Line line = allLinesFlat[i];
                 ShapeLine _line = new ShapeLine();
-                Brush solidColorBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
-                solidColorBrush.Opacity = 0.5;
-                if (selectedLineIndices.Contains(i)) {
-                    solidColorBrush = Brushes.Yellow;
+                LinesolidColorBrush.Opacity = 0.5;
+                if (line.HasDoor)
+                {
+                    ShapeLine _line2 = new ShapeLine();
+                    _Point n = line.GetNV(true);
+                    _line2.Stroke = LinesolidColorBrush2;
+                    _line2.X1 = (line.StartPoint.X + line.EndPoint.X)/2;
+                    _line2.X2 = (line.StartPoint.X + line.EndPoint.X)/2 + n.X*10;
+                    _line2.Y1 = (line.StartPoint.Y + line.EndPoint.Y)/2;
+                    _line2.Y2 = (line.StartPoint.Y + line.EndPoint.Y)/2 + n.Y*10;
+                    _line2.StrokeEndLineCap = PenLineCap.Triangle;
+                    _line2.StrokeStartLineCap = PenLineCap.Round;
+                    _line2.StrokeThickness = 10;
+                    _line2.ToolTip = line.ToString();
+                    testcanvas.Children.Add(_line2);
+                }
+                if (selectedLineIndices.Contains(i))
+                {
+                    LinesolidColorBrush = Brushes.Yellow;
                 }
 
-                _line.Stroke = solidColorBrush;
+
+
+
+                _line.Stroke = LinesolidColorBrush;
                 _line.X1 = line.StartPoint.X;
                 _line.X2 = line.EndPoint.X;
                 _line.Y1 = line.StartPoint.Y;
                 _line.Y2 = line.EndPoint.Y;
                 _line.StrokeEndLineCap = PenLineCap.Triangle;
                 _line.StrokeStartLineCap = PenLineCap.Round;
-                _line.StrokeThickness = 10;
+                _line.StrokeThickness = 5;
                 _line.ToolTip = line.ToString();
                 testcanvas.Children.Add(_line);
             }
 
             List<_Point> allPointsFlat = model.AllPointsFlat();
-            for (var i = 0; i < allPointsFlat.Count; i++) {
+            var solidColorBrush = new SolidColorBrush(Color.FromArgb(90, 255, 0, 0));
+            for (var i = 0; i < allPointsFlat.Count; i++)
+            {
                 _Point point = allPointsFlat[i];
                 ShapeLine _line = new ShapeLine();
 
-                var solidColorBrush = new SolidColorBrush(Color.FromArgb(90, 255, 0, 0));
                 solidColorBrush.Opacity = 0.5;
-                if (i.Equals(SelectedPointIndex)) {
+                if (i.Equals(SelectedPointIndex))
+                {
                     solidColorBrush = Brushes.GreenYellow;
                 }
                 _line.Stroke = solidColorBrush;
@@ -149,26 +209,12 @@ namespace Diploma2 {
                 testcanvas.Children.Add(_line);
             }
 
-            foreach (_Room room in Rooms) {
-                try {
-                    List<_Point> boundaries = room.GetPoints();
-                    if (!boundaries.Any()) continue;
-                    List<Point> convertedPoints = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
-                    Polygon p = new Polygon();
-                    p.Points = new PointCollection(convertedPoints);
-                    p.Fill = new SolidColorBrush(room.type.fillColor.ToMediaColor());
-                    p.Opacity = 0.25;
-                    p.ToolTip = room.ToString();
-                    testcanvas.Children.Add(p);
-                }
-                catch (Exception e) {
-                    Logger.WriteLog(e);
-                }
-            }
+
 
             isPainting = false;
         }
-        private void LoadDataFromModel() {
+        private void LoadDataFromModel()
+        {
             Points = new ObservableCollection<_Point>(model.AllPointsFlat());
             Lines = new ObservableCollection<_Line>(model.AllLinesFlat());
             Rooms = model.rooms;
@@ -179,31 +225,39 @@ namespace Diploma2 {
         }
         #region UI eventhandlers
 
-        private void LoadModel_OnClick(object sender, RoutedEventArgs e) {
+        private void LoadModel_OnClick(object sender, RoutedEventArgs e)
+        {
             LoadModels();
         }
 
-        private void MoveLine_OnClick(object sender, RoutedEventArgs e) {
-            if (selectedLines.FirstOrDefault() == null) {
+        private void MoveLine_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (selectedLines.FirstOrDefault() == null)
+            {
                 model.MoveLine();
             }
-            else {
+            else
+            {
                 model.MoveLine(10, selectedLines.FirstOrDefault());
             }
             LoadDataFromModel();
             Paint();
         }
 
-        private void Exit_OnClick(object sender, RoutedEventArgs e) {
+        private void Exit_OnClick(object sender, RoutedEventArgs e)
+        {
             this.Close();
         }
 
-        private void Paint_OnClick(object sender, RoutedEventArgs e) {
+        private void Paint_OnClick(object sender, RoutedEventArgs e)
+        {
             Paint();
         }
 
-        private void MainWindow_OnKeyDown(object sender, KeyEventArgs e) {
-            switch (e.Key) {
+        private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
                 case Key.A:
                     Dispatcher.BeginInvoke((Action)(() => TabControl.SelectedIndex = 0));
                     break;
@@ -222,13 +276,16 @@ namespace Diploma2 {
             }
         }
 
-        private void RoomGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
+        private void RoomGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
             _Room index = RoomGrid.CurrentCell.Item as _Room;
             selectedLineIndices.Clear();
             selectedLines.Clear();
             var i = 0;
-            foreach (var line in Lines) {
-                if (index != null && index.Lines.Contains(line)) {
+            foreach (var line in Lines)
+            {
+                if (index != null && index.Lines.Contains(line))
+                {
                     selectedLineIndices.Add(i);
                     selectedLines.Add(line);
                 }
@@ -239,11 +296,13 @@ namespace Diploma2 {
 
         }
 
-        private void LineGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
+        private void LineGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
             selectedLineIndices.Clear();
             selectedLines.Clear();
             var ined = LineGrid.SelectedIndex;
-            if (ined != -1) {
+            if (ined != -1)
+            {
                 selectedLineIndices.Add(ined);
                 selectedLines.Add(Lines.ElementAt(ined));
                 Paint();
@@ -251,26 +310,40 @@ namespace Diploma2 {
             }
         }
 
-        private void PointGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e) {
+        private void PointGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
             SelectedPointIndex = PointGrid.SelectedIndex;
         }
-        private void StartSimulation_OnClick(object sender, RoutedEventArgs e) {
+
+        private Thread simulationThread;
+        private void StartSimulation_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (simulationThread != null && simulationThread.IsAlive)
+            {
+                MessageBox.Show("already running");
+                return;
+            }
+
+
             simulation.Model = model;
             Paint();
 
-            Thread t = new Thread(simulation.RunSteps);
-            t.Start();
+            simulationThread = new Thread(simulation.RunSteps);
+            simulationThread.Start();
         }
-        private void UndoStep_OnClick(object sender, RoutedEventArgs e) {
+        private void UndoStep_OnClick(object sender, RoutedEventArgs e)
+        {
             simulation.UndoStep();
         }
 
 
-        private void SaveToJson_OnClick(object sender, RoutedEventArgs e) {
+        private void SaveToJson_OnClick(object sender, RoutedEventArgs e)
+        {
             SaveHistoryModel(model, GenerateModelNameFromState(model));
         }
 
-        private void LoadFromJson_OnClick(object sender, RoutedEventArgs e) {
+        private void LoadFromJson_OnClick(object sender, RoutedEventArgs e)
+        {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = $"{savepath}\\Models";
             ofd.ShowDialog();
@@ -288,18 +361,23 @@ namespace Diploma2 {
         }
 
         #region GenerateAllModels
-        private void Gentest_OnClick(object sender, RoutedEventArgs e) {
+        private void Gentest_OnClick(object sender, RoutedEventArgs e)
+        {
             GeneratingBase = ModelConfigurations.InitTestModel();
             List<_Model> new_Models = new List<_Model>();
             new_Models.Add(GeneratingBase);
             List<_Model> all_Models = new List<_Model>();
-            while (new_Models.Any()) {
+            while (new_Models.Any())
+            {
                 List<_Model> loop = new List<_Model>();
-                foreach (_Model _Model in new_Models) {
+                foreach (_Model _Model in new_Models)
+                {
                     List<_Model> current_Models = AllRoomPairs(_Model);
 
-                    foreach (_Model current_Model in current_Models) {
-                        if (current_Model.rooms.Count > 1) {
+                    foreach (_Model current_Model in current_Models)
+                    {
+                        if (current_Model.rooms.Count > 1)
+                        {
                             loop.Add(current_Model);
                         }
                     }
@@ -311,32 +389,39 @@ namespace Diploma2 {
                 GC.Collect();
             }
 
-            foreach (_Model _Model in all_Models) {
+            foreach (_Model _Model in all_Models)
+            {
                 Ommitsteps(_Model);
             }
 
-            foreach (_Model m1 in ms.getHistory()) {
+            foreach (_Model m1 in ms.getHistory())
+            {
                 SaveHistoryModel(m1, GenerateModelNameFromState(m1));
             }
         }
-        private string GenerateModelNameFromState(_Model currentModel) {
+        private string GenerateModelNameFromState(_Model currentModel)
+        {
             return
                 $"{currentModel.loadedModelType}_{currentModel.rooms.Count}_" +
                 $"{currentModel.AllLinesFlat().Count}";
         }
 
-        public List<_Model> AllRoomPairs(_Model m_mod) {
+        public List<_Model> AllRoomPairs(_Model m_mod)
+        {
             List<_Model> returnList = new List<_Model>();
-            for (var i = 0; i < m_mod.rooms.Count; i++) {
+            for (var i = 0; i < m_mod.rooms.Count; i++)
+            {
                 _Room room = m_mod.rooms[i];
-                for (var j = i + 1; j < m_mod.rooms.Count; j++) {
+                for (var j = i + 1; j < m_mod.rooms.Count; j++)
+                {
                     _Room modelRoom = m_mod.rooms[j];
                     //if (room2.Guid == room1.Guid) continue;
 
                     bool a = DoTheyHaveCommmonWall(room, modelRoom);
                     if (!a) continue;
 
-                    else {
+                    else
+                    {
                         _Room room2;
                         _Room modelRoom2;
                         _Model m_mod2 = m_mod.DeepCopy(room, modelRoom, out room2, out modelRoom2);
@@ -350,16 +435,19 @@ namespace Diploma2 {
             return returnList;
         }
 
-        private _Model MergeRooms(_Model mMod, _Room room, _Room modelRoom) {
+        private _Model MergeRooms(_Model mMod, _Room room, _Room modelRoom)
+        {
             //Model m = mMod.DeepCopy();
             mMod = RemoveCommonWalls(mMod, room, modelRoom);
             //MergeBoundaryLineListToSmallerIdRooms();
             return mMod;
         }
 
-        private _Model RemoveCommonWalls(_Model m, _Room room1, _Room room2) {
+        private _Model RemoveCommonWalls(_Model m, _Room room1, _Room room2)
+        {
             List<_Line> common = room1.Lines.Intersect(room2.Lines).ToList();
-            foreach (_Line line in common) {
+            foreach (_Line line in common)
+            {
                 room1.Lines.Remove(line);
                 room2.Lines.Remove(line);
             }
@@ -368,10 +456,12 @@ namespace Diploma2 {
 
             int result1 = room1.Number;
             int result2 = room2.Number;
-            if (result1 < result2) {
+            if (result1 < result2)
+            {
                 m.rooms.Remove(room2);
             }
-            else {
+            else
+            {
                 m.rooms.Remove(room1);
             }
 
@@ -379,13 +469,15 @@ namespace Diploma2 {
         }
 
 
-        private bool DoTheyHaveCommmonWall(_Room room, _Room modelRoom) {
+        private bool DoTheyHaveCommmonWall(_Room room, _Room modelRoom)
+        {
             if (room.Lines.Intersect(modelRoom.Lines).Any()) return true;
             return false;
         }
 
 
-        public void Ommitsteps(_Model m_mod) {
+        public void Ommitsteps(_Model m_mod)
+        {
             ms.AddModel(m_mod.DeepCopy());
 
             if (ExitCondition(m_mod)) return;
@@ -394,8 +486,10 @@ namespace Diploma2 {
 
         }
 
-        private void Ommit(_Model mMod) {
-            foreach (_Room room in mMod.rooms) {
+        private void Ommit(_Model mMod)
+        {
+            foreach (_Room room in mMod.rooms)
+            {
                 _Room room2;
                 _Model m_mod2 = mMod.DeepCopy(room, out room2);
 
@@ -405,13 +499,15 @@ namespace Diploma2 {
 
         }
 
-        private bool ExitCondition(_Model model) {
+        private bool ExitCondition(_Model model)
+        {
             if (GeneratingBase.rooms.Count == 1) return true;
             else return false;
         }
 
         private string savepath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        private void SaveHistoryModel(_Model ms, string name) {
+        private void SaveHistoryModel(_Model ms, string name)
+        {
             //string data = JsonConvert.SerializeObject(jsondata);
             JsonSerializer serializer = new JsonSerializer();
             serializer.Formatting = Formatting.Indented;
@@ -419,7 +515,8 @@ namespace Diploma2 {
             serializer.NullValueHandling = NullValueHandling.Include;
 
             using (StreamWriter sw = new StreamWriter($"{savepath}\\Models\\{name}.json"))
-            using (JsonWriter writer = new JsonTextWriter(sw)) {
+            using (JsonWriter writer = new JsonTextWriter(sw))
+            {
                 serializer.Serialize(writer, ms);
             }
         }
@@ -431,16 +528,19 @@ namespace Diploma2 {
         public string[] Labels { get; set; }
         public Func<double, string> YFormatter { get; set; }
 
-        private void ModelChangeHandler(object sender, ProgressEventArgs e) {
+        private void ModelChangeHandler(object sender, ProgressEventArgs e)
+        {
 
-            Dispatcher.BeginInvoke(new Action(() => {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
 
-                lock (locker) {
+                lock (locker)
+                {
 
                     //SaveStateToPng();
                     modelHistory.Add(model);
                     model = e.model;
-                    SimulationCosts.Add(e.Cost );
+                    SimulationCosts.Add(e.Cost);
                     LoadDataFromModel();
                     Paint();
                 }
@@ -490,7 +590,8 @@ namespace Diploma2 {
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) {
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
