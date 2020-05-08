@@ -61,7 +61,8 @@ namespace Diploma2.Services {
                 room.CanGetBoundarySorted();
             }
 
-            List<_Point> boundaries = new List<_Point>() { new _Point(0, 0), new _Point(0, 900), new _Point(900, 900), new _Point(900, 0) };
+            //List<_Point> boundaries = new List<_Point>() { new _Point(50, 0), new _Point(50, 50), new _Point(0, 50), new _Point(0, 500), new _Point(500, 500), new _Point(500, 0) };
+            List<_Point> boundaries = new List<_Point>() { new _Point(0, 0),  new _Point(0, 500), new _Point(500, 500), new _Point(500, 0) };
             m.OutlinePolygonPoints = boundaries;
             List<System.Windows.Point> convertedPointsForPolygon = boundaries.Select(i => new System.Windows.Point(i.X, i.Y)).ToList();
             m.AvailableOutlinePolygon = new Polygon() { Points = new PointCollection(convertedPointsForPolygon) };
