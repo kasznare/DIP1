@@ -1,0 +1,3010 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GeoLib</name>
+    </assembly>
+    <members>
+        <member name="T:GeoLib.C2DArc">
+            <summary>
+            Class to represent a 2 dimensional arc being a part of a circle.
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DLineBase">
+            <summary>
+            Abstract base class for a line going from one point to another
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DBase">
+            <summary>
+            Abstract class to represent a geometric entity of some type with basic generic functions.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DBase.Move(GeoLib.C2DVector)">
+            <summary>
+            Moves the entity by the vector provided.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DBase.RotateToRight(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Rotates this to the right about the origin provided.
+            </summary>
+            <param name="dAng">The angle through which to rotate.</param>
+            <param name="Origin">The origin about which to rotate.</param>
+        </member>
+        <member name="M:GeoLib.C2DBase.Grow(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Grows the entity
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DBase.Reflect(GeoLib.C2DPoint)">
+            <summary>
+            Reflection in a point
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DBase.Reflect(GeoLib.C2DLine)">
+            <summary>
+            Reflection in a line
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DBase.Distance(GeoLib.C2DPoint)">
+            <summary>
+            Distance to a point
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DBase.GetBoundingRect(GeoLib.C2DRect)">
+            <summary>
+            Return the bounding rect
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DBase.Project(GeoLib.C2DLine,GeoLib.CInterval)">
+            <summary>
+            Projects this onto the line provided with the interval on the line returned.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DBase.Project(GeoLib.C2DVector,GeoLib.CInterval)">
+            <summary>
+            Projects this onto the vector provided with the interval on the line returned.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DBase.SnapToGrid(GeoLib.CGrid)">
+            <summary>
+            Snaps this to the conceptual grid.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBase.Crosses(GeoLib.C2DLineBase,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            Intersection with another
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBase.Distance(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Minimum distance to a point.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBase.Distance(GeoLib.C2DLineBase,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Minimum distance to another.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBase.GetPointFrom">
+            <summary>
+            The point from.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBase.GetPointTo">
+            <summary>
+            The point to.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBase.GetLength">
+            <summary>
+            The length.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBase.ReverseDirection">
+            <summary>
+            Reverse direction of the line.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBase.GetSubLines(System.Collections.Generic.List{GeoLib.C2DPoint},System.Collections.Generic.List{GeoLib.C2DLineBase})">
+            <summary>
+            Given a set of points on the line, this function creates sub lines defined by those points.
+            Required by intersection, union and difference functions in the C2DPolyBase class.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBase.CreateCopy">
+            <summary>
+            Creats a copy of the line.
+            </summary> 
+        </member>
+        <member name="M:GeoLib.C2DLineBase.Transform(GeoLib.CTransformation)">
+            <summary>
+             Transform by a user defined transformation. e.g. a projection.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBase.InverseTransform(GeoLib.CTransformation)">
+            <summary>
+             Transform by a user defined transformation. e.g. a projection.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.#ctor">
+            <summary>
+            Contructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.#ctor(GeoLib.C2DArc)">
+            <summary>
+            Contructor.
+            </summary>
+            <param name="Other">Arc to which this will be assigned.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.#ctor(GeoLib.C2DPoint,GeoLib.C2DPoint,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Contructor.
+            </summary>
+            <param name="PtFrom">The point the arc is to go from.</param>
+            <param name="PtTo">The point the arc is to go to.</param>
+            <param name="dRadius">The corresponding circles radius.</param>
+            <param name="bCentreOnRight">Whether the centre is on the right.</param>
+            <param name="bArcOnRight">Whether the arc is to the right of the line.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.#ctor(GeoLib.C2DPoint,GeoLib.C2DVector,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Contructor.
+            </summary>
+            <param name="PtFrom">The point the arc is to go from.</param>
+            <param name="Vector">The vector defining the end point.</param>
+            <param name="dRadius">The corresponding circles radius.</param>
+            <param name="bCentreOnRight">Whether the centre is on the right.</param>
+            <param name="bArcOnRight">Whether the arc is to the right of the line.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.#ctor(GeoLib.C2DLine,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Contructor.
+            </summary>
+            <param name="ArcLine">The line defining the start and end point of the arc.</param>
+            <param name="dRadius">The corresponding circles radius.</param>
+            <param name="bCentreOnRight">Whether the centre is on the right.</param>
+            <param name="bArcOnRight">Whether the arc is to the right of the line.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Set(GeoLib.C2DArc)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="other">The arc to set this to.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Set(GeoLib.C2DPoint,GeoLib.C2DPoint,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="PtFrom">The point the arc is to go from.</param>
+            <param name="PtTo">The point the arc is to go to.</param>
+            <param name="dRadius">The corresponding circles radius.</param>
+            <param name="bCentreOnRight">Whether the centre is on the right.</param>
+            <param name="bArcOnRight">Whether the arc is to the right of the line.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Set(GeoLib.C2DPoint,GeoLib.C2DVector,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="PtFrom">The point the arc is to go from.</param>
+            <param name="Vector">The vector defining the end point.</param>
+            <param name="dRadius">The corresponding circles radius.</param>
+            <param name="bCentreOnRight">Whether the centre is on the right.</param>
+            <param name="bArcOnRight">Whether the arc is to the right of the line.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Set(GeoLib.C2DLine,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="ArcLine">The line defining the start and end point of the arc.</param>
+            <param name="dRadius">The corresponding circles radius.</param>
+            <param name="bCentreOnRight">Whether the centre is on the right.</param>
+            <param name="bArcOnRight">Whether the arc is to the right of the line.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Set(GeoLib.C2DLine,GeoLib.C2DPoint)">
+            <summary>
+            Assignment given a straight line defining the end points and a point on the arc.
+            </summary>
+            <param name="ArcLine">The line defining the start and end point of the arc.</param>
+            <param name="ptOnArc">A point on the arc.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.CreateCopy">
+            <summary>
+            Creates a copy of this as a new object.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.IsValid">
+            <summary>
+            Tests to see if the radius is large enough to connect the end points.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.GetCircleCentre">
+            <summary>
+            Returns the corresponding circle's centre.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.GetLength">
+            <summary>
+            Returns the length of the curve.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.GetBoundingRect(GeoLib.C2DRect)">
+            <summary>
+             Gets the bounding rectangle.	
+            </summary>
+            <param name="Rect">The bounding rectangle to recieve the result.</param>	
+        </member>
+        <member name="M:GeoLib.C2DArc.GetSegmentAngle">
+            <summary>
+            Gets the angle of the minimum segment. Always +ve and less than PI. In radians.	
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.GetPointFrom">
+            <summary>
+            Returns the first point as a new object.	
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.GetPointTo">
+            <summary>
+            Returns the second point as a new object.	
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.Crosses(GeoLib.C2DLineBase,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            True if this crosses the line given as a base class.
+            </summary>
+            <param name="Other">The other line as an abstract base class.</param>
+            <param name="IntersectionPts">The interection point list to recieve the result.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Crosses(GeoLib.C2DLine,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            True if this crosses the straight line.
+            </summary>
+            <param name="TestLine">The other line.</param>
+            <param name="IntersectionPts">The interection point list to recieve the result.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Crosses(GeoLib.C2DArc,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            True if this crosses a curved line.
+            </summary>
+            <param name="Other">The other arc.</param>
+            <param name="IntersectionPts">The interection point list to recieve the result.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.CrossesRay(GeoLib.C2DLine,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            True if this crosses the ray given. The ray is an infinite line represented by a line.
+            The line is assumed no to end.
+            </summary>
+            <param name="Ray">The ray.</param>
+            <param name="IntersectionPts">The interection point list to recieve the result.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Distance(GeoLib.C2DPoint)">
+            <summary>
+            Distance between this and the test point.
+            </summary>
+            <param name="TestPoint">The test point.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Distance(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Distance between this and the test point.
+            </summary>
+            <param name="TestPoint">The test point.</param>
+            <param name="ptOnThis">The closest point on this to the given point as a returned value.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Distance(GeoLib.C2DArc,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            The distance between this and another arc.
+            </summary>
+            <param name="Other">The test point.</param>
+            <param name="ptOnThis">The closest point on this to the other as a returned value.</param>
+            <param name="ptOnOther">The closest point on the other to this as a returned value.</param>     
+        </member>
+        <member name="M:GeoLib.C2DArc.Distance(GeoLib.C2DLine,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Distance between this and another straight line.
+            </summary>
+            <param name="TestLine">The test line.</param>
+            <param name="ptOnThis">The closest point on this to the other as a returned value.</param>
+            <param name="ptOnOther">The closest point on the other to this as a returned value.</param>   
+        </member>
+        <member name="M:GeoLib.C2DArc.Distance(GeoLib.C2DLineBase,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Returns the minimum distance from the other line to this providing closest points.
+            </summary>
+            <param name="Other">The test point.</param>
+            <param name="ptOnThis">The closest point on this to the other as a returned value.</param>
+            <param name="ptOnOther">The closest point on the other to this as a returned value.</param> 
+        </member>
+        <member name="M:GeoLib.C2DArc.Project(GeoLib.C2DLine,GeoLib.CInterval)">
+            <summary>
+            Returns the projection of this onto the line provided, given as the interval on
+            (or off) the line. Interval given as distance from the start of the line.
+            </summary>
+            <param name="TestLine">The projection line.</param>
+            <param name="Interval">The interval to recieve the result.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Project(GeoLib.C2DVector,GeoLib.CInterval)">
+            <summary>
+            Returns the projection of this onto the vector provided, given as the interval on
+            (or off) the vector. Interval given as distance from the start of the vector.
+            The vector is equivalent to a line from (0, 0).
+            </summary>
+            <param name="Vector">The projection vector.</param>
+            <param name="Interval">The interval to recieve the result.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.GetMidPoint">
+            <summary>
+            Gets the point half way along the curve as a new object.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.GetPointOn(System.Double)">
+            <summary>
+            Gets the point on the curve determined by the factor as a new object.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.Move(GeoLib.C2DVector)">
+            <summary>
+            Move by the vector given.
+            </summary>
+            <param name="vector">The vector.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.RotateToRight(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Rotates this to the right about the origin provided.
+            </summary>
+            <param name="dAng">The angle through which to rotate.</param>
+            <param name="Origin">The origin about which to rotate.</param>
+        </member>
+        <member name="M:GeoLib.C2DArc.Grow(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Grow relative to the origin.
+            </summary>
+            <param name="dFactor">The factor to grow this by.</param>
+            <param name="Origin">The origin about which this is to be grown.</param>  
+        </member>
+        <member name="M:GeoLib.C2DArc.Reflect(GeoLib.C2DPoint)">
+            <summary>
+            Reflect in the point.
+            </summary>
+            <param name="point">The point through which this will be reflected.</param> 
+        </member>
+        <member name="M:GeoLib.C2DArc.Reflect(GeoLib.C2DLine)">
+            <summary>
+            Reflects throught the line provided.
+            </summary>
+            <param name="TestLine">The line through which this will be reflected.</param> 
+        </member>
+        <member name="M:GeoLib.C2DArc.ReverseDirection">
+            <summary>
+            Reverses the direction.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.GetSubLines(System.Collections.Generic.List{GeoLib.C2DPoint},System.Collections.Generic.List{GeoLib.C2DLineBase})">
+            <summary>
+            Returns the lines that go to make this up based on the set of points 
+            provided which are assumed to be on the line.
+            </summary>
+            <param name="PtsOnLine">The points defining how the line is to be split.</param> 
+            <param name="LineSet">The line set to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DArc.SnapToGrid(GeoLib.CGrid)">
+            <summary>
+            Snaps this to the conceptual grid.
+            </summary>
+            <param name="grid">The grid object to snap this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DArc.Transform(GeoLib.CTransformation)">
+            <summary>
+             Transform by a user defined transformation. e.g. a projection.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DArc.InverseTransform(GeoLib.CTransformation)">
+            <summary>
+             Transform by a user defined transformation. e.g. a projection.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DArc.Radius">
+            <summary>
+            The radius.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DArc.CentreOnRight">
+            <summary>
+            Whether the associated circle centre is to the right of the line.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DArc.ArcOnRight">
+            <summary>
+            Whether the arc is to the right of the line.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DArc._Line">
+            <summary>
+            The straight line used to define the start and end points of the line.
+            </summary> 
+        </member>
+        <member name="P:GeoLib.C2DArc.Line">
+            <summary>
+            The straight line used to define the start and end points of the line.
+            </summary> 
+        </member>
+        <member name="T:GeoLib.C2DRect">
+            <summary>
+            Class to represent a 2D rectangle.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.#ctor(GeoLib.C2DRect)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">The other rect.</param>   
+        </member>
+        <member name="M:GeoLib.C2DRect.#ctor(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="ptTopLeft">The top left point.</param>  
+            <param name="ptBottomRight">The bottom right point.</param>  
+        </member>
+        <member name="M:GeoLib.C2DRect.#ctor(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="dLeft">Left.</param>  
+            <param name="dTop">Top.</param>  
+            <param name="dRight">Right.</param>  
+            <param name="dBottom">Bottom.</param>  
+        </member>
+        <member name="M:GeoLib.C2DRect.#ctor(GeoLib.C2DPoint)">
+            <summary>
+            Constructor sets both the top left and bottom right to equal the rect.
+            </summary>
+            <param name="pt">Point.</param>  
+        </member>
+        <member name="M:GeoLib.C2DRect.Set(GeoLib.C2DPoint)">
+            <summary>
+            Sets both the top left and bottom right to equal the rect.
+            </summary>
+            <param name="pt">Point.</param>  
+        </member>
+        <member name="M:GeoLib.C2DRect.Set(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="ptTopLeft">The top left point.</param>  
+            <param name="ptBottomRight">The bottom right point.</param>  
+        </member>
+        <member name="M:GeoLib.C2DRect.Set(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="dLeft">Left.</param>  
+            <param name="dTop">Top.</param>  
+            <param name="dRight">Right.</param>  
+            <param name="dBottom">Bottom.</param>  
+        </member>
+        <member name="M:GeoLib.C2DRect.SetTop(System.Double)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="dTop">Top.</param>  
+        </member>
+        <member name="M:GeoLib.C2DRect.SetLeft(System.Double)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="dLeft">Left.</param>  
+        </member>
+        <member name="M:GeoLib.C2DRect.SetBottom(System.Double)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="dBottom">Bottom.</param>  
+        </member>
+        <member name="M:GeoLib.C2DRect.SetRight(System.Double)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="dRight">Right.</param>  
+        </member>
+        <member name="M:GeoLib.C2DRect.Clear">
+            <summary>
+            Clears the rectangle.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.ExpandToInclude(GeoLib.C2DPoint)">
+            <summary>
+            Expands to include the point.
+            </summary>
+            <param name="NewPt">Point.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.ExpandToInclude(GeoLib.C2DRect)">
+            <summary>
+            Expands to include the rectangle.
+            </summary>
+            <param name="Other">Rectangle.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.Overlaps(GeoLib.C2DRect,GeoLib.C2DRect)">
+            <summary>
+            True if there is an overlap, returns the overlap.
+            </summary>
+            <param name="Other">Rectangle.</param> 
+            <param name="Overlap">Output. The overlap.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.Contains(GeoLib.C2DPoint)">
+            <summary>
+            True if the point is within the rectangle.
+            </summary>
+            <param name="Pt">Point.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.Contains(GeoLib.C2DRect)">
+            <summary>
+            True if the entire other rectangle is within.
+            </summary>
+            <param name="Other">Other rectangle.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.Overlaps(GeoLib.C2DRect)">
+            <summary>
+            True if there is an overlap.
+            </summary>
+            <param name="Other">Other rectangle.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.IsValid">
+            <summary>
+            If the area is positive e.g. the top is greater than the bottom.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.GetArea">
+            <summary>
+            Returns the area.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.Width">
+            <summary>
+            Returns the width.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.Height">
+            <summary>
+            Returns the height.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.GetTop">
+            <summary>
+            Returns the top.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.GetLeft">
+            <summary>
+            Returns the left.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.GetBottom">
+            <summary>
+            Returns the bottom.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.GetRight">
+            <summary>
+            Returns the right.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.Set(GeoLib.C2DRect)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="Other">Other rectangle.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.Grow(System.Double)">
+            <summary>
+            Grows it from its centre.
+            </summary>
+            <param name="dFactor">Factor to grow by.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.GrowHeight(System.Double)">
+            <summary>
+            Grow the height it from its centre.
+            </summary>
+            <param name="dFactor">Factor to grow by.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.GrowWidth(System.Double)">
+            <summary>
+            Grows the width from its centre.
+            </summary>
+            <param name="dFactor">Factor to grow by.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.Expand(System.Double)">
+            <summary>
+            Expands from the centre by the fixed amount given.
+            </summary>
+            <param name="dRange">Amount to expand by.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.Grow(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Grows it from the given point.
+            </summary>
+            <param name="dFactor">Factor to grow by.</param> 
+            <param name="Origin">The origin.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.Move(GeoLib.C2DVector)">
+            <summary>
+            Moves this point by the vector given.
+            </summary>
+            <param name="Vector">The vector.</param>
+        </member>
+        <member name="M:GeoLib.C2DRect.Reflect(GeoLib.C2DPoint)">
+            <summary>
+            Reflect throught the point given. 
+            Switches Top Left and Bottom Right to maintain validity.
+            </summary>
+            <param name="Point">Reflection point.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.Reflect(GeoLib.C2DLine)">
+            <summary>
+            Reflect throught the line by reflecting the centre of the 
+            rect and keeping the validity.
+            </summary>
+            <param name="Line">Reflection Line.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.RotateToRight(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Rotates this to the right about the origin provided.
+            Note that as the horizontal/vertical line property will be
+            preserved. If you rotate an object and its bounding box, the box may not still
+            bound the object.
+            </summary>
+            <param name="dAng">The angle through which to rotate.</param>
+            <param name="Origin">The origin about which to rotate.</param>
+        </member>
+        <member name="M:GeoLib.C2DRect.Distance(GeoLib.C2DPoint)">
+            <summary>
+            Returns the distance from this to the point. 0 if the point inside.
+            </summary>
+            <param name="TestPoint">Test Point.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.Distance(GeoLib.C2DRect)">
+            <summary>
+            Returns the distance from this to the other rect. 0 if there is an overlap.
+            </summary>
+            <param name="Other">Other rectangle.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.GetBoundingRect(GeoLib.C2DRect)">
+            <summary>
+            Returns the bounding rectangle. (Required for virtual base class).
+            </summary>
+            <param name="Rect">Ouput. Bounding rectangle.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.Scale(GeoLib.C2DPoint)">
+            <summary>
+            Scales the rectangle accordingly.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.GetCentre">
+            <summary>
+            Returns the centre.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.GetPointClosestToOrigin">
+            <summary>
+            Returns the point which is closest to the origin (0,0).
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.GetPointFurthestFromOrigin">
+            <summary>
+            Returns the point which is furthest from the origin (0,0).
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DRect.Project(GeoLib.C2DLine,GeoLib.CInterval)">
+            <summary>
+            Projection onto the line
+            </summary>
+            <param name="Line">Line to project on.</param> 
+            <param name="Interval">Ouput. Projection.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.Project(GeoLib.C2DVector,GeoLib.CInterval)">
+            <summary>
+            Projection onto the Vector.
+            </summary>
+            <param name="Vector">Vector to project on.</param> 
+            <param name="Interval">Ouput. Projection.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.SnapToGrid(GeoLib.CGrid)">
+            <summary>
+            Snaps this to the conceptual grid.
+            </summary>
+            <param name="grid">Grid to snap to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DRect.OverlapsVertically(GeoLib.C2DRect)">
+            <summary>
+            True if this is above or below the other
+            </summary>
+            <param name="Other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GeoLib.C2DRect.OverlapsAbove(GeoLib.C2DRect)">
+            <summary>
+            True if this is above the other.
+            </summary>
+            <param name="Other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GeoLib.C2DRect.OverlapsBelow(GeoLib.C2DRect)">
+            <summary>
+            True if this is below the other.
+            </summary>
+            <param name="Other"></param>
+            <returns></returns>
+        </member>
+        <member name="F:GeoLib.C2DRect.topLeft">
+            <summary>
+            Top left.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DRect.bottomRight">
+            <summary>
+            Bottom right.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DRect.TopLeft">
+            <summary>
+            Top left.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DRect.BottomRight">
+            <summary>
+            Bottom right.
+            </summary>
+        </member>
+        <member name="T:GeoLib.CTravellingSalesman">
+            <summary>
+            Class to help with reordering a point set to minimise the perimeter.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CTravellingSalesman.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:GeoLib.CTravellingSalesman.Finalize">
+            <summary>
+            Destructor
+            </summary>
+        </member>
+        <member name="M:GeoLib.CTravellingSalesman.SetPointsDirect(System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            Allocates points from a set by removing them from the set
+            </summary>
+        </member>
+        <member name="M:GeoLib.CTravellingSalesman.ExtractPoints(System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            Extracts the points into the set
+            </summary>
+        </member>
+        <member name="M:GeoLib.CTravellingSalesman.InsertOptimally(GeoLib.C2DPoint)">
+            <summary>
+            Inserts a point optimally into this 
+            </summary>
+        </member>
+        <member name="M:GeoLib.CTravellingSalesman.Refine">
+            <summary>
+            Refines the set, trying to find optimal positions for the points
+            </summary>
+        </member>
+        <member name="M:GeoLib.CTravellingSalesman.Refine2">
+            <summary>
+            Refines the set, trying to find optimal positions for the points
+            </summary>
+        </member>
+        <member name="M:GeoLib.CTravellingSalesman.SimpleReorder">
+            <summary>
+            Brute force optimisation
+            </summary>
+        </member>
+        <member name="M:GeoLib.CTravellingSalesman.Optimize">
+            <summary>
+            Optimises the position of the points
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DVector">
+            <summary>
+            Class representing a 2D vector.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.#ctor(System.Double,System.Double)">
+            <summary>
+            Constructor with assignment.
+            </summary>
+            <param name="di">i.</param>
+            <param name="dj">j.</param>
+        </member>
+        <member name="M:GeoLib.C2DVector.#ctor(GeoLib.C2DVector)">
+            <summary>
+            Constructor with assignment.
+            </summary>
+            <param name="Other">other vector.</param>
+        </member>
+        <member name="M:GeoLib.C2DVector.#ctor(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Constructor provides 2 points, this being the vector from the first to the second.
+            </summary>
+            <param name="PointFrom">Point 1.</param>
+            <param name="PointTo">Point 2.</param>
+        </member>
+        <member name="M:GeoLib.C2DVector.#ctor(GeoLib.C2DPoint)">
+            <summary>
+            Constructor converts a point to the vector (a point can be interpreted as a point and vice versa)
+            </summary>
+            <param name="Point">Point to assign to.</param>
+        </member>
+        <member name="M:GeoLib.C2DVector.Set(System.Double,System.Double)">
+            <summary>
+            Constructor converts a point to the vector (a point can be interpreted as a point and vice versa)
+            </summary>
+            <param name="di">i.</param>
+            <param name="dj">j.</param>
+        </member>
+        <member name="M:GeoLib.C2DVector.Set(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Sets it to be the vector from the 1st to the second.
+            </summary>
+            <param name="PointFrom">Point 1.</param>
+            <param name="PointTo">Point 2.</param>
+        </member>
+        <member name="M:GeoLib.C2DVector.Set(GeoLib.C2DVector)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="Other">Other vector.</param>
+        </member>
+        <member name="M:GeoLib.C2DVector.Reverse">
+            <summary>
+            Reverses the direction of the vector.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.TurnRight">
+            <summary>
+            Turns right 90 degrees.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.TurnRight(System.Double)">
+            <summary>
+            Turns right by the angle given in radians.
+            </summary>
+            <param name="dAng">Angle to turn through.</param>
+        </member>
+        <member name="M:GeoLib.C2DVector.TurnLeft">
+            <summary>
+            Turns left by 90 degrees.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.TurnLeft(System.Double)">
+            <summary>
+            Turns left by the angle given in radians.
+            </summary>
+            <param name="dAng">Angle to turn through.</param>
+        </member>
+        <member name="M:GeoLib.C2DVector.GetLength">
+            <summary>
+            Returns the length of the vector.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.SetLength(System.Double)">
+            <summary>
+            Sets the length of the vector.
+            </summary>
+            <param name="dDistance">The new length.</param>
+        </member>
+        <member name="M:GeoLib.C2DVector.MakeUnit">
+            <summary>
+            Makes the vector unit.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.op_Addition(GeoLib.C2DVector,GeoLib.C2DVector)">
+            <summary>
+            Addition.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.op_Subtraction(GeoLib.C2DVector,GeoLib.C2DVector)">
+            <summary>
+            Subtraction.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.Multiply(System.Double)">
+            <summary>
+            Multiplication.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.Dot(GeoLib.C2DVector)">
+            <summary>
+            Dot product.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.Cross(GeoLib.C2DVector)">
+            <summary>
+            Cross product.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.Set(GeoLib.C2DPoint)">
+            <summary>
+            Assignment to a point.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.VectorEqualTo(GeoLib.C2DVector)">
+            <summary>
+            Equality test.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.AngleFromNorth">
+            <summary>
+            Returns the angle from north in radians.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.AngleToRight(GeoLib.C2DVector)">
+            <summary>
+            Returns the angle to the right to another vector.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.AngleToLeft(GeoLib.C2DVector)">
+            <summary>
+            Returns the angle to the left to another vector.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DVector.AngleBetween(GeoLib.C2DVector)">
+            <summary>
+            Returns the shortest angle between 2 vectors i.e. the dot product of the norms.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DVector.i">
+            <summary>
+            The value in the x axis.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DVector.j">
+            <summary>
+            The value in the y axis.
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DLine">
+            <summary>
+            Class to represent a 2D line as a point and a vector frm that point to a
+            secnd point.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLine.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLine.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLine.#ctor(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="dPt1x">The x value of the first point.</param>
+            <param name="dPt1y">The y value of the first point.</param>
+            <param name="dPt2x">The x value of the second point.</param>
+            <param name="dPt2y">The y value of the second point.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.#ctor(GeoLib.C2DPoint,GeoLib.C2DVector)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="PointFrom">The point from.</param>
+            <param name="VectorTo">The vector defining the second point.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.#ctor(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="PointFrom">The point from.</param>
+            <param name="PointTo">The point to.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.#ctor(GeoLib.C2DLine)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">The other line.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Set(GeoLib.C2DLine)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="Other">The other line.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Set(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="PointFrom">The point from.</param>
+            <param name="PointTo">The point to.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Set(GeoLib.C2DPoint,GeoLib.C2DVector)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="PointFrom">The point from.</param>
+            <param name="VectorTo">The vector defining the second point.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.SetPointTo(GeoLib.C2DPoint)">
+            <summary>
+            Sets the point that this is going to.
+            </summary>
+            <param name="PointTo">The point to go to.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.SetPointFrom(GeoLib.C2DPoint)">
+            <summary>
+            Sets the point that this is going to. The second point is unchanged.
+            </summary>
+            <param name="PointFrom">The point to go from.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.SetLength(System.Double)">
+            <summary>
+            Sets the length. The first point is unchanged.
+            </summary>
+            <param name="dLength">The new length.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.CreateCopy">
+            <summary>
+            Creates a copy of this.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLine.ReverseDirection">
+            <summary>
+            Reverses the direction of the line.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLine.IsOnRight(GeoLib.C2DPoint)">
+            <summary>
+            True if the point is to the right of the line.
+            </summary>
+            <param name="OtherPoint">The new point to test.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.GetPointTo">
+            <summary>
+            Returns the second point as a new object.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLine.GetPointFrom">
+            <summary>
+            Returns the first point as a new object.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLine.WouldCross(GeoLib.C2DLine)">
+            <summary>
+            True if this line would cross the other if this were infinite.
+            </summary>
+            <param name="Other">The other line to test.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Crosses(GeoLib.C2DLineBase,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            True if this line crosses the other line, returns the intersection pt.
+            </summary>
+            <param name="Other">The other line to test.</param>
+            <param name="IntersectionPts">Output. The intersection points.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Crosses(GeoLib.C2DLine,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            True if this line crosses the other line, returns the intersection pt.
+            </summary>
+            <param name="Other">The other line to test.</param>
+            <param name="IntersectionPts">Output. The intersection points.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Crosses(GeoLib.C2DLine,System.Collections.Generic.List{GeoLib.C2DPoint},System.Boolean@,System.Boolean@,System.Boolean)">
+            <summary>
+            True if this line crosses the other. Returns the point is a collection is provided.
+            Returns whether it would cross on this or on the other. Can opt to get the point 
+            where the cross would occur (if not parallel) even if they don't cross.
+            </summary>
+            <param name="Other">The other line</param>
+            <param name="IntersectionPts">To recieve the result</param>
+            <param name="bOnThis">Output. True is the intersection would be on this line.</param>
+            <param name="bOnOther">Output. True is the intersection would be on the other line.</param>
+            <param name="bAddPtIfFalse">Input. True to add the intersection point even if there is no intersection.</param>
+            <returns></returns>
+        </member>
+        <member name="M:GeoLib.C2DLine.Join(GeoLib.C2DLine)">
+            <summary>
+            Function to join the 2 lines at the point where they do / would intersect. If they do then
+            the lines are clipped to remove the smallest part of the line. Returns false if they
+            cannot be joined.
+            </summary>
+            <param name="Other">The other line</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.CrossesRay(GeoLib.C2DLine,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            True if the ray provided (infinite line starting from the first point) crosses this. 
+            </summary>
+            <param name="Ray">The other line to test.</param>
+            <param name="IntersectionPts">Output. The intersection points.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Distance(GeoLib.C2DPoint)">
+            <summary>
+            Returns the distance from this to the point. 
+            </summary>
+            <param name="TestPoint">The test point.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Distance(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Returns the distance from this to the point. 
+            </summary>
+            <param name="TestPoint">The test pointt.</param>
+            <param name="ptOnThis">Output. The closest point on this.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Distance(GeoLib.C2DLine,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Returns the distance from this to the other line.
+            </summary>
+            <param name="Other">The Other line.</param>
+            <param name="ptOnThis">Output. The closest point on this.</param>
+            <param name="ptOnOther">Output. The closest point on the other line.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Distance(GeoLib.C2DLineBase,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Returns the distance from this to the other line.
+            </summary>
+            <param name="Other">The other line.</param>
+            <param name="ptOnThis">Output. The closest point on this.</param>
+            <param name="ptOnOther">Output. The closest point on the other line.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.GetMidPoint">
+            <summary>
+            Gets the mid point on the line.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLine.GetPointOn(System.Double)">
+            <summary>
+            Gets the point on the line given by the factor. e.g. 0.5 = mid point.
+            </summary>
+            <param name="dFactorFromStart">The factor from the start.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.GetBoundingRect(GeoLib.C2DRect)">
+            <summary>
+            Returns the bounding rectangle.
+            </summary>
+            <param name="Rect">Output. The bounding rectangle.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.GetLength">
+            <summary>
+            Returns the length of the line.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLine.Move(GeoLib.C2DVector)">
+            <summary>
+            Moves this point by the vector given.
+            </summary>
+            <param name="vector">The vector.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.RotateToRight(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Rotates this to the right about the origin provided.
+            </summary>
+            <param name="dAng">The angle through which to rotate.</param>
+            <param name="Origin">The origin about which to rotate.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Grow(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Grows the line about the origin.
+            </summary>
+            <param name="dFactor">The factor to grow by.</param>
+            <param name="Origin">The origin about which to grow.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Reflect(GeoLib.C2DPoint)">
+            <summary>
+            Point reflection.
+            </summary>
+            <param name="Point">The point through which to reflect this.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Reflect(GeoLib.C2DLine)">
+            <summary>
+            Point reflection.
+            </summary>
+            <param name="Line">The line through which to reflect this.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.GrowFromCentre(System.Double)">
+            <summary>
+            Grows from the centre by the amount.
+            </summary>
+            <param name="dFactor">The factor to grow this by.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Project(GeoLib.C2DLine,GeoLib.CInterval)">
+            <summary>
+            Projection onto a line.
+            </summary>
+            <param name="TestLine">The line to project this on.</param>
+            <param name="Interval">Output. The interval.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.Project(GeoLib.C2DVector,GeoLib.CInterval)">
+            <summary>
+            Projection onto a vector.
+            </summary>
+            <param name="Vector">The vector to project this on.</param>
+            <param name="Interval">Output. The interval.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.GetSubLines(System.Collections.Generic.List{GeoLib.C2DPoint},System.Collections.Generic.List{GeoLib.C2DLineBase})">
+            <summary>
+            Returns the lines that make up this defined by the points which are assumed
+            to be on this line. i.e. splits the line up.
+            </summary>
+            <param name="PtsOnLine">The point set defining how this is to be broken up.</param>
+            <param name="LineSet">Output. The sub lines.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.SnapToGrid(GeoLib.CGrid)">
+            <summary>
+            Snaps this to the conceptual grid.
+            </summary>
+            <param name="grid">The grid to snap to.</param>
+        </member>
+        <member name="M:GeoLib.C2DLine.GetY(System.Double)">
+            <summary>
+            Given x, this returns y assuming the line is infinite.
+            </summary>
+            <param name="dx"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GeoLib.C2DLine.OverlapsVertically(GeoLib.C2DLine,System.Double@,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            True if part of this line is above or below the other. Returns the point 
+            on this and on the other.
+            </summary>
+            <param name="Other"></param>
+            <param name="dVerticalDistance"></param>
+            <param name="ptOnThis"></param>
+            <param name="ptOnOther"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GeoLib.C2DLine.OverlapsAbove(GeoLib.C2DLine,System.Double@,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            True if part of this line is above the other. Returns the point 
+            on this and on the other.
+            </summary>
+            <param name="Other"></param>
+            <param name="dVerticalDistance"></param>
+            <param name="ptOnThis"></param>
+            <param name="ptOnOther"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GeoLib.C2DLine.DistanceAsRay(GeoLib.C2DPoint)">
+            <summary>
+            Returns the distance from this to the point with this as a ray.
+            </summary>
+            <param name="TestPoint"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GeoLib.C2DLine.DistanceAsRay(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Returns the distance from this to the point with this as a ray.
+            </summary>
+            <param name="TestPoint"></param>
+            <param name="ptOnThis"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GeoLib.C2DLine.Transform(GeoLib.CTransformation)">
+            <summary>
+             Transform by a user defined transformation. e.g. a projection.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLine.InverseTransform(GeoLib.CTransformation)">
+            <summary>
+             Transform by a user defined transformation. e.g. a projection.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DLine.point">
+            The first point.
+        </member>
+        <member name="F:GeoLib.C2DLine.vector">
+            The vector to the second point.
+        </member>
+        <member name="T:GeoLib.C2DLineBaseSet">
+            <summary>
+            Set of abstract lines.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.Finalize">
+            <summary>
+            Destructor
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.MakeValueCopy(System.Collections.Generic.List{GeoLib.C2DLineBase})">
+            <summary>
+            Makes a value copy of the other set.
+            </summary>
+            <param name="Other">The other set.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.MakeRefCopy(System.Collections.Generic.List{GeoLib.C2DLineBase})">
+            <summary>
+            Makes a refenence copy of the other set.
+            </summary>
+            <param name="Other">The other set.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.AddCopy(GeoLib.C2DLineBase)">
+            <summary>
+            Adds a copy of the item.
+            </summary>
+            <param name="NewItem">The line as a line base.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.ExtractAllOf(System.Collections.Generic.List{GeoLib.C2DLineBase})">
+            <summary>
+            Extracts all of the other set.
+            </summary>
+            <param name="S2">The other set.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.ExtractAt(System.Int32)">
+            <summary>
+            Extracts at the index given.
+            </summary>
+            <param name="nIndex">The index.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.GetIntersections(System.Collections.Generic.List{GeoLib.C2DPoint},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Returns the intersections within the set. Each intersection has and
+            associated point an 2 indexes corresponding to the lines that
+            created the intersection.
+            </summary>
+            <param name="pPoints">Output. The point set.</param>
+            <param name="pIndexes1">Output. The indexes.</param>
+            <param name="pIndexes2">Output. The indexes.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.GetIntersections(System.Collections.Generic.List{GeoLib.C2DLineBase},System.Collections.Generic.List{GeoLib.C2DPoint},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32},GeoLib.C2DRect,GeoLib.C2DRect)">
+            <summary>
+            Returns the intersections with this set and the other. 
+            Each intersection has an associated point and 2 indexes 
+            corresponding to the lines that created the intersection.
+            </summary>
+            <param name="Other">Input. The other line set.</param>
+            <param name="pPoints">Output. The intersection points.</param>
+            <param name="pIndexesThis">Output. The indexes for this.</param>
+            <param name="pIndexesOther">Output. The indexes for the other set.</param>
+            <param name="pBoundingRectThis">Input. The bounding rect for this.</param>
+            <param name="pBoundingRectOther">Input. The bounding rect for the other.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.HasCrossingLines">
+            <summary>
+            True if there are crossing lines within the set.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.IsClosed(System.Boolean)">
+            <summary>
+            Checks for closure i.e. it forms a closed shape.
+            </summary>
+            <param name="bEndsOnly">Input. True to only check the ends of the array.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.AddIfCommonEnd(GeoLib.C2DLineBaseSet)">
+            <summary>
+            Adds the other to this if there is a common end i.e. they can be joined up.
+            </summary>
+            <param name="Other">Input. The other set.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.Remove0Lines(System.Double)">
+            <summary>
+            Removes lines that are small, based on the tolerance. 
+            </summary>
+            <param name="dTolerance">Input. The length defined to be null.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.ReverseDirection">
+            <summary>
+            Reverses the direction. 
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DLineBaseSet.CLineBaseRect">
+            <summary>
+            Class to hold a line reference and bounding rect for line intersection algorithm.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DLineBaseSet.CLineBaseRect.Line">
+            <summary>
+            Line reference
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DLineBaseSet.CLineBaseRect.Rect">
+            <summary>
+            Line bounding rect
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DLineBaseSet.CLineBaseRect.usIndex">
+            <summary>
+            Line index
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DLineBaseSet.CLineBaseRect.bSetFlag">
+            <summary>
+            Set flag
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DLineBaseSet.CLineBaseRectLeftToRight">
+            <summary>
+            Class to help with sorting. 
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSet.CLineBaseRectLeftToRight.Compare(GeoLib.C2DLineBaseSet.CLineBaseRect,GeoLib.C2DLineBaseSet.CLineBaseRect)">
+            <summary>
+            Compare function. 
+            </summary>
+        </member>
+        <member name="T:GeoLib.CGrid">
+            <summary>
+            Class to represent a grid with settings for polygon degenerate handling.
+            </summary>
+        </member>
+        <member name="F:GeoLib.CGrid.const_dEqualityAvoidanceFactor">
+            <summary>
+            Equality Avoidance Factor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CGrid.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:GeoLib.CGrid.Finalize">
+            <summary>
+            Destructor
+            </summary>
+        </member>
+        <member name="M:GeoLib.CGrid.SetGridSize(System.Double)">
+            <summary>
+            Sets the size of the grid.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CGrid.GetMinGridSize(GeoLib.C2DRect,System.Boolean)">
+            <summary>
+            Finds a recommended minimum grid size to avoid point equality problems.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CGrid.SetToMinGridSize(GeoLib.C2DRect,System.Boolean)">
+            <summary>   
+            Sets to the minimum recommended size for degenerate handling.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CGrid.ResetDegenerateErrors">
+            <summary>
+            Resets the degenerate count.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CGrid.LogDegenerateError">
+            <summary>
+            Used to log a degenerate error.
+            </summary>
+        </member>
+        <member name="F:GeoLib.CGrid.gridSize">
+            <summary>
+            Grid size.
+            </summary>
+        </member>
+        <member name="F:GeoLib.CGrid.degenerateErrors">
+            <summary>
+            Degenerate errors.
+            </summary>
+        </member>
+        <member name="F:GeoLib.CGrid.DegenerateHandling">
+            <summary>
+            Degenerate Handling.
+            </summary>
+        </member>
+        <member name="P:GeoLib.CGrid.GridSize">
+            <summary>
+            Grid size.
+            </summary>
+        </member>
+        <member name="P:GeoLib.CGrid.DegenerateErrors">
+            <summary>
+            Degenerate errors.
+            </summary>
+        </member>
+        <member name="T:GeoLib.CGrid.eDegenerateHandling">
+            <summary>
+            Enumeration for degenerate handling methods.
+            </summary>
+        </member>
+        <member name="F:GeoLib.CGrid.eDegenerateHandling.None">
+            <summary> No degenerate handling. </summary>
+        </member>
+        <member name="F:GeoLib.CGrid.eDegenerateHandling.RandomPerturbation">
+            <summary> Randomly perturb shapes to avoid coincident points. </summary>
+        </member>
+        <member name="F:GeoLib.CGrid.eDegenerateHandling.DynamicGrid">
+            <summary> Grid method. Calucate grid size automatically. </summary>
+        </member>
+        <member name="F:GeoLib.CGrid.eDegenerateHandling.PreDefinedGrid">
+            <summary> Grid method. Grid size already set. </summary>
+        </member>
+        <member name="F:GeoLib.CGrid.eDegenerateHandling.PreDefinedGridPreSnapped">
+            <summary> Grid method. Shapes presnapped to the grid. </summary>
+        </member>
+        <member name="T:GeoLib.C2DLineBaseSetSet">
+            <summary>
+            Class representing a set of a set of lines. Each line set can be thought
+            of as a route or a part of a polygon. Generally used for breaking up
+            polygns and putting them back together again.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSetSet.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSetSet.Finalize">
+            <summary>
+            Destructor
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSetSet.ExtractAllOf(System.Collections.Generic.List{GeoLib.C2DLineBaseSet})">
+            <summary>
+            Extracts all of the line sets frm the other.
+            </summary>
+            <param name="S2">The other set.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSetSet.ExtractAt(System.Int32)">
+            <summary>
+            Extracts at the index supplied.
+            </summary>
+            <param name="nIndex">The index to extract at.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSetSet.MergeJoining">
+            <summary>
+            Merges the joining routes together if there are any.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSetSet.AddJoining(GeoLib.C2DLineBaseSetSet)">
+            <summary>
+            Adds all the routes from the other to this if the join a routes in this.
+            </summary>
+            <param name="Other">The other set.</param>
+        </member>
+        <member name="M:GeoLib.C2DLineBaseSetSet.AddClosed(GeoLib.C2DLineBaseSetSet,System.Boolean)">
+            <summary>
+            Adds the routes in the other set that are closed.        
+            </summary>
+            <param name="Other">The other set.</param>
+            <param name="bEndsOnly">True if only the ends require checking.</param>
+        </member>
+        <member name="T:GeoLib.C2DTriangle">
+            <summary>
+            Class representing a 2D triangle.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.#ctor(GeoLib.C2DPoint,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="pt1">Point 1.</param>
+            <param name="pt2">Point 2.</param>
+            <param name="pt3">Point 3.</param>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Set(GeoLib.C2DPoint,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Assignement.
+            </summary>
+            <param name="pt1">Point 1.</param>
+            <param name="pt2">Point 2.</param>
+            <param name="pt3">Point 3.</param>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Collinear">
+            <summary>
+            True if the 3 are collinear.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.GetArea">
+            <summary>
+            Returns the area.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.GetAreaSigned">
+            <summary>
+            Returns the area signed (indicating weather clockwise or not).
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.IsClockwise">
+            <summary>
+            True if clockwise.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.GetCircumCentre">
+            <summary>
+            Returns the circumcentre.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.GetFermatPoint">
+            <summary>
+            Returns the Fermat point (also known as the Torricelli point).
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.GetInCentre">
+            <summary>
+            InCentre function.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.GetPerimeter">
+            <summary>
+            Returns the perimeter.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Contains(GeoLib.C2DPoint)">
+            <summary>
+            Returns true if the point is contained.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Move(GeoLib.C2DVector)">
+            <summary>
+            Moves this point by the vector given.
+            </summary>
+            <param name="Vector">The vector.</param>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.RotateToRight(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Rotates this to the right about the origin provided.
+            </summary>
+            <param name="dAng">The angle through which to rotate.</param>
+            <param name="Origin">The origin about which to rotate.</param>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Grow(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Grows the triangle.
+            </summary>
+            <param name="dFactor">The factor to grow by.</param>
+            <param name="Origin">The origin through which to grow.</param>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Reflect(GeoLib.C2DPoint)">
+            <summary>
+            Reflects the triangle.
+            </summary>
+            <param name="Point">The point to reflect through.</param>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Reflect(GeoLib.C2DLine)">
+            <summary>
+            Reflects the in the line given.
+            </summary>
+            <param name="Line">The line to reflect through.</param>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Distance(GeoLib.C2DPoint)">
+            <summary>
+            Distance to a point.
+            </summary>
+            <param name="ptTest">The test point.</param>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Distance(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Distance to a point.
+            </summary>
+            <param name="ptTest">The test point.</param>
+            <param name="ptOnThis">Output. The closest point on the triangle.</param>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Distance(GeoLib.C2DTriangle,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Distance to a another.
+            </summary>
+            <param name="Other">The other triangle.</param>
+            <param name="ptOnThis">Output. The closest point on the triangle.</param>
+            <param name="ptOnOther">Output. The closest point on the other triangle.</param>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.GetBoundingRect(GeoLib.C2DRect)">
+            <summary>
+            Returns the bounding rect.
+            </summary>
+            <param name="Rect">Output. The bounding rectangle.</param>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.GetAreaSigned(GeoLib.C2DPoint,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Static version of area signed function.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.IsClockwise(GeoLib.C2DPoint,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Returns whether the triangle is clockwise.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.GetCircumCentre(GeoLib.C2DPoint,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Static version of circumcentre function.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.GetFermatPoint(GeoLib.C2DPoint,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Static version of Fermat point function.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.GetInCentre(GeoLib.C2DPoint,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Static version of InCentre function.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Collinear(GeoLib.C2DPoint,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Static collinear.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Project(GeoLib.C2DLine,GeoLib.CInterval)">
+            <summary>
+            Projects this onto the line given.
+            </summary>
+            <param name="Line">Line to project on.</param> 
+            <param name="Interval">Ouput. Projection.</param> 
+        </member>
+        <member name="M:GeoLib.C2DTriangle.Project(GeoLib.C2DVector,GeoLib.CInterval)">
+            <summary>
+            Projection onto the Vector.
+            </summary>
+            <param name="Vector">Vector to project on.</param> 
+            <param name="Interval">Ouput. Projection.</param> 
+        </member>
+        <member name="M:GeoLib.C2DTriangle.SnapToGrid(GeoLib.CGrid)">
+            <summary>
+            Snaps this to the conceptual grid.
+            </summary>
+            <param name="grid">Grid to snap to.</param> 
+        </member>
+        <member name="F:GeoLib.C2DTriangle.p1">
+            <summary>
+            Point 1.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DTriangle.p2">
+            Point 2.
+        </member>
+        <member name="F:GeoLib.C2DTriangle.p3">
+            Point 3.
+        </member>
+        <member name="P:GeoLib.C2DTriangle.P1">
+            <summary>
+            Point 1.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DTriangle.P2">
+            <summary>
+            Point 2.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DTriangle.P3">
+            <summary>
+            Point 3.
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DPoint">
+            <summary>
+            Class to represent a 2 dimensional point in cartesian co-ordinates.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPoint.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPoint.#ctor(GeoLib.C2DPoint)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">Point to which this will be assigned.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.#ctor(System.Double,System.Double)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="dx">The x value of the point.</param>
+            <param name="dy">The y value of the point.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Set(System.Double,System.Double)">
+            <summary>
+            Sets the x and y values of the point.
+            </summary>
+            <param name="dx">The x value of the point.</param>
+            <param name="dy">The y value of the point.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Set(GeoLib.C2DPoint)">
+            <summary>
+            Assignment to another point.
+            </summary>
+            <param name="pt">The point to assign to.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.#ctor(GeoLib.C2DVector)">
+            <summary>
+            Construction from a vector which can be thought of as a point (and vice versa).
+            </summary>
+            <param name="Vector">Vector to assign to.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.GetMidPoint(GeoLib.C2DPoint)">
+            <summary>
+            Returns the mid point between this and the other as a new object.
+            </summary>
+            <param name="Other">Another point.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Project(GeoLib.C2DVector)">
+            <summary>
+            Projects the point on the vector given returning a distance along the vector.
+            </summary>
+            <param name="Vector">The vector to project this on.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Project(GeoLib.C2DLine)">
+            <summary>
+            Projects the point on the line given returning a distance along the line from the start.
+            </summary>
+            <param name="Line">The line to project this on.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Project(GeoLib.C2DVector,GeoLib.CInterval)">
+            <summary>
+            Projects the point on the vector given returning a distance along the vector.
+            </summary>
+            <param name="Vector">The vector to project this on.</param>
+            <param name="Interval">The interval to recieve the result. 
+            Both the min and max of the interval will be set to the result.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Project(GeoLib.C2DLine,GeoLib.CInterval)">
+            <summary>
+            Projects the point on the vector given returning a distance along the vector.
+            </summary>
+            <param name="Line">The vector to project this on.</param>
+            <param name="Interval">The interval to recieve the result. 
+            Both the min and max of the interval will be set to the result.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.ProjectsOnLine(GeoLib.C2DLine,GeoLib.C2DPoint,System.Boolean@)">
+            <summary>
+            True if the point projects onto the line given and returns the point on the line.
+            Also returns whether the line projects above or below the line if relevant.
+            </summary>
+            <param name="Line">The line to project this on.</param>
+            <param name="ptOnLine">The point to recieve the result.</param>
+            <param name="bAbove">The flag to indicate whether it projects above or below.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Distance(GeoLib.C2DPoint)">
+            <summary>
+            Returns the distance between this and the other point.
+            </summary>
+            <param name="Other">The point to return the distance to.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.MakeVector(GeoLib.C2DPoint)">
+            <summary>
+            Returns a vector from this to the other point as a new object.
+            </summary>
+            <param name="PointTo">The point that vector is to go to.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.GetPointTo(GeoLib.C2DVector)">
+            <summary>
+            Returns the point that the vector supplied would take this point to as a new object.
+            </summary>
+            <param name="V1">The vector from this to the new point.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.op_Addition(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Adds 2 points together.
+            </summary>
+            <param name="P1">The first point.</param>
+            <param name="P2">The second point.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.op_Subtraction(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Takes 1 point from the other.
+            </summary>
+            <param name="P1">The first point.</param>
+            <param name="P2">The second point.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Multiply(System.Double)">
+            <summary>
+            Multiplies the point by the factor.
+            </summary>
+            <param name="dFactor">The multiplication factor.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Divide(System.Double)">
+            <summary>
+            Divides the point by the factor.
+            </summary>
+            <param name="dFactor">The divisor.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.PointEqualTo(GeoLib.C2DPoint)">
+            <summary>
+            Equality test which really tests for point proximity.
+            <seealso cref="F:GeoLib.Constants.conEqualityTolerance"/> 
+            </summary>
+            <param name="Other">The other point.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Move(GeoLib.C2DVector)">
+            <summary>
+            Moves this point by the vector given.
+            </summary>
+            <param name="vector">The vector.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.RotateToRight(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Rotates this to the right about the origin provided.
+            </summary>
+            <param name="dAng">The angle through which to rotate.</param>
+            <param name="Origin">The origin about which to rotate.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Grow(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Grows this about the origin provided. 
+            In the case of a point this will just move it away (or closer) 
+            to the origin as there is no shape to grow.
+            </summary>
+            <param name="dFactor">The factor to grow this by.</param>
+            <param name="Origin">The origin about which to rotate.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Reflect(GeoLib.C2DPoint)">
+            <summary>
+            Reflects this through the point given.
+            </summary>
+            <param name="Other">The point to reflect this through.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.Reflect(GeoLib.C2DLine)">
+            <summary>
+            Reflects this through the line given.
+            </summary>
+            <param name="Line">The line to reflect this through.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.ReflectY">
+            <summary>
+            Reflects through the y axis.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPoint.ReflectX">
+            <summary>
+            Reflects through the x axis.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPoint.GetBoundingRect(GeoLib.C2DRect)">
+            <summary>
+            Returns the bounding rectangle which will be set to this point.
+            </summary>
+            <param name="Rect">The rectangle to recieve the result.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.SnapToGrid(GeoLib.CGrid)">
+            <summary>
+            Snaps this to the grid. The x and y values can only be multiples or the grid size.
+            </summary>
+            <param name="grid">The grid to snap this to.</param>
+        </member>
+        <member name="M:GeoLib.C2DPoint.ProjectOnRay(GeoLib.C2DLine)">
+            <summary>
+            True if the point projects onto the line given and returns the 
+            point on the line.
+            </summary>
+            <param name="Line"></param>
+        </member>
+        <member name="F:GeoLib.C2DPoint.x">
+            <summary>
+            The x component of the point.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DPoint.y">
+            <summary>
+            The y component of the point.
+            </summary>
+        </member>
+        <member name="T:GeoLib.CInterval">
+            <summary>
+            Class to hold an interval as 2 doubles.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CInterval.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:GeoLib.CInterval.#ctor(System.Double,System.Double)">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:GeoLib.CInterval.Finalize">
+            <summary>
+            Destructor
+            </summary>
+        </member>
+        <member name="M:GeoLib.CInterval.ExpandToInclude(GeoLib.CInterval)">
+            <summary>
+            Expands the interval to include the other
+            </summary>
+        </member>
+        <member name="M:GeoLib.CInterval.ExpandToInclude(System.Double)">
+            <summary>
+            Expands the interval to include the value
+            </summary>
+        </member>
+        <member name="M:GeoLib.CInterval.GetLength">
+            <summary>
+            Returns the distance between the min and the max
+            </summary>
+        </member>
+        <member name="M:GeoLib.CInterval.Set(GeoLib.CInterval)">
+            <summary>
+            Assignement
+            </summary>
+        </member>
+        <member name="M:GeoLib.CInterval.Overlaps(GeoLib.CInterval)">
+            <summary>
+            True if this overlaps the other
+            </summary>
+        </member>
+        <member name="M:GeoLib.CInterval.Overlaps(GeoLib.CInterval,GeoLib.CInterval)">
+            <summary>
+            True is this overlaps the other.
+            </summary>
+            <param name="Other"></param>
+            <param name="Overlap"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GeoLib.CInterval.Contains(System.Double)">
+            <summary>
+            True if this contains the value
+            </summary>
+        </member>
+        <member name="M:GeoLib.CInterval.Contains(GeoLib.CInterval)">
+            <summary>
+            True if this contains the other
+            </summary>
+        </member>
+        <member name="M:GeoLib.CInterval.IsAbove(GeoLib.CInterval)">
+            <summary>
+            True if this is entirely above the other
+            </summary>
+        </member>
+        <member name="M:GeoLib.CInterval.IsBelow(GeoLib.CInterval)">
+            <summary>
+            True if this is entirely below the other
+            </summary>
+        </member>
+        <member name="F:GeoLib.CInterval.dMin">
+            <summary>
+            The min 
+            </summary>
+        </member>
+        <member name="F:GeoLib.CInterval.dMax">
+            <summary>
+            The max
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DCircle">
+            <summary>
+            Class representing a circle.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DCircle.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DCircle.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DCircle.#ctor(GeoLib.C2DPoint,System.Double)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Point">The centre.</param>
+            <param name="NewRadius">The radius.</param>
+        </member>
+        <member name="M:GeoLib.C2DCircle.#ctor(GeoLib.C2DCircle)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">The circle to assign this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Set(GeoLib.C2DPoint,System.Double)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="Point">The centre.</param> 
+            <param name="NewRadius">The radius.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.SetMinimum(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Set to be the minimum bounding circle for the 2 points.
+            </summary>
+            <param name="Point1">The first point to include.</param> 
+            <param name="Point2">The second point to include.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.SetMinimum(GeoLib.C2DPoint,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Set to be the minimum bounding circle for the 3 points.
+            </summary>
+            <param name="Point1">The first point to include.</param> 
+            <param name="Point2">The second point to include.</param> 
+            <param name="Point3">The third point to include.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.SetInscribed(GeoLib.C2DPoint,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Sets the circle to be the maximum contained circle within the 3 points provided.
+            </summary>
+            <param name="Point1">The triangle's first point.</param> 
+            <param name="Point2">The triangle's second point.</param> 
+            <param name="Point3">The triangle's third point.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.SetInscribed(GeoLib.C2DTriangle)">
+            <summary>
+            Sets the circle to be the maximum contained circle within the triangle.
+            </summary>
+            <param name="Triangle">The triangle to bound the circle.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.SetCircumscribed(GeoLib.C2DPoint,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Set to be circle that places all 3 points on the edge.
+            </summary>
+            <param name="Point1">The first point.</param> 
+            <param name="Point2">The second point.</param> 
+            <param name="Point3">The third point.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.SetCircumscribed(GeoLib.C2DTriangle)">
+            <summary>
+            Set to be circle that places all 3 points of the triangle on the edge.
+            </summary>
+            <param name="Triangle">The triangle.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.GetArea">
+            <summary>
+            Returns the area.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DCircle.GetPerimeter">
+            <summary>
+            Returns the perimeter.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DCircle.Set(GeoLib.C2DCircle)">
+            <summary>
+            Sets this to another.
+            </summary>
+            <param name="Other">The other circle.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.GetBoundingRect(GeoLib.C2DRect)">
+            <summary>
+            Gets the bounding rectangle.
+            </summary>
+            <param name="Rect">The rectangle to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Crosses(GeoLib.C2DCircle,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            True if this crosses the other and returns the intersectin points.
+            </summary>
+            <param name="Other">The other circle.</param> 
+            <param name="IntersectionPts">The point set to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Crosses(GeoLib.C2DLine,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            True if this crosses the line and returns the intersectin points.
+            </summary>
+            <param name="Line">The line.</param> 
+            <param name="IntersectionPts">The point set to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.CrossesRay(GeoLib.C2DLine,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            True if this crosses the ray and returns the intersectin points.
+            </summary>
+            <param name="Ray">The ray. A line with no end point</param> 
+            <param name="IntersectionPts">The point set to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Contains(GeoLib.C2DPoint)">
+            <summary>
+            True if this contains the point.
+            </summary>
+            <param name="pt">The test point.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.IsWithinDistance(GeoLib.C2DPoint,System.Double)">
+            <summary>
+            Proximity test.
+            </summary>
+            <param name="pt">The test point.</param> 
+            <param name="dRange">The range.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Move(GeoLib.C2DVector)">
+            <summary>
+            Moves this point by the vector given.
+            </summary>
+            <param name="Vector">The vector.</param>
+        </member>
+        <member name="M:GeoLib.C2DCircle.RotateToRight(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Rotates this to the right about the origin provided.
+            </summary>
+            <param name="dAng">The angle through which to rotate.</param>
+            <param name="Origin">The origin about which to rotate.</param>
+        </member>
+        <member name="M:GeoLib.C2DCircle.Grow(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Grow about the origin.
+            </summary>
+            <param name="dFactor">The factor to grow by.</param> 
+            <param name="Origin">The origin.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Reflect(GeoLib.C2DPoint)">
+            <summary>
+            Reflection.
+            </summary>
+            <param name="Point">The point to reflect this through.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Reflect(GeoLib.C2DLine)">
+            <summary>
+            Reflection trhough a line.
+            </summary>
+            <param name="Line">The line to reflect this through.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Distance(GeoLib.C2DPoint)">
+            <summary>
+            Distance to a point.
+            </summary>
+            <param name="TestPoint">Point to calculate the distance to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Distance(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Distance to a point, returns the closest point on the circle.
+            </summary>
+            <param name="TestPoint">Point to calculate the distance to.</param> 
+            <param name="ptOnThis">Closest point on the circle to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Distance(GeoLib.C2DLine,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Distance to a line, returns the closest point on the circle and the line.
+            </summary>
+            <param name="Line">Line to calculate the distance to.</param> 
+            <param name="ptOnThis">Closest point on the circle to recieve the result.</param> 
+            <param name="ptOnOther">Closest point on the line to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Distance(GeoLib.C2DCircle,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Distance to a circle, returns the closest point on both circles.
+            </summary>
+            <param name="Other">Circle to calculate the distance to.</param> 
+            <param name="ptOnThis">Closest point on this circle to recieve the result.</param> 
+            <param name="ptOnOther">Closest point on the other circle to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Project(GeoLib.C2DLine,GeoLib.CInterval)">
+            <summary>
+            Projection onto the line as distance along the line from the start of the line.
+            Result is stored as an CInterval Min and Max,
+            </summary>
+            <param name="Line">Line to project this onto.</param> 
+            <param name="Interval">Interval to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.Project(GeoLib.C2DVector,GeoLib.CInterval)">
+            <summary>
+            Projection onto the vector as distance along the line from the start of the vector.
+            Result is stored as an CInterval Min and Max,
+            </summary>
+            <param name="Vector">Vector to project this onto.</param> 
+            <param name="Interval">Interval to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DCircle.SnapToGrid(GeoLib.CGrid)">
+            <summary>
+            Snaps to the conceptual grid
+            </summary>
+            <param name="grid">The grid.</param> 
+        </member>
+        <member name="F:GeoLib.C2DCircle._Centre">
+            <summary>
+            The centre.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DCircle.Radius">
+            <summary>
+            The radius.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DCircle.Centre">
+            <summary>
+            The centre.
+            </summary>
+        </member>
+        <member name="T:GeoLib.Constants">
+            <summary>
+            Class to hold constants
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conRadiansPerDegree">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conDegreesPerRadian">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conMetresPerNauticalMile">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conEARTH_RADIUS_METRES">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conSecondsPerDegree">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conMinutesPerDegree">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conMetersPerFoot">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conEqualityTolerance">
+            <summary>
+            This defined how close 2 doubles need to be to each other in order to be considered
+            Equal. If the difference between the 2 divided by 1 of them is less than this they are
+            equal.
+            </summary> 
+        </member>
+        <member name="F:GeoLib.Constants.coniPerturbationFactor">
+            <summary>
+            Random number perturbation seed.
+            </summary> 
+        </member>
+        <member name="F:GeoLib.Constants.conjPerturbationFactor">
+            <summary>
+            Random number perturbation seed.
+            </summary> 
+        </member>
+        <member name="F:GeoLib.Constants.conPI">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conTWOPI">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conSIXTHPI">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conQUARTPI">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conTHIRDPI">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conTWOTHIRDPI">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conHALFPI">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conMetresPerDataMile">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conDataMilesPerNauticalMile">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conGeocent_Major">
+            <summary>
+            Earth semi-major axis of ellipsoid in meters
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conGeocent_Minor">
+            <summary>
+            Earth semi-minor axis of ellipsoid in meters
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conGeocent_Mean">
+            <summary>
+            Earth axis mean in meters
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conGeocent_e2">
+            <summary>
+            Earth axis eccentricity squared
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conGeocent_ep2">
+            <summary>
+            Earth axis 2nd eccentricity squared
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conLbsPerKilogram">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conSecondsPerDay">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conSecondsPerHour">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conSecondsPerMinute">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conE">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conRoot2">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:GeoLib.Constants.conRoot3">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DPointSet">
+            <summary>
+            Class representing a point set.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.MakeCopy(System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            Makes a copy of the other set.
+            </summary>
+            <param name="Other">The other set.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.ExtractAllOf(GeoLib.C2DPointSet)">
+            <summary>
+            Extracts all of the other set.
+            </summary>
+            <param name="S2">The other set.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.AddCopy(GeoLib.C2DPoint)">
+            <summary>
+            Adds a copy of the point.
+            </summary>
+            <param name="P1">The point.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.AddCopy(System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            Adds a copy of the point set.
+            </summary>
+            <param name="Other">The point set.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.ExtractAt(System.Int32)">
+            <summary>
+            Extracts at the index given.
+            </summary>
+            <param name="nIndex">The index.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.ExtractConvexHull(GeoLib.C2DPointSet)">
+            <summary>
+            Removes the convex hull from the point set given.
+            Will affect the input set.
+            </summary>
+            <param name="Other">The other set.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.SortByAngleFromNorth(GeoLib.C2DPoint)">
+            <summary>
+            Sorts by the angle from north relative to the origin given.
+            </summary>
+            <param name="Origin">The origin.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.SortByAngleToRight(GeoLib.C2DLine)">
+            <summary>
+            Sorts by the angle to the right of the line.
+            </summary>
+            <param name="Line">The Line.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.SortByAngleToLeft(GeoLib.C2DLine)">
+            <summary>
+            Sorts by the angle to the left of the line.
+            </summary>
+            <param name="Line">The Line.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.GetBoundingRect(GeoLib.C2DRect)">
+            <summary>
+            Gets the bounding rectangle.
+            </summary>
+            <param name="Rect">Ouput. The Rect.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.GetBoundingCircle(GeoLib.C2DCircle)">
+            <summary>
+            Gets the minimum bounding circle.
+            </summary>
+            <param name="Circle">Ouput. The Circle.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.GetExtremePointsEst(System.Int32@,System.Int32@,System.Double@,System.Int32)">
+            <summary>
+            Gets the points that are furthest apart as an estimate.
+            </summary>
+            <param name="nIndx1">Ouput. The first index.</param>
+            <param name="nIndx2">Ouput. The second index.</param>
+            <param name="dDist">Ouput. The distance between.</param>
+            <param name="nStartEst">Input. The guess at one of the points.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.GetExtremePoints(System.Int32@,System.Int32@,System.Double@)">
+            <summary>
+            Gets the points that are furthest apart.
+            </summary>
+            <param name="nIndx1">Ouput. The first index.</param>
+            <param name="nIndx2">Ouput. The second index.</param>
+            <param name="dDist">Ouput. The distance.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.RemoveRepeatedPoints">
+            <summary>
+            Removes all repeated points.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.GetFurthestPoint(System.Int32,System.Double@)">
+            <summary>
+            Returns the index of the furthest point from the point specified by the 
+            index given.
+            </summary>
+            <param name="nIndex">Input. The index.</param>
+            <param name="dDist">Ouput. The distance.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.SortByDistance(GeoLib.C2DPoint)">
+            <summary>
+            Sorts by distance to the point.
+            </summary>
+            <param name="pt">Input. The point.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.SortLeftToRight">
+            <summary>
+            Sorts left to right.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.SortByIndex(System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Sorts by index. The index set must have the same number of entries.
+            The index set will also be sorted.
+            </summary>
+            <param name="Indexes">Input. The indexes.</param>
+        </member>
+        <member name="M:GeoLib.C2DPointSet.SortByIndex(System.Collections.Generic.List{System.Int32},System.Int32,System.Int32)">
+            <summary>
+            Quicksort index sorting.
+            </summary>
+            <param name="Indexes">Input. The indexes.</param>
+            <param name="lo0">Input. The sort start.</param>
+            <param name="hi0">Input. The sort end.</param>
+        </member>
+        <member name="T:GeoLib.PointLeftToRight">
+            <summary>
+            Sort helper.
+            </summary>
+        </member>
+        <member name="M:GeoLib.PointLeftToRight.Compare(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Compare function.
+            </summary>
+        </member>
+        <member name="T:GeoLib.AngleFromNorth">
+            <summary>
+            Sort helper.
+            </summary>
+        </member>
+        <member name="F:GeoLib.AngleFromNorth.Origin">
+            <summary>
+            Origin.
+            </summary>
+        </member>
+        <member name="M:GeoLib.AngleFromNorth.Compare(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Compare function.
+            </summary>
+        </member>
+        <member name="T:GeoLib.AngleToRight">
+            <summary>
+            Sort helper.
+            </summary>
+        </member>
+        <member name="F:GeoLib.AngleToRight.Line">
+            <summary>
+            Line.
+            </summary>
+        </member>
+        <member name="M:GeoLib.AngleToRight.Compare(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Compare function.
+            </summary>
+        </member>
+        <member name="T:GeoLib.AngleToLeft">
+            <summary>
+            Sort helper.
+            </summary>
+        </member>
+        <member name="F:GeoLib.AngleToLeft.Line">
+            <summary>
+            Line.
+            </summary>
+        </member>
+        <member name="M:GeoLib.AngleToLeft.Compare(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Compare function.
+            </summary>
+        </member>
+        <member name="T:GeoLib.SortByDistance">
+            <summary>
+            Sort helper.
+            </summary>
+        </member>
+        <member name="F:GeoLib.SortByDistance.Point">
+            <summary>
+            Point to calculate distance from.
+            </summary>
+        </member>
+        <member name="M:GeoLib.SortByDistance.Compare(GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Compare function.
+            </summary>
+        </member>
+        <member name="T:GeoLib.CRandomNumber">
+            <summary>
+            Class to random number.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CRandomNumber.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:GeoLib.CRandomNumber.#ctor(System.Double,System.Double)">
+            <summary>
+            Constructor, initialises to 2 double forming the bounds
+            </summary>
+        </member>
+        <member name="M:GeoLib.CRandomNumber.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CRandomNumber.Set(System.Double,System.Double)">
+            <summary>
+            Sets the random number bound to 2 doubles.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CRandomNumber.SetMax(System.Double)">
+            <summary>
+            Sets the max.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CRandomNumber.SetMin(System.Double)">
+            <summary>
+            Sets the min.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CRandomNumber.GetMin">
+            <summary>
+            Access to the min.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CRandomNumber.GetMax">
+            <summary>
+            Access to the max.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CRandomNumber.Get">
+            <summary>
+            Gets a random number based on the settings.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CRandomNumber.GetInt">
+            <summary>
+            Gets an integer based on the settings. Sets up temporary new boundaries so that an interval
+            of e.g. 0.8 to 3.7 will become 1.0 to 3.0 allowing integers 1 and 2 only.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CRandomNumber.GetBool">
+            <summary>
+            Returns true or false.
+            </summary>
+        </member>
+        <member name="F:GeoLib.CRandomNumber.Min">
+            <summary>
+            The minimum possible value.
+            </summary>
+        </member>
+        <member name="F:GeoLib.CRandomNumber.Max">
+            <summary>
+            The maximum possible value.
+            </summary>
+        </member>
+        <member name="T:GeoLib.CTransformation">
+            <summary>
+            Transformation abstract class.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CTransformation.Transform(System.Double,System.Double)">
+            <summary>
+            Transform the given point.
+            </summary>
+        </member>
+        <member name="M:GeoLib.CTransformation.InverseTransform(System.Double,System.Double)">
+            <summary>
+            Inverse transform the given point.
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DSegment">
+            <summary>
+            Abstract class representing a 2D entity.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.#ctor(GeoLib.C2DArc)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="ArcOther">The other arc.</param>   
+        </member>
+        <member name="M:GeoLib.C2DSegment.#ctor(GeoLib.C2DPoint,GeoLib.C2DPoint,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Contructor.
+            </summary>
+            <param name="PtFrom">The point the arc is to go from.</param>
+            <param name="PtTo">The point the arc is to go to.</param>
+            <param name="dRadius">The corresponding circles radius.</param>
+            <param name="bCentreOnRight">Whether the centre is on the right.</param>
+            <param name="bArcOnRight">Whether the arc is to the right of the line.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.#ctor(GeoLib.C2DPoint,GeoLib.C2DVector,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Contructor.
+            </summary>
+            <param name="PtFrom">The point the arc is to go from.</param>
+            <param name="Vector">The vector defining the end point.</param>
+            <param name="dRadius">The corresponding circles radius.</param>
+            <param name="bCentreOnRight">Whether the centre is on the right.</param>
+            <param name="bArcOnRight">Whether the arc is to the right of the line.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.#ctor(GeoLib.C2DLine,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Contructor.
+            </summary>
+            <param name="Line">The line defining the start and end point of the arc.</param>
+            <param name="dRadius">The corresponding circles radius.</param>
+            <param name="bCentreOnRight">Whether the centre is on the right.</param>
+            <param name="bArcOnRight">Whether the arc is to the right of the line.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.Set(GeoLib.C2DPoint,GeoLib.C2DPoint,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="PtFrom">The point the arc is to go from.</param>
+            <param name="PtTo">The point the arc is to go to.</param>
+            <param name="dRadius">The corresponding circles radius.</param>
+            <param name="bCentreOnRight">Whether the centre is on the right.</param>
+            <param name="bArcOnRight">Whether the arc is to the right of the line.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.Set(GeoLib.C2DPoint,GeoLib.C2DVector,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="PtFrom">The point the arc is to go from.</param>
+            <param name="Vector">The vector defining the end point.</param>
+            <param name="dRadius">The corresponding circles radius.</param>
+            <param name="bCentreOnRight">Whether the centre is on the right.</param>
+            <param name="bArcOnRight">Whether the arc is to the right of the line.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.Set(GeoLib.C2DLine,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="Line">The line defining the start and end point of the arc.</param>
+            <param name="dRadius">The corresponding circles radius.</param>
+            <param name="bCentreOnRight">Whether the centre is on the right.</param>
+            <param name="bArcOnRight">Whether the arc is to the right of the line.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.IsValid">
+            <summary>
+            Tests to see if the radius is large enough to connect the end points.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.GetCircleCentre">
+            <summary>
+            Returns the corresponding circle's centre.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.GetPerimeter">
+            <summary>
+            Returns the perimeter of the shape.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.GetArcLength">
+            <summary>
+            Returns the length of the arc.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.GetBoundingRect(GeoLib.C2DRect)">
+            <summary>
+            Returns the bounding rectangle.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.GetInverse(GeoLib.C2DSegment)">
+            <summary>
+            Returns the inverse of this i.e. the other part of the circle to this.
+            </summary>
+            <param name="Other">The other segment.</param>	
+        </member>
+        <member name="M:GeoLib.C2DSegment.GetSegmentAngle">
+            <summary>
+            Always +ve and LESS than PI. In radians.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.GetArea">
+            <summary>
+            Returns the area.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.GetAreaSigned">
+            <summary>
+            Returns the area which is positive if anti-clockwise -ve if clockwise
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.GetCentroid">
+            <summary>
+            Returns the centroid.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.GetPointFrom">
+            <summary>
+            Gets the first point on the straight line.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.GetPointTo">
+            <summary>
+            Gets the second point on the straight line.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.GetLine">
+            <summary>
+            Returns a reference to the line as a new object.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.Contains(GeoLib.C2DPoint)">
+            <summary>
+            Returns whether the point is in the shape.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DSegment.Move(GeoLib.C2DVector)">
+            <summary>
+            Moves this point by the vector given.
+            </summary>
+            <param name="vector">The vector.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.RotateToRight(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Rotates this to the right about the origin provided.
+            </summary>
+            <param name="dAng">The angle through which to rotate.</param>
+            <param name="Origin">The origin about which to rotate.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.Grow(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Grows the segment by the factor from the origin provided.
+            </summary>
+            <param name="dFactor">The factor to grow by.</param>
+            <param name="Origin">The origin about which to grow.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.Reflect(GeoLib.C2DPoint)">
+            <summary>
+            Reflects the shape throught the point given.
+            </summary>
+            <param name="point">The point to reflect through.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.Reflect(GeoLib.C2DLine)">
+            <summary>
+            Reflects the in the line given.
+            </summary>
+            <param name="Line">The line to reflect through.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.Distance(GeoLib.C2DPoint)">
+            <summary>
+            Returns the distance to the point given.
+            </summary>
+            <param name="TestPoint">The point.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.Project(GeoLib.C2DLine,GeoLib.CInterval)">
+            <summary>
+            Projects this onto the line given.
+            </summary>
+            <param name="Line">The line.</param>
+            <param name="Interval">The projection.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.Project(GeoLib.C2DVector,GeoLib.CInterval)">
+            <summary>
+            Projects this onto the vector given.
+            </summary>
+            <param name="Vector">The Vector.</param>
+            <param name="Interval">The projection.</param>
+        </member>
+        <member name="M:GeoLib.C2DSegment.SnapToGrid(GeoLib.CGrid)">
+            <summary>
+            Snaps this to the conceptual grid.
+            </summary>
+            <param name="grid">The grid.</param>
+        </member>
+        <member name="F:GeoLib.C2DSegment.arc">
+            <summary>
+            The arc.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DSegment.Arc">
+            <summary>
+            The arc.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,84 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="Current">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{263192A1-5B8D-4F2B-96AD-0FBA86C9F4F5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GeoView</RootNamespace>
+    <AssemblyName>GeoProjections</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\GeoProjections.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\GeoProjections.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AlbersEqualAreaConic.cs" />
+    <Compile Include="BonneProjection.cs" />
+    <Compile Include="C3DPoint.cs" />
+    <Compile Include="Cassini.cs" />
+    <Compile Include="ConicEquidistant.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="CylindricalEqualArea.cs" />
+    <Compile Include="CylindricalEquidistant.cs" />
+    <Compile Include="EckertIV.cs" />
+    <Compile Include="EckertVI.cs" />
+    <Compile Include="Geodetic.cs" />
+    <Compile Include="GeoRotation.cs" />
+    <Compile Include="Gnomonic.cs" />
+    <Compile Include="HorizontalRangeHeading.cs" />
+    <Compile Include="LambertAzimuthalEqualArea.cs" />
+    <Compile Include="LambertConformalConic.cs" />
+    <Compile Include="Mercator.cs" />
+    <Compile Include="MillerCylindrical.cs" />
+    <Compile Include="Mollweide.cs" />
+    <Compile Include="Orthographic.cs" />
+    <Compile Include="Polyconic.cs" />
+    <Compile Include="Projection.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RangeHeading.cs" />
+    <Compile Include="Sinusoidal.cs" />
+    <Compile Include="SlantRangeHeading.cs" />
+    <Compile Include="Stereographic.cs" />
+    <Compile Include="Transformation.cs" />
+    <Compile Include="VanDerGrinten.cs" />
+    <Compile Include="Vertical.cs" />
+    <Compile Include="VerticalPerspective.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

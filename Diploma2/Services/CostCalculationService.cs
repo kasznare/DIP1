@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Shapes;
 using Diploma2.Model;
+using Point = System.Windows.Point;
 
 namespace Diploma2.Services
 {
@@ -57,8 +62,31 @@ namespace Diploma2.Services
         }
         private static double CalculateConstraintCost()
         {
+            foreach (_Room room in localModel.rooms)
+            {
+                List<_Point> boundaries = room.GetPoints();
+                if (!boundaries.Any()) continue;
+                //List<PointF> convertedPoints = boundaries.Select(i => new PointF((float) i.X, (float) i.Y)).ToList();
+                List<Point> convertedPointsForPolygon = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
+                //System.Drawing.PointF center = Utils.GetCentroid(convertedPoints);
+                Polygon p = new Polygon();
+                p.Points = new PointCollection(convertedPointsForPolygon);
+                
+                GraphicsPath grp = new GraphicsPath();
+
+                // Create an open figure
+                grp.AddLine(10, 10, 10, 50); // a of polygon
+                grp.AddLine(10, 50, 50, 50); // b of polygon
+                grp.CloseFigure();           // close polygon
+
+                // Create a Region regarding to grp
+                Region reg = new Region(grp);
+                reg.GetRegionData();
+            }
             return 0.0;
         }
+
+      
         private static double CalculateParameterCost()
         {
             double summary = 0.0;
@@ -140,7 +168,7 @@ namespace Diploma2.Services
                         }
                     }
 
-                    if (d<30) //WE dont like small walls
+                    if (d < 30) //WE dont like small walls
                     {
                         wallLength += Math.Sqrt((d / 100)) * 100;
                     }
@@ -173,7 +201,7 @@ namespace Diploma2.Services
             }
 
             //elrendezésszintű
-           
+
             //ajtókat, nyílásokat letenni...(kérdés)
             //bejárhatóság generálás
             double privacygradientcost = 0.0;

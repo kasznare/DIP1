@@ -1,0 +1,1534 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GeoPolygons</name>
+    </assembly>
+    <members>
+        <member name="T:GeoLib.C2DHoledPolyBase">
+            <summary>
+            Class representing a polygon with (or can be without) holes. The outer Rim is
+            a reference to a polygon (C2DPolyBase) with the holes stored in an array of
+            references to other polygons. Functions generally assume that the holes do
+            not overlap and are fully contained within the Rim. Each polygon should not 
+            self intersect.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.#ctor(GeoLib.C2DHoledPolyBase)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.#ctor(GeoLib.C2DPolyBase)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Set(GeoLib.C2DHoledPolyBase)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.GetLineCount">
+            <summary>
+            Return the number of lines.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Clear">
+            <summary>
+            Clears the shape.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.IsValid">
+            <summary>
+            Validity check. True if the holes are contained and non-intersecting.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.RotateToRight(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Rotates to the right by the angle around the origin.
+            </summary>
+            <param name="dAng">Angle in radians to rotate by.</param> 
+            <param name="Origin">The origin.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Move(GeoLib.C2DVector)">
+            <summary>
+            Moves the polygon.
+            </summary>
+            <param name="Vector">Vector to move by.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Grow(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Grows around the origin.
+            </summary>
+            <param name="dFactor">Factor to grow by.</param> 
+            <param name="Origin">Origin to grow this around.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Reflect(GeoLib.C2DPoint)">
+            <summary>
+            Point reflection.
+            </summary>
+            <param name="Point">Point through which to reflect this.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Reflect(GeoLib.C2DLine)">
+            <summary>
+            Reflects throught the line provided.
+            </summary>
+            <param name="Line">Line through which to reflect this.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Distance(GeoLib.C2DPoint)">
+            <summary>
+            Distance from the point.
+            </summary>
+            <param name="TestPoint">Point to find the distance to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Distance(GeoLib.C2DLineBase)">
+            <summary>
+            Distance from the line provided.
+            </summary>
+            <param name="Line">Line to find the distance to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Distance(GeoLib.C2DPolyBase,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Distance from the polygon provided.
+            </summary>
+            <param name="Poly">Polygon to find the distance to.</param> 
+            <param name="ptOnThis">Closest point on this to recieve the result.</param> 
+            <param name="ptOnOther">Closest point on the other to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.IsWithinDistance(GeoLib.C2DPoint,System.Double)">
+            <summary>
+            Proximity test.
+            </summary>
+            <param name="TestPoint">Point to test against.</param> 
+            <param name="dDist">Distance threshold.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.GetPerimeter">
+            <summary>
+            Perimeter.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Project(GeoLib.C2DLine,GeoLib.CInterval)">
+            <summary>
+            Projection onto the line.
+            </summary>
+            <param name="Line">Line to project this on.</param> 
+            <param name="Interval">Interval to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Project(GeoLib.C2DVector,GeoLib.CInterval)">
+            <summary>
+            Projection onto the vector.
+            </summary>
+            <param name="Vector">Vector to project this on.</param> 
+            <param name="Interval">Interval to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.HasCrossingLines">
+            <summary>
+            Returns true if there are crossing lines.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.GetBoundingRect(GeoLib.C2DRect)">
+            <summary>
+            Returns the bounding rectangle.
+            </summary>
+            <param name="Rect">Rectangle to recieve the result.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Contains(GeoLib.C2DPoint)">
+            <summary>
+            Point inside test.
+            </summary>
+            <param name="pt">Point to test for.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Contains(GeoLib.C2DLineBase)">
+            <summary>
+            Line entirely inside test.
+            </summary>
+            <param name="Line">Line to test for.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Contains(GeoLib.C2DPolyBase)">
+            <summary>
+            Polygon entirely inside test.
+            </summary>
+            <param name="Polygon">Polygon to test for.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Contains(GeoLib.C2DHoledPolyBase)">
+            <summary>
+            Polygon entirely inside test.
+            </summary>
+            <param name="Polygon">Polygon to test for.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Crosses(GeoLib.C2DLineBase)">
+            <summary>
+            True if this crosses the line
+            </summary>
+            <param name="Line">Line to test for.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Crosses(GeoLib.C2DLineBase,GeoLib.C2DPointSet)">
+            <summary>
+            True if this crosses the line.
+            </summary>
+            <param name="Line">Line to test for.</param> 
+            <param name="IntersectionPts">Point set to recieve the intersections.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Crosses(GeoLib.C2DPolyBase)">
+            <summary>
+            True if this crosses the other polygon.
+            </summary>
+            <param name="Poly">Polygon to test for.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.CrossesRay(GeoLib.C2DLine,GeoLib.C2DPointSet)">
+            <summary>
+            True if this crosses the ray, returns the intersection points.
+            </summary>
+            <param name="Ray">Ray to test for.</param> 
+            <param name="IntersectionPts">Intersection points.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Overlaps(GeoLib.C2DHoledPolyBase)">
+            <summary>
+            True if this overlaps the other.
+            </summary>
+            <param name="Other">Other polygon to test for.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Overlaps(GeoLib.C2DPolyBase)">
+            <summary>
+            True if this overlaps the other.
+            </summary>
+            <param name="Other">Other polygon to test for.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.PolygonsToHoledPolygons(System.Collections.Generic.List{GeoLib.C2DHoledPolyBase},System.Collections.Generic.List{GeoLib.C2DPolyBase})">
+            <summary>
+            Function to convert polygons to complex polygons. Assigning holes to those that are contained.
+            The set of holed polygons will be filled from the set of simple polygons.
+            </summary>
+            <param name="HoledPolys">Holed polygon set.</param> 
+            <param name="Polygons">Simple polygon set.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.GetOverlaps(GeoLib.C2DHoledPolyBase,System.Collections.Generic.List{GeoLib.C2DHoledPolyBase},GeoLib.CGrid)">
+            <summary>
+            Returns the overlaps between this and the other complex polygon.
+            </summary>
+            <param name="Other">Other polygon.</param> 
+            <param name="HoledPolys">Set to receieve all the resulting polygons.</param> 
+            <param name="grid">Grid containing the degenerate handling settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.GetNonOverlaps(GeoLib.C2DHoledPolyBase,System.Collections.Generic.List{GeoLib.C2DHoledPolyBase},GeoLib.CGrid)">
+            <summary>
+            Returns the difference between this and the other polygon.
+            </summary>
+            <param name="Other">Other polygon.</param> 
+            <param name="HoledPolys">Set to receieve all the resulting polygons.</param> 
+            <param name="grid">Grid containing the degenerate handling settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.GetUnion(GeoLib.C2DHoledPolyBase,System.Collections.Generic.List{GeoLib.C2DHoledPolyBase},GeoLib.CGrid)">
+            <summary>
+            Returns the union of this and the other.
+            </summary>
+            <param name="Other">Other polygon.</param> 
+            <param name="HoledPolys">Set to receieve all the resulting polygons.</param> 
+            <param name="grid">Grid containing the degenerate handling settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.GetRoutes(GeoLib.C2DHoledPolyBase,System.Boolean,GeoLib.C2DHoledPolyBase,System.Boolean,GeoLib.C2DLineBaseSetSet,GeoLib.C2DLineBaseSetSet,System.Collections.Generic.List{GeoLib.C2DPolyBase},System.Collections.Generic.List{GeoLib.C2DPolyBase},GeoLib.CGrid)">
+            <summary>
+            Returns the routes (multiple lines or part polygons) either inside or
+            outside the polygons provided. These are based on the intersections
+            of the 2 polygons e.g. the routes / part polygons of one inside or
+            outside the other.
+            </summary>
+            <param name="Poly1">The first polygon.</param> 
+            <param name="bP1RoutesInside">True if routes inside the second polygon are 
+            required for the first polygon.</param> 
+            <param name="Poly2">The second polygon.</param> 
+            <param name="bP2RoutesInside">True if routes inside the first polygon are 
+            required for the second polygon.</param> 
+            <param name="Routes1">Output. Set of lines for the first polygon.</param> 
+            <param name="Routes2">Output. Set of lines for the second polygon.</param> 
+            <param name="CompleteHoles1">Output. Complete holes for the first polygon.</param> 
+            <param name="CompleteHoles2">Output. Complete holes for the second polygon.</param> 
+            <param name="grid">Contains the degenerate handling settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.RandomPerturb">
+            <summary>
+            Moves this by a small random amount.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.SnapToGrid(GeoLib.CGrid)">
+            <summary>
+            Snaps this to the conceptual grip.
+            </summary>
+            <param name="grid">The grid to snap to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.GetBoolean(GeoLib.C2DHoledPolyBase,System.Collections.Generic.List{GeoLib.C2DHoledPolyBase},System.Boolean,System.Boolean,GeoLib.CGrid)">
+            <summary>
+            Returns the boolean result (e.g. union) of 2 shapes. Boolean Operation defined by 
+            the inside / outside flags.
+            </summary>
+            <param name="Other">Other polygon.</param> 
+            <param name="HoledPolys">Set of polygons to recieve the result.</param> 
+            <param name="bThisInside">Does the operation require elements of this INSIDE the other.</param> 
+            <param name="bOtherInside">Does the operation require elements of the other INSIDE this.</param> 
+            <param name="grid">The grid with the degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.Transform(GeoLib.CTransformation)">
+            <summary>
+             Transform by a user defined transformation. e.g. a projection.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.InverseTransform(GeoLib.CTransformation)">
+            <summary>
+             Transform by a user defined transformation. e.g. a projection.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DHoledPolyBase._Rim">
+            <summary>
+            The outer rim.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DHoledPolyBase._Holes">
+            <summary>
+            Holes.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.GetHole(System.Int32)">
+            <summary>
+            Hole access.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.SetHole(System.Int32,GeoLib.C2DPolyBase)">
+            <summary>
+            Hole assignment.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.AddHole(GeoLib.C2DPolyBase)">
+            <summary>
+            Hole addition.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBase.RemoveHole(System.Int32)">
+            <summary>
+            Hole removal.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DHoledPolyBase.Rim">
+            <summary>
+            Rim access. 
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DHoledPolyBase.HoleCount">
+            <summary>
+            Hole count.
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DHoledPolyBaseSet">
+            <summary>
+            Class representing a set of holed polygons.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.ExtractAllOf(System.Collections.Generic.List{GeoLib.C2DPolyBase})">
+            <summary>
+            Extracts all from the set provided.
+            </summary>
+            <param name="Polys">The set to extract from converting to holed polygns.</param>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.ExtractAllOf(System.Collections.Generic.List{GeoLib.C2DHoledPolyBase})">
+            <summary>
+            Extracts all from the set provided.
+            </summary>
+            <param name="Polys">The set to extract from.</param>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.UnifyBasic">
+            <summary>
+            Basic multiple unification.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.UnifyProgressive(GeoLib.CGrid)">
+            <summary>
+            Unification by growing shapes of fairly equal size (fastest for large groups).
+            </summary>
+            <param name="grid">The CGrid with the degenerate settings.</param>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.AddAndUnify(GeoLib.C2DHoledPolyBase)">
+            <summary>
+            Adds a new polygon and looks for a possible unification.
+            Assumes current set is distinct.
+            </summary>
+            <param name="pPoly">The polygon to add and possible unify.</param>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.AddAndUnify(GeoLib.C2DHoledPolyBaseSet)">
+            <summary>
+            Adds a new polygon set and looks for a possible unifications.
+            Assumes both sets are distinct.
+            </summary>
+            <param name="pOther">The polygon set to add and possible unify.</param>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.AddIfUnify(GeoLib.C2DHoledPolyBase)">
+            <summary>
+            Adds a new polygon ONLY if there is a unifications.
+            Assumes current set is distinct.
+            </summary>
+            <param name="pPoly">The polygon to add if there is a union.</param>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.AddKnownHoles(System.Collections.Generic.List{GeoLib.C2DPolyBase})">
+            <summary>
+            Adds a set of holes to the current set of polygons as holes within them.
+            </summary>
+            <param name="pOther">The polygon set to add as holes.</param>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.GetLineCount">
+            <summary>
+            Total line count for all polygons contained.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.GetMinLineCount">
+            <summary>
+            Minimum line count of all polygons contained.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.Transform(GeoLib.CTransformation)">
+            <summary>
+            Transformation.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyBaseSet.InverseTransform(GeoLib.CTransformation)">
+            <summary>
+            Transformation.
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DPolygon">
+            <summary>
+            Class representing a polygon with straight lines. Inherits from C2DPolyBase
+            but only allows straight lines to be added.
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DPolyBase">
+            <summary>
+            Class to represent a shape bounded by lines. Lines currently supported are 
+            Straight and Arced lines. No holed permitted and should not self intersect.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.#ctor">
+            <summary>
+            Constructor
+            </summary> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.#ctor(GeoLib.C2DPolyBase)">
+            <summary>
+            Constructor sets from another
+            </summary> 
+            <param name="Other">The other polygon.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Finalize">
+            <summary>
+            Destructor
+            </summary> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Set(GeoLib.C2DPolyBase)">
+            <summary>
+            Assigment sets from another
+            </summary> 
+            <param name="Other">The other polygon.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.CreateDirect(GeoLib.C2DLineBaseSet)">
+            <summary>
+            Creates directly from a set of lines by extracting them from the set provided.
+            </summary> 
+            <param name="NewLines">The line set.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Create(GeoLib.C2DLineBaseSet)">
+            <summary>
+            Creates from the set of lines using copies.
+            </summary> 
+            <param name="Lines">The line set.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Contains(GeoLib.C2DPoint)">
+            <summary>
+            True if the point is in the shape.
+            </summary> 
+            <param name="pt">The point to test set.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Contains(GeoLib.C2DPolyBase)">
+            <summary>
+            True if it entirely contains the other.
+            </summary> 
+            <param name="Other">The other polygon.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Contains(GeoLib.C2DLineBase)">
+            <summary>
+            True if it entirely contains the line.
+            </summary> 
+            <param name="Line">The line to test.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.HasCrossingLines">
+            <summary>
+            True if any of the lines cross.
+            </summary> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Distance(GeoLib.C2DPoint)">
+            <summary>
+            Distance of the point from the shape. Returns -ve if inside.
+            </summary> 
+            <param name="pt">The point to test.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Distance(GeoLib.C2DLineBase)">
+            <summary>
+            Distance to the line.
+            </summary> 
+            <param name="Line">The line to test.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Distance(GeoLib.C2DPolyBase,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            Distance of the poly from the shape. 
+            </summary> 
+            <param name="Other">The other polygon test.</param> 
+            <param name="ptOnThis">Output. The closest point on this.</param> 
+            <param name="ptOnOther">The closest point on the other.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.IsWithinDistance(GeoLib.C2DPoint,System.Double)">
+            <summary>
+            True if the point is with the range given to the shape or inside.
+            </summary> 
+            <param name="pt">The point to test.</param> 
+            <param name="dRange">The range to test against.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.GetBoundingRect(GeoLib.C2DRect)">
+            <summary>
+            Returns the bounding rectangle. Can access directly as well.
+            </summary> 
+            <param name="Rect">Output. The bounding rectangle.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.GetPerimeter">
+            <summary>
+            Calculates the perimeter.
+            </summary> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Clear">
+            <summary>
+            Clears all.
+            </summary> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Move(GeoLib.C2DVector)">
+            <summary>
+            Moves this point by the vector given.
+            </summary>
+            <param name="vector">The vector.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.RotateToRight(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Rotates this to the right about the origin provided.
+            </summary>
+            <param name="dAng">The angle in radians through which to rotate.</param>
+            <param name="Origin">The origin about which to rotate.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Grow(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Grows the polygon around the origin.
+            </summary>
+            <param name="dFactor">The factor to grow by.</param>
+            <param name="Origin">The origin about which to grow.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Reflect(GeoLib.C2DPoint)">
+            <summary>
+            Reflects the area about the point.
+            </summary>
+            <param name="point">The point to reflect through.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Reflect(GeoLib.C2DLine)">
+            <summary>
+            Reflects throught the line provided.
+            </summary>
+            <param name="Line">The line to reflect through.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Crosses(GeoLib.C2DPolyBase)">
+            <summary>
+            True if it crosses the other.
+            </summary>
+            <param name="Other">The other polygon.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Crosses(GeoLib.C2DPolyBase,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            Intersection with another.
+            </summary>
+            <param name="Other">The other polygon.</param>
+            <param name="IntersectionPts">Output. The intersection points.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Crosses(GeoLib.C2DLineBase)">
+            <summary>
+            Intersection with a line base.
+            </summary>
+            <param name="Line">The other line.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Crosses(GeoLib.C2DLineBase,System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            True if it crosses the line. Provides the intersection points.
+            </summary>
+            <param name="Line">The other line.</param>
+            <param name="IntersectionPts">Output. The intersection points.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.CrossesRay(GeoLib.C2DLine,GeoLib.C2DPointSet)">
+            <summary>
+            True if it crosses the ray. Provides the intersection points.
+            </summary>
+            <param name="Ray">The infinite line.</param>
+            <param name="IntersectionPts">Output. The intersection points.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Overlaps(GeoLib.C2DPolyBase)">
+            <summary>
+            True if this overlaps the other.
+            </summary>
+            <param name="Other">The other polygon.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Overlaps(GeoLib.C2DHoledPolyBase)">
+            <summary>
+            True if this overlaps the other.
+            </summary>
+            <param name="Other">The other polygon.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.IsClosed">
+            <summary>
+            True if it is a closed shape which it should be.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.SnapToGrid(GeoLib.CGrid)">
+            <summary>
+            Snap to the conceptual grid.
+            </summary>
+            <param name="grid">The grid.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.GetNonOverlaps(GeoLib.C2DPolyBase,System.Collections.Generic.List{GeoLib.C2DHoledPolyBase},GeoLib.CGrid)">
+            <summary>
+            Returns the non-overlaps of this with another.
+            </summary>
+            <param name="Other">The other polygon.</param>
+            <param name="Polygons">The output polygons.</param>
+            <param name="grid">The degenerate settings.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.GetUnion(GeoLib.C2DPolyBase,System.Collections.Generic.List{GeoLib.C2DHoledPolyBase},GeoLib.CGrid)">
+            <summary>
+            Returns the union of this with another.
+            </summary>
+            <param name="Other">The other polygon.</param>
+            <param name="Polygons">The output polygons.</param>
+            <param name="grid">The degenerate settings.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.GetOverlaps(GeoLib.C2DPolyBase,System.Collections.Generic.List{GeoLib.C2DHoledPolyBase},GeoLib.CGrid)">
+            <summary>
+            Returns the overlaps of this with another.
+            </summary>
+            <param name="Other">The other polygon.</param>
+            <param name="Polygons">The output polygons.</param>
+            <param name="grid">The degenerate settings.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.GetRoutes(GeoLib.C2DPointSet,System.Collections.Generic.List{System.Int32},GeoLib.C2DLineBaseSetSet,System.Boolean,System.Boolean)">
+            <summary>
+            Returns the routes (collection of lines and sublines) either inside or outside another
+            Given the intersection points.
+            </summary>
+            <param name="IntPts">The intersection points of this with the other polygon.</param>
+            <param name="IntIndexes">The corresponding line indexes.</param>
+            <param name="Routes">Output. The routes to get the result.</param>
+            <param name="bStartInside">True if this polygon starts inside the other.</param>
+            <param name="bRoutesInside">True if we require routes of this polygon inside the other.</param>    
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.GetBoolean(GeoLib.C2DPolyBase,System.Collections.Generic.List{GeoLib.C2DHoledPolyBase},System.Boolean,System.Boolean,GeoLib.CGrid)">
+            <summary>
+            Gets the boolean operation with the other. e.g. union / intersection.
+            </summary>
+            <param name="Other">The other polygon.</param>
+            <param name="HoledPolys">The set to recieve the result.</param>
+            <param name="bThisInside">The flag to indicate routes inside.</param>
+            <param name="bOtherInside">The flag to indicate routes inside for the other.</param>
+            <param name="grid">The degenerate settings.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Project(GeoLib.C2DLine,GeoLib.CInterval)">
+            <summary>
+            Projection onto the line.
+            </summary>
+            <param name="Line">The line.</param>
+            <param name="Interval">Output. The interval.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Project(GeoLib.C2DVector,GeoLib.CInterval)">
+            <summary>
+            Projection onto the vector.
+            </summary>
+            <param name="Vector">The vector.</param>
+            <param name="Interval">Output. The interval.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.RandomPerturb">
+            <summary>
+            Moves this by a tiny random amount.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.GetRoutes(GeoLib.C2DPolyBase,System.Boolean,GeoLib.C2DPolyBase,System.Boolean,GeoLib.C2DLineBaseSetSet,GeoLib.C2DLineBaseSetSet)">
+            <summary>
+            Returns the routes (multiple lines or part polygons) either inside or
+            outside the polygons provided. These are based on the intersections
+            of the 2 polygons e.g. the routes / part polygons of one inside or
+            outside the other.
+            </summary>
+            <param name="Poly1">The first polygon.</param> 
+            <param name="bP1RoutesInside">True if routes inside the second polygon are 
+            required for the first polygon.</param> 
+            <param name="Poly2">The second polygon.</param> 
+            <param name="bP2RoutesInside">True if routes inside the first polygon are 
+            required for the second polygon.</param> 
+            <param name="Routes1">Output. Set of lines for the first polygon.</param> 
+            <param name="Routes2">Output. Set of lines for the second polygon.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.MakeBoundingRect">
+            <summary>
+            Forms the bounding rectangle.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.MakeLineRects">
+            <summary>
+            Forms the bounding rectangles for all the lines.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.ReverseDirection">
+            <summary>
+            Reverses the direction of the lines.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.Transform(GeoLib.CTransformation)">
+            <summary>
+             Transform by a user defined transformation. e.g. a projection.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyBase.InverseTransform(GeoLib.CTransformation)">
+            <summary>
+             Transform by a user defined transformation. e.g. a projection.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DPolyBase._Lines">
+            <summary>
+            The lines.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DPolyBase._BoundingRect">
+            <summary>
+            The bounding rectangle.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DPolyBase._LineRects">
+            <summary>
+            The line bounding rectangles.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DPolyBase.Lines">
+            <summary>
+            The lines.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DPolyBase.BoundingRect">
+            <summary>
+            The bounding rectangle.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DPolyBase.LineRects">
+            <summary>
+            The line bounding rectangles.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.#ctor(System.Collections.Generic.List{GeoLib.C2DPoint},System.Boolean)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Points">The points to create from.</param>
+            <param name="bReorderIfNeeded">True if reordering is required.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.#ctor(GeoLib.C2DPolygon)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">The other polygon.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.#ctor(GeoLib.C2DPolyBase)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">The other polygon.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Set(GeoLib.C2DPolyBase)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="Other">The other to set to.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Set(GeoLib.C2DPolygon)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="Other">The other to set to.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Create(System.Collections.Generic.List{GeoLib.C2DPoint},System.Boolean)">
+            <summary>
+            Creates the polygon with optional reordering of points.
+            </summary>
+            <param name="Points">The points to create from.</param>
+            <param name="bReorderIfNeeded">True if reordering is required.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.CreateRegular(GeoLib.C2DPoint,System.Double,System.Int32)">
+            <summary>
+            Creates a regular polygon.
+            </summary>
+            <param name="Centre">The centre.</param>
+            <param name="dDistanceToPoints">The distance to each point.</param>
+            <param name="nNumberSides">True number of sides.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.CreateConvexHull(GeoLib.C2DPolygon)">
+            <summary>
+            Creates a convex hull from another polygon. Uses Graham's algorithm.
+            </summary>
+            <param name="Other">The other polygon.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.CreateRandom(GeoLib.C2DRect,System.Int32,System.Int32)">
+            <summary>
+            Creates a randon polygon.
+            </summary>
+            <param name="cBoundary">The boundary of the random shape.</param>
+            <param name="nMinPoints">The minimum number of points.</param>
+            <param name="nMaxPoints">The maximum number of points.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.CreateMorph(GeoLib.C2DPolygon,GeoLib.C2DPolygon,System.Double)">
+            <summary>
+            Mophs this polygon into another by the factor given.
+            </summary>
+            <param name="OtherFrom">The other shape from.</param>
+            <param name="OtherTo">The other shape to.</param>
+            <param name="dFactor">The factor between the 2 polygons.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.CreateConvexSubAreas">
+            <summary>
+            Creates convex sub areas of the current polygon. These can then be extracted. 
+            This function is also useful when obtaining minimum translation vectors. 
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.ClearConvexSubAreas">
+            <summary>
+            Removes the convex sub areas.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.IsConvex">
+            <summary>
+            True if the polygon is convex.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Clear">
+            <summary>
+            Clears all.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.RotateToRight(System.Double)">
+            <summary>
+            Rotates the polygon to the right around the centroid.
+            </summary>
+            <param name="dAng">The angle to rotate by.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Grow(System.Double)">
+            <summary>
+            Grows the polygon from the centre.
+            </summary>
+            <param name="dFactor">The factor to grow by.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Move(GeoLib.C2DVector)">
+            <summary>
+            Moves this point by the vector given.
+            </summary>
+            <param name="vector">The vector.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.RotateToRight(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Rotates this to the right about the origin provided.
+            </summary>
+            <param name="dAng">The angle in radians through which to rotate.</param>
+            <param name="Origin">The origin about which to rotate.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Grow(System.Double,GeoLib.C2DPoint)">
+            <summary>
+            Grows the polygon around the origin.
+            </summary>
+            <param name="dFactor">The factor to grow by.</param>
+            <param name="Origin">The origin about which to grow.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Reflect(GeoLib.C2DPoint)">
+            <summary>
+            Reflects the area about the point.
+            </summary>
+            <param name="point">The point to reflect through.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Reflect(GeoLib.C2DLine)">
+            <summary>
+            Reflects throught the line provided.
+            </summary>
+            <param name="Line">The line to reflect through.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.HasRepeatedPoints">
+            <summary>
+            True if there are repeated points.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.IsClockwise">
+            <summary>
+            True if clockwise.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.GetConvexSubAreas(System.Collections.Generic.List{GeoLib.C2DPolygon})">
+            <summary>
+            Returns the convex sub areas if created.
+            </summary>
+            <param name="SubAreas">Ouput. The sub areas.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Overlaps(GeoLib.C2DPolygon,GeoLib.C2DVector)">
+            <summary>
+            True if this overlaps another and returns the translation vector required to move
+            this apart. Exact if this is convex, approximate if concave. Better approximation
+            if convex sub areas have been created.
+            </summary>
+            <param name="Other">The other polygon.</param>
+            <param name="MinimumTranslationVector">Ouput. The vector to move this by to move it away from the other.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Avoid(GeoLib.C2DPolygon)">
+            <summary>
+            Moves this away from the other by the minimal amount
+            </summary>
+            <param name="Other">The other polygon.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.GetCentroid">
+            <summary>
+            Returns the centroid.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.GetArea">
+            <summary>
+            Returns the area.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.GetAreaSigned">
+            <summary>
+            Returns the area signed (-ve if clockwise).
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.GetPoint(System.Int32)">
+            <summary>
+            Gets the point at the specified index. Index is cyclic.
+            </summary>
+            <param name="nPointIndex">The index of the point.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.GetPointsCopy(System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            Copies the points into the set object provided.
+            </summary>
+            <param name="PointCopy">The point set to recieve the result.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.GetLeftMostPoint">
+            <summary>
+            Returns the left most point.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Smooth(System.Double,System.Double)">
+            <summary>
+            Smooths the polygon. 
+            </summary>
+            <param name="dMinAngleDegrees">The minimum angle between points. Default is 144 degrees.</param>
+            <param name="dCropFactor">The factor to crop "sharp" lines by. Default is 0.8.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Smooth">
+            <summary>
+            Smooths the polygon using default smoothing i.e. 144 degrees and 0.8 crop factor. 
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.GetBoundingCircle(GeoLib.C2DCircle)">
+            <summary>
+            Get the minimum bounding circle.
+            </summary>
+            <param name="Circle">Output. The bounding circle.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.FindFirstInflection(System.Int32@)">
+            <summary>
+            Finds the index of the first inflected point if there is one.
+            </summary>
+            <param name="nFirstInflection">Output. Inflected point.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.IsPointInflected(System.Int32)">
+            <summary>
+            True if the point is inflected.
+            </summary>
+            <param name="nIndex">The point index.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.CanPointsBeJoined(System.Int32,System.Int32)">
+            <summary>
+            True if the points can be joined with no resulting crossing lines.
+            </summary>
+            <param name="nStart">The first point index.</param>
+            <param name="nEnd">The second point index.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.CreateSubAreas(System.Int32,System.Int32,GeoLib.C2DPolygon@,GeoLib.C2DPolygon@)">
+            <summary>
+            Creates sub areas given 2 point indexes and pointers to the new areas.
+            </summary>
+            <param name="nPt1">The first point index.</param>
+            <param name="nPt2">The second point index.</param>
+            <param name="pNewArea1">The first subarea.</param>
+            <param name="pNewArea2">The second subarea.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.Reorder">
+            <summary>
+            Reorders the points to minimise perimeter.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.EliminateCrossingLines">
+            <summary>
+            Reorders to eliminate crossing lines.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.SwapPositions(System.Int32,System.Int32)">
+            <summary>
+            Swaps the two points.
+            </summary>
+            <param name="Pos1">The first point index.</param>
+            <param name="Pos2">The second point index.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.SetPoint(GeoLib.C2DPoint,System.Int32)">
+            <summary>
+            Sets the point to the point provided.
+            </summary>
+            <param name="Point">The point to be set to.</param>
+            <param name="nPointIndex">The point index.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.InsertPoint(System.Int32,GeoLib.C2DPoint)">
+            <summary>
+            Inserts a point.
+            </summary>
+            <param name="nPointIndex">The point index.</param>   
+            <param name="Point">The point to be set to.</param>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.SimpleBuffer(System.Double)">
+            <summary>
+            Simple buffer around the polygon at a fixed amount. No attemp to ensure validity
+            as intended for small buffer amounts.
+            </summary>
+            <param name="dBuffer">The buffer amount.</param>   
+        </member>
+        <member name="M:GeoLib.C2DPolygon.RemoveNullAreas(System.Double)">
+            <summary>
+            Removes null areas, will return true if the shape is no longer valid.
+            </summary>
+            <param name="dTolerance"></param>
+            <returns>True if the polygon is no longer valid i.e. completely null.</returns>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.MakeLines(System.Collections.Generic.List{GeoLib.C2DPoint})">
+            <summary>
+            Make the lines related to the points for the base class to work on.
+            </summary>
+            <param name="Points">The point set.</param>   
+        </member>
+        <member name="M:GeoLib.C2DPolygon.GetNonOverlaps(GeoLib.C2DPolygon,System.Collections.Generic.List{GeoLib.C2DHoledPolygon},GeoLib.CGrid)">
+            <summary>
+            Gets the non overlaps i.e. the parts of this that aren't in the other.
+            </summary>
+            <param name="Other">The other shape.</param> 
+            <param name="Polygons">The set to recieve the result.</param> 
+            <param name="grid">The degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolygon.GetUnion(GeoLib.C2DPolygon,System.Collections.Generic.List{GeoLib.C2DHoledPolygon},GeoLib.CGrid)">
+            <summary>
+            Gets the union of the 2 shapes.
+            </summary>
+            <param name="Other">The other shape.</param> 
+            <param name="Polygons">The set to recieve the result.</param> 
+            <param name="grid">The degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolygon.GetOverlaps(GeoLib.C2DPolygon,System.Collections.Generic.List{GeoLib.C2DHoledPolygon},GeoLib.CGrid)">
+            <summary>
+            Gets the overlaps of the 2 shapes.	
+            </summary>
+            <param name="Other">The other shape.</param> 
+            <param name="Polygons">The set to recieve the result.</param> 
+            <param name="grid">The degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolygon.OverlapsAbove(GeoLib.C2DPolygon,System.Double@,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            True if this polygon is above the other. Returns the vertical distance 
+            and the points on both polygons.
+            </summary>
+            <param name="Other"></param>
+            <param name="dVerticalDistance"></param>
+            <param name="ptOnThis"></param>
+            <param name="ptOnOther"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.OverlapsVertically(GeoLib.C2DPolygon,System.Double@,GeoLib.C2DPoint,GeoLib.C2DPoint)">
+            <summary>
+            True if this polygon is above or below the other. Returns the vertical distance 
+            and the points on both polygons.
+            </summary>
+            <param name="Other"></param>
+            <param name="dVerticalDistance"></param>
+            <param name="ptOnThis"></param>
+            <param name="ptOnOther"></param>
+            <returns></returns>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.GetMinBoundingBox(GeoLib.C2DLine,System.Double@)">
+            <summary>
+            Returns the minimum bounding box that is not necassarily horiztonal i.e. 
+            the box can be at an angle and is defined by a line and the width to the right.
+            </summary>
+            <param name="Line"></param>
+            <param name="dWidthToRight"></param>
+        </member>
+        <member name="F:GeoLib.C2DPolygon.subArea1">
+            <summary>
+            Sub area 1.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DPolygon.subArea2">
+            <summary>
+            Sub area 2.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DPolygon.SubArea1">
+            <summary>
+            Sub area 1 access.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DPolygon.SubArea2">
+            <summary>
+            Sub area 2 access.
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DPolygon.CLineBaseRect">
+            <summary>
+            Class to hold a line reference and bounding rect for OverlapsAbove algorithm.
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DPolygon.CLineBaseRect.Line">
+            <summary>
+            Line reference
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DPolygon.CLineBaseRect.Rect">
+            <summary>
+            Line bounding rect
+            </summary>
+        </member>
+        <member name="F:GeoLib.C2DPolygon.CLineBaseRect.bSetFlag">
+            <summary>
+            Set flag
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DPolygon.CLineBaseRectLeftToRight">
+            <summary>
+            Class to help with sorting. 
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolygon.CLineBaseRectLeftToRight.Compare(GeoLib.C2DPolygon.CLineBaseRect,GeoLib.C2DPolygon.CLineBaseRect)">
+            <summary>
+            Compare function. 
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DHoledPolygon">
+            <summary>
+            Class to represent a 2D polygon with holes.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.#ctor(GeoLib.C2DHoledPolyBase)">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.#ctor(GeoLib.C2DHoledPolygon)">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.#ctor(GeoLib.C2DPolyBase)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.#ctor(GeoLib.C2DPolygon)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.Set(GeoLib.C2DHoledPolyBase)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.Set(GeoLib.C2DHoledPolygon)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.RotateToRight(System.Double)">
+            <summary>
+            Rotates to the right by the angle around the centroid
+            </summary>
+            <param name="dAng">Angle in radians to rotate by.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.Grow(System.Double)">
+            <summary>
+            Grows around the centroid.
+            </summary>
+            <param name="dFactor">Factor to grow by.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.GetCentroid">
+            <summary>
+            Calculates the centroid of the polygon by moving it according to each holes
+            weighted centroid.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.GetArea">
+            <summary>
+            Calculates the area.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.SimpleBuffer(System.Double)">
+            <summary>
+            Buffers the polygon by buffering all shapes to expand the shape.
+            No attempt to handle resulting crossing lines as designed for 
+            very small buffers.
+            </summary>
+            <param name="dBuffer">The buffer amount</param>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.RemoveNullAreas(System.Double)">
+            <summary>
+            Removes null areas within the shape according to the tolerance.
+            </summary>
+            <param name="dTolerance"></param>
+            <returns>True if the shape is no longer valid.</returns>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.GetNonOverlaps(GeoLib.C2DHoledPolygon,System.Collections.Generic.List{GeoLib.C2DHoledPolygon},GeoLib.CGrid)">
+            <summary>
+            Gets the non overlaps i.e. the parts of this that aren't in the other.
+            </summary>
+            <param name="Other">The other shape.</param> 
+            <param name="Polygons">The set to recieve the result.</param> 
+            <param name="grid">The degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.GetUnion(GeoLib.C2DHoledPolygon,System.Collections.Generic.List{GeoLib.C2DHoledPolygon},GeoLib.CGrid)">
+            <summary>
+            Gets the union of the 2 shapes.
+            </summary>
+            <param name="Other">The other shape.</param> 
+            <param name="Polygons">The set to recieve the result.</param> 
+            <param name="grid">The degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.GetOverlaps(GeoLib.C2DHoledPolygon,System.Collections.Generic.List{GeoLib.C2DHoledPolygon},GeoLib.CGrid)">
+            <summary>
+            Gets the overlaps of the 2 shapes.	
+            </summary>
+            <param name="Other">The other shape.</param> 
+            <param name="Polygons">The set to recieve the result.</param> 
+            <param name="grid">The degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.GetHole(System.Int32)">
+            <summary>
+            Gets the Hole as a C2DPolygon.
+            </summary>
+            <param name="i">Hole index.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.SetHole(System.Int32,GeoLib.C2DPolygon)">
+            <summary>
+            Hole access.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.AddHole(GeoLib.C2DPolygon)">
+            <summary>
+            Hole addition.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.SetHole(System.Int32,GeoLib.C2DPolyBase)">
+            <summary>
+            Hole access.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.AddHole(GeoLib.C2DPolyBase)">
+            <summary>
+            Hole addition.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolygon.RemoveHole(System.Int32)">
+            <summary>
+            Hole removal.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DHoledPolygon.Rim">
+            <summary>
+            The rim.
+            </summary>
+        </member>
+        <member name="T:GeoLib.C2DPolyArc">
+            <summary>
+            Class to represent a 2D polygon with optional curved lines.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.#ctor(GeoLib.C2DPolyBase)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">The other polygon.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.#ctor(GeoLib.C2DPolyArc)">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.Finalize">
+            <summary>
+            Destructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.SetStartPoint(GeoLib.C2DPoint)">
+            <summary>
+            Sets the starting point.
+            </summary>
+            <param name="Point">The start point.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.LineTo(GeoLib.C2DPoint,System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Arc to a new point.
+            </summary>
+            <param name="Point">The point to go to.</param> 
+            <param name="dRadius">The radius.</param> 
+            <param name="bCentreOnRight">Indicates whether the centre of the arc is to the right of the line.</param> 
+            <param name="bArcOnRight">indicates whether the curve is to the right i.e. anti-clockwise.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.LineTo(GeoLib.C2DPoint)">
+            <summary>
+            Adds a point which is a striaght line from the previous.
+            </summary>
+            <param name="Point">The point to go to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.Close(System.Double,System.Boolean,System.Boolean)">
+            <summary>
+            Close with a curved line back to the first point.
+            </summary>
+            <param name="dRadius">The radius.</param> 
+            <param name="bCentreOnRight">Indicates whether the centre of the arc is to the right of the line.</param> 
+            <param name="bArcOnRight">indicates whether the curve is to the right i.e. anti-clockwise.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.Close">
+            <summary>
+            Close with a straight line back to the first point.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.CreateRandom(GeoLib.C2DRect,System.Int32,System.Int32)">
+            <summary>
+            Creates a random shape.
+            </summary>
+            <param name="cBoundary">The boundary.</param> 
+            <param name="nMinPoints">The minimum points.</param> 
+            <param name="nMaxPoints">The maximum points.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.GetNonOverlaps(GeoLib.C2DPolyArc,System.Collections.Generic.List{GeoLib.C2DHoledPolyArc},GeoLib.CGrid)">
+            <summary>
+            Gets the non overlaps i.e. the parts of this that aren't in the other.
+            </summary>
+            <param name="Other">The other shape.</param> 
+            <param name="Polygons">The set to recieve the result.</param> 
+            <param name="grid">The degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.GetUnion(GeoLib.C2DPolyArc,System.Collections.Generic.List{GeoLib.C2DHoledPolyArc},GeoLib.CGrid)">
+            <summary>
+            Gets the union of the 2 shapes.
+            </summary>
+            <param name="Other">The other shape.</param> 
+            <param name="Polygons">The set to recieve the result.</param> 
+            <param name="grid">The degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.GetOverlaps(GeoLib.C2DPolyArc,System.Collections.Generic.List{GeoLib.C2DHoledPolyArc},GeoLib.CGrid)">
+            <summary>
+            Gets the overlaps of the 2 shapes.	
+            </summary>
+            <param name="Other">The other shape.</param> 
+            <param name="Polygons">The set to recieve the result.</param> 
+            <param name="grid">The degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.GetArea">
+            <summary>
+            Gets the area.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.GetCentroid">
+            <summary>
+            Returns the centroid.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DPolyArc.RotateToRight(System.Double)">
+            Rotates the polygon to the right around the centroid.
+            
+            <summary>
+            Rotates the shape to the right about the centroid.	
+            </summary>
+            <param name="dAng">The angle to rotate by.</param> 
+        </member>
+        <member name="T:GeoLib.C2DHoledPolyArc">
+            <summary>
+            Class to represent a 2D polyarc with holes.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.#ctor(GeoLib.C2DHoledPolyBase)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.#ctor(GeoLib.C2DPolyBase)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.#ctor(GeoLib.C2DPolyArc)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.Set(GeoLib.C2DHoledPolyBase)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.Set(GeoLib.C2DHoledPolyArc)">
+            <summary>
+            Assignment.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.#ctor(GeoLib.C2DHoledPolyArc)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="Other">Other polygon to set this to.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.GetArea">
+            <summary>
+            Gets the area.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.GetCentroid">
+            <summary>
+            Gets the centroid.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.GetNonOverlaps(GeoLib.C2DHoledPolyArc,System.Collections.Generic.List{GeoLib.C2DHoledPolyArc},GeoLib.CGrid)">
+            <summary>
+            Gets the non overlaps i.e. the parts of this that aren't in the other.
+            </summary>
+            <param name="Other">The other shape.</param> 
+            <param name="Polygons">The set to recieve the result.</param> 
+            <param name="grid">The degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.GetUnion(GeoLib.C2DHoledPolyArc,System.Collections.Generic.List{GeoLib.C2DHoledPolyArc},GeoLib.CGrid)">
+            <summary>
+            Gets the union of the 2 shapes.
+            </summary>
+            <param name="Other">The other shape.</param> 
+            <param name="Polygons">The set to recieve the result.</param> 
+            <param name="grid">The degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.GetOverlaps(GeoLib.C2DHoledPolyArc,System.Collections.Generic.List{GeoLib.C2DHoledPolyArc},GeoLib.CGrid)">
+            <summary>
+            Gets the overlaps of the 2 shapes.	
+            </summary>
+            <param name="Other">The other shape.</param> 
+            <param name="Polygons">The set to recieve the result.</param> 
+            <param name="grid">The degenerate settings.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.GetHole(System.Int32)">
+            <summary>
+            Gets the Hole as a C2DPolyArc.
+            </summary>
+            <param name="i">Hole index.</param> 
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.SetHole(System.Int32,GeoLib.C2DPolyArc)">
+            <summary>
+            Hole assignment.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.AddHole(GeoLib.C2DPolyArc)">
+            <summary>
+            Hole addition.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.SetHole(System.Int32,GeoLib.C2DPolyBase)">
+            <summary>
+            Hole assignment.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.AddHole(GeoLib.C2DPolyBase)">
+            <summary>
+            Hole addition.
+            </summary>
+        </member>
+        <member name="M:GeoLib.C2DHoledPolyArc.RemoveHole(System.Int32)">
+            <summary>
+            Hole removal.
+            </summary>
+        </member>
+        <member name="P:GeoLib.C2DHoledPolyArc.Rim">
+            <summary>
+            Rim access.
+            </summary>
+        </member>
+    </members>
+</doc>
