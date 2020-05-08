@@ -82,9 +82,14 @@ namespace Diploma2.Services
                 List<C2DHoledPolygon> asdasd = new List<C2DHoledPolygon>();
                 roomPolygon.GetOverlaps(roomPolygon2, asdasd,grid);
                 List<double> a = asdasd.Select(i => i.GetArea()).ToList();
-                double sumoverlap = a.Sum();
+                double sumoverlap = a.Sum()/10000;
                 double actualArea = room.Area;
-                asd += Math.Pow(2,actualArea - sumoverlap);
+                if (actualArea-sumoverlap>0)
+                {
+                    asd += +10000000;
+                }
+
+                asd += Math.Pow(2, actualArea - sumoverlap);
             }
             return asd;
         }

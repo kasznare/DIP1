@@ -60,6 +60,12 @@ namespace Diploma2.Services {
             foreach (var room in m.rooms) {
                 room.CanGetBoundarySorted();
             }
+
+            List<_Point> boundaries = new List<_Point>() { new _Point(0, 0), new _Point(0, 900), new _Point(900, 900), new _Point(900, 0) };
+            m.OutlinePolygonPoints = boundaries;
+            List<System.Windows.Point> convertedPointsForPolygon = boundaries.Select(i => new System.Windows.Point(i.X, i.Y)).ToList();
+            m.AvailableOutlinePolygon = new Polygon() { Points = new PointCollection(convertedPointsForPolygon) };
+
             return m;
         }
 

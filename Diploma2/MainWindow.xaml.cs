@@ -101,7 +101,7 @@ namespace Diploma2
         {
             DataContext = this;
             InitializeComponent();
-            model = ModelConfigurations.InitSimplestModel();
+            model = ModelConfigurations.InitSimpleModel();
             CostCalculationService.InitializeASD();
             LoadDataFromModel();
             simulation.Model = model;
@@ -109,7 +109,7 @@ namespace Diploma2
             Paint();
         }
 
-      
+
 
         private void LoadModels()
         {
@@ -125,12 +125,15 @@ namespace Diploma2
 
             try
             {
-                Polygon p = model.AvailableOutlinePolygon;
-                p.Fill = Brushes.White;
-                p.Opacity = 0.1;
-                p.ToolTip = "Available space";
+                if (model.AvailableOutlinePolygon != null)
+                {
+                    Polygon p = model.AvailableOutlinePolygon;
+                    p.Fill = Brushes.White;
+                    p.Opacity = 0.1;
+                    p.ToolTip = "Available space";
 
-                testcanvas.Children.Add(p);
+                    testcanvas.Children.Add(p);
+                }
             }
             catch (Exception e)
             {
@@ -145,14 +148,14 @@ namespace Diploma2
                     List<_Point> boundaries = room.GetPoints();
                     if (!boundaries.Any()) continue;
                     //List<PointF> convertedPoints = boundaries.Select(i => new PointF((float) i.X, (float) i.Y)).ToList();
-                    List<Point> convertedPointsForPolygon = boundaries.Select(i => new Point( i.X, i.Y)).ToList();
+                    List<Point> convertedPointsForPolygon = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
                     //System.Drawing.PointF center = Utils.GetCentroid(convertedPoints);
                     Polygon p = new Polygon();
                     p.Points = new PointCollection(convertedPointsForPolygon);
                     p.Fill = new SolidColorBrush(room.type.fillColor.ToMediaColor());
                     p.Opacity = 0.25;
                     p.ToolTip = room.ToString();
-                    
+
                     testcanvas.Children.Add(p);
                 }
                 catch (Exception e)
@@ -161,9 +164,10 @@ namespace Diploma2
                 }
             }
             var allLinesFlat = model.AllLinesFlat();
-            Brush LinesolidColorBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
-            Brush LinesolidColorBrush2 = Brushes.Red;
-                LinesolidColorBrush.Opacity = 0.5;
+            Brush greyBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
+            Brush redBrush = Brushes.Red;
+            Brush yellowBrush = Brushes.Yellow;
+            greyBrush.Opacity = 0.5;
             for (var i = 0; i < allLinesFlat.Count; i++)
             {
                 _Line line = allLinesFlat[i];
@@ -172,26 +176,20 @@ namespace Diploma2
                 {
                     ShapeLine _line2 = new ShapeLine();
                     _Point n = line.GetNV(true);
-                    _line2.Stroke = LinesolidColorBrush2;
-                    _line2.X1 = (line.StartPoint.X + line.EndPoint.X)/2;
-                    _line2.X2 = (line.StartPoint.X + line.EndPoint.X)/2 + n.X*10;
-                    _line2.Y1 = (line.StartPoint.Y + line.EndPoint.Y)/2;
-                    _line2.Y2 = (line.StartPoint.Y + line.EndPoint.Y)/2 + n.Y*10;
+                    _line2.Stroke = redBrush;
+                    _line2.X1 = (line.StartPoint.X + line.EndPoint.X) / 2;
+                    _line2.X2 = (line.StartPoint.X + line.EndPoint.X) / 2 + n.X * 10;
+                    _line2.Y1 = (line.StartPoint.Y + line.EndPoint.Y) / 2;
+                    _line2.Y2 = (line.StartPoint.Y + line.EndPoint.Y) / 2 + n.Y * 10;
                     _line2.StrokeEndLineCap = PenLineCap.Triangle;
                     _line2.StrokeStartLineCap = PenLineCap.Round;
                     _line2.StrokeThickness = 10;
                     _line2.ToolTip = line.ToString();
                     testcanvas.Children.Add(_line2);
                 }
-                if (selectedLineIndices.Contains(i))
-                {
-                    LinesolidColorBrush = Brushes.Yellow;
-                }
 
+                _line.Stroke = selectedLineIndices.Contains(i) ? yellowBrush : greyBrush;
 
-
-
-                _line.Stroke = LinesolidColorBrush;
                 _line.X1 = line.StartPoint.X;
                 _line.X2 = line.EndPoint.X;
                 _line.Y1 = line.StartPoint.Y;
@@ -205,17 +203,15 @@ namespace Diploma2
 
             List<_Point> allPointsFlat = model.AllPointsFlat();
             var solidColorBrush = new SolidColorBrush(Color.FromArgb(90, 255, 0, 0));
-                solidColorBrush.Opacity = 0.5;
+            solidColorBrush.Opacity = 0.5;
+            var GreenBrush = Brushes.GreenYellow;
             for (var i = 0; i < allPointsFlat.Count; i++)
             {
                 _Point point = allPointsFlat[i];
                 ShapeLine _line = new ShapeLine();
 
-                if (i.Equals(SelectedPointIndex))
-                {
-                    solidColorBrush = Brushes.GreenYellow;
-                }
-                _line.Stroke = solidColorBrush;
+                _line.Stroke = i.Equals(SelectedPointIndex) ? GreenBrush : solidColorBrush;
+                
                 _line.X1 = point.X;
                 _line.X2 = point.X + 1;
                 _line.Y1 = point.Y;
@@ -226,8 +222,6 @@ namespace Diploma2
                 _line.ToolTip = point.ToString();
                 testcanvas.Children.Add(_line);
             }
-
-
 
             isPainting = false;
         }
