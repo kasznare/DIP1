@@ -25,10 +25,11 @@ namespace Diploma2.Services
         int CurrentIndex = 0;
         int MaxIndex = 100;
         int baseMoveDistance = 10;
+        private int maxSeconds = 60;
 
         ExitCondition exitCondition = ExitCondition.Running;
 
-        Cost actualCost = new Cost(0, 100000, 100000, 0, 0);
+        Cost actualCost = new Cost(0, 1000000, 1000000, 0, 0);
 
         public ObservableCollection<_Model> modelCopyHistory = new ObservableCollection<_Model>();
         public Dictionary<Action, Cost> ActionsByCosts = new Dictionary<Action, Cost>();
@@ -52,8 +53,8 @@ namespace Diploma2.Services
                 MakeAStepByTheCalculatedCosts();
 
 
-                CalculateDoorCosts();
-                MakeStepByDoorChanges();
+                //CalculateDoorCosts();
+                //MakeStepByDoorChanges();
 
                 HandleModelChangeUpdate();
 
@@ -61,7 +62,7 @@ namespace Diploma2.Services
                 {
                     exitCondition = ExitCondition.isFinished;
                 }
-                if (st.ElapsedMilliseconds > 10000)
+                if (st.ElapsedMilliseconds > maxSeconds*1000)
                 {
                     exitCondition = ExitCondition.isTimeout;
                 }

@@ -101,7 +101,7 @@ namespace Diploma2
         {
             DataContext = this;
             InitializeComponent();
-            model = ModelConfigurations.InitNormalModel();
+            model = ModelConfigurations.InitSimplestModel();
             CostCalculationService.InitializeASD();
             LoadDataFromModel();
             simulation.Model = model;
@@ -122,6 +122,23 @@ namespace Diploma2
         {
             isPainting = true;
             testcanvas.Children.Clear();
+
+            try
+            {
+              
+                Polygon p = model.AvailableOutlinePolygon;
+                p.Fill = Brushes.White;
+                p.Opacity = 0.1;
+                p.ToolTip = "Available space";
+
+                testcanvas.Children.Add(p);
+            }
+            catch (Exception e)
+            {
+                Logger.WriteLog(e);
+            }
+
+
             foreach (_Room room in Rooms)
             {
                 try
@@ -147,11 +164,11 @@ namespace Diploma2
             var allLinesFlat = model.AllLinesFlat();
             Brush LinesolidColorBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
             Brush LinesolidColorBrush2 = Brushes.Red;
+                LinesolidColorBrush.Opacity = 0.5;
             for (var i = 0; i < allLinesFlat.Count; i++)
             {
                 _Line line = allLinesFlat[i];
                 ShapeLine _line = new ShapeLine();
-                LinesolidColorBrush.Opacity = 0.5;
                 if (line.HasDoor)
                 {
                     ShapeLine _line2 = new ShapeLine();
@@ -189,12 +206,12 @@ namespace Diploma2
 
             List<_Point> allPointsFlat = model.AllPointsFlat();
             var solidColorBrush = new SolidColorBrush(Color.FromArgb(90, 255, 0, 0));
+                solidColorBrush.Opacity = 0.5;
             for (var i = 0; i < allPointsFlat.Count; i++)
             {
                 _Point point = allPointsFlat[i];
                 ShapeLine _line = new ShapeLine();
 
-                solidColorBrush.Opacity = 0.5;
                 if (i.Equals(SelectedPointIndex))
                 {
                     solidColorBrush = Brushes.GreenYellow;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Windows.Shapes;
 using Diploma2.Services;
 using Action = System.Action;
 
@@ -15,7 +16,7 @@ namespace Diploma2.Model
         public ObservableCollection<_Room> rooms { get; set; }
         public object loadedModelType { get; internal set; }
         public bool IsInInvalidState { get; internal set; }
-
+        public Polygon AvailableOutlinePolygon { get; set; }
         public int[,] AdjacencyMatrix { get; set; }
         public int[,] TransparencyMatrix { get; set; }
         public int[] DepthMatrix { get; set; }

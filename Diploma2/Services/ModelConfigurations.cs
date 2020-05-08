@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Media;
+using System.Windows.Shapes;
 using Diploma2.Model;
 
 namespace Diploma2.Services {
@@ -21,6 +25,10 @@ namespace Diploma2.Services {
             foreach (var room in m.rooms) {
                 room.CanGetBoundarySorted();
             }
+
+            List<_Point> boundaries =new List<_Point>(){new _Point(0,0),new _Point(0,450), new _Point(450,450), new _Point(450,0)};
+            List<System.Windows.Point> convertedPointsForPolygon = boundaries.Select(i => new System.Windows.Point(i.X, i.Y)).ToList();
+            m.AvailableOutlinePolygon = new Polygon(){Points = new PointCollection(convertedPointsForPolygon)};
             return m;
         }
         public static _Model InitSimpleModel() {

@@ -117,10 +117,10 @@
 
           <StackPanel  Grid.Column="1"
                        Grid.Row="0">
-            <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Visible" Height="500">
+            <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Visible" Height="550" HorizontalScrollBarVisibility="Visible">
             <Canvas x:Name="testcanvas"
                     Height="500"
-                    Margin="50,500,0,0">
+                    Margin="150,600,0,0">
               <!--RenderTransformOrigin="0,0"-->
               <Canvas.RenderTransform>
                 <!--<TransformGroup>-->
