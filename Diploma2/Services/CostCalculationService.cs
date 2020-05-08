@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Diploma2.Model;
+using GeoLib;
 using Point = System.Windows.Point;
 
 namespace Diploma2.Services
@@ -62,28 +63,30 @@ namespace Diploma2.Services
         }
         private static double CalculateConstraintCost()
         {
+            double asd = 0.0;
+            List<_Point> boundaries2 = localModel.OutlinePolygonPoints;
             foreach (_Room room in localModel.rooms)
             {
                 List<_Point> boundaries = room.GetPoints();
                 if (!boundaries.Any()) continue;
-                //List<PointF> convertedPoints = boundaries.Select(i => new PointF((float) i.X, (float) i.Y)).ToList();
-                List<Point> convertedPointsForPolygon = boundaries.Select(i => new Point(i.X, i.Y)).ToList();
-                //System.Drawing.PointF center = Utils.GetCentroid(convertedPoints);
-                Polygon p = new Polygon();
-                p.Points = new PointCollection(convertedPointsForPolygon);
+                List<C2DPoint> convertedPointsForPolygon2 = boundaries.Select(i => new C2DPoint(i.X, i.Y)).ToList();
+                List<C2DPoint> convertedPointsForPolygon3 = boundaries2.Select(i => new C2DPoint(i.X, i.Y)).ToList();
+               
+                C2DPolygon roomPolygon = new C2DPolygon();
+                roomPolygon.Create(convertedPointsForPolygon2, true);
+
+                C2DPolygon roomPolygon2 = new C2DPolygon();
+                roomPolygon2.Create(convertedPointsForPolygon3, true);
                 
-                GraphicsPath grp = new GraphicsPath();
-
-                // Create an open figure
-                grp.AddLine(10, 10, 10, 50); // a of polygon
-                grp.AddLine(10, 50, 50, 50); // b of polygon
-                grp.CloseFigure();           // close polygon
-
-                // Create a Region regarding to grp
-                Region reg = new Region(grp);
-                reg.GetRegionData();
+                CGrid grid = new CGrid();
+                List<C2DHoledPolygon> asdasd = new List<C2DHoledPolygon>();
+                roomPolygon.GetOverlaps(roomPolygon2, asdasd,grid);
+                List<double> a = asdasd.Select(i => i.GetArea()).ToList();
+                double sumoverlap = a.Sum();
+                double actualArea = room.Area;
+                asd += Math.Pow(2,actualArea - sumoverlap);
             }
-            return 0.0;
+            return asd;
         }
 
       

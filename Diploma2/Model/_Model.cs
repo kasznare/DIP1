@@ -14,12 +14,18 @@ namespace Diploma2.Model
     {
         public List<Action> actionHistory { get; set; }
         public ObservableCollection<_Room> rooms { get; set; }
-        public object loadedModelType { get; internal set; }
-        public bool IsInInvalidState { get; internal set; }
+        public object loadedModelType { get;  set; }
+        public bool IsInInvalidState { get;  set; }
+        [JsonIgnore]
+        [IgnoreDataMember]
         public Polygon AvailableOutlinePolygon { get; set; }
+        [JsonIgnore]
+        [IgnoreDataMember]
+        public List<_Point> OutlinePolygonPoints { get; set; }
         public int[,] AdjacencyMatrix { get; set; }
         public int[,] TransparencyMatrix { get; set; }
         public int[] DepthMatrix { get; set; }
+
         public _Model()
         {
             rooms = new ObservableCollection<_Room>();
@@ -119,7 +125,12 @@ namespace Diploma2.Model
 
             _Model m = new _Model(newRooms);
             //RemoveRedundancy(m);
-
+            m.OutlinePolygonPoints = OutlinePolygonPoints;
+            m.AvailableOutlinePolygon = AvailableOutlinePolygon;
+            m.AdjacencyMatrix = AdjacencyMatrix;
+            m.TransparencyMatrix = TransparencyMatrix;
+            m.DepthMatrix = DepthMatrix;
+            m.IsInInvalidState = IsInInvalidState;
             return m;
         }
         public _Model DeepCopy(_Line oldMyLine, out _Line newMyLine)

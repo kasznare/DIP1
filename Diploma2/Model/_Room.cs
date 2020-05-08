@@ -167,7 +167,9 @@ namespace Diploma2.Model {
             }
             return commonMyPoint;
         }
-
+        /// <summary>
+        /// this value is in m2 so divide the coordinates with 10000
+        /// </summary>
         public double Area { get; set; }
 
         public double CalculateArea() {

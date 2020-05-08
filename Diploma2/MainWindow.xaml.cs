@@ -125,7 +125,6 @@ namespace Diploma2
 
             try
             {
-              
                 Polygon p = model.AvailableOutlinePolygon;
                 p.Fill = Brushes.White;
                 p.Opacity = 0.1;

@@ -27,6 +27,7 @@ namespace Diploma2.Services {
             }
 
             List<_Point> boundaries =new List<_Point>(){new _Point(0,0),new _Point(0,450), new _Point(450,450), new _Point(450,0)};
+            m.OutlinePolygonPoints = boundaries;
             List<System.Windows.Point> convertedPointsForPolygon = boundaries.Select(i => new System.Windows.Point(i.X, i.Y)).ToList();
             m.AvailableOutlinePolygon = new Polygon(){Points = new PointCollection(convertedPointsForPolygon)};
             return m;

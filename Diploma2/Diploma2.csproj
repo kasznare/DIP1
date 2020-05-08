@@ -142,10 +142,6 @@
       <Project>{c94c1bdd-11f9-4a3f-8929-86b1b67ae1d5}</Project>
       <Name>Selen.Wpf.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Downloads\selen\source\Selen.Wpf.DemoApplication\Selen.Wpf.DemoApplication.csproj">
-      <Project>{12a9479b-4807-47e2-b685-c5cee50e5b53}</Project>
-      <Name>Selen.Wpf.DemoApplication</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Downloads\selen\source\Selen.Wpf.GenericAppTree.Contracts\Selen.Wpf.GenericAppTree.Contracts.csproj">
       <Project>{fc32ab02-5705-48e0-bcfd-78eb6c137aeb}</Project>
       <Name>Selen.Wpf.GenericAppTree.Contracts</Name>
@@ -157,6 +153,22 @@
     <ProjectReference Include="..\..\..\Downloads\selen\source\Selen.Wpf.SystemStyles\Selen.Wpf.SystemStyles.csproj">
       <Project>{a468315f-fa11-4bc2-8e5f-ea3c48b24c74}</Project>
       <Name>Selen.Wpf.SystemStyles</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GeoLib 4.0\GeoLib.csproj">
+      <Project>{c5e6ed3a-59d8-4e0d-9b22-76b397432d5b}</Project>
+      <Name>GeoLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GeoPolygons 4.0\GeoPolygons.csproj">
+      <Project>{a13aa7e0-06c4-4401-9006-c7eb506b3479}</Project>
+      <Name>GeoPolygons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GeoProjections 1.0\GeoProjections.csproj">
+      <Project>{107de529-3820-436e-8857-9b0de1944737}</Project>
+      <Name>GeoProjections</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GeoView 1.0\GeoView.csproj">
+      <Project>{263192a1-5b8d-4f2b-96ad-0fba86c9f4f5}</Project>
+      <Name>GeoView</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
