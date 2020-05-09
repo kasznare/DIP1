@@ -23,13 +23,13 @@ namespace Diploma2.Services
         int ActualTreshold = 0;
         int MaxTreshold = 5;
         int CurrentIndex = 0;
-        int MaxIndex = 100;
+        int MaxIndex = 200;
         int baseMoveDistance = 10;
         private int maxSeconds = 60;
 
         ExitCondition exitCondition = ExitCondition.Running;
 
-        Cost actualCost = new Cost(0, 1000000, 1000000, 0, 0);
+        Cost actualCost = new Cost(0, 10000000, 10000000, 0, 0);
 
         public ObservableCollection<_Model> modelCopyHistory = new ObservableCollection<_Model>();
         public Dictionary<Action, Cost> ActionsByCosts = new Dictionary<Action, Cost>();
@@ -48,7 +48,7 @@ namespace Diploma2.Services
                 DoorActions.Clear();
                 SaveState();
                 actualCost = CostCalculationService.CalculateCostNew(Model);
-
+                actualCost.Index = CurrentIndex;
                 CalculateCostsForState();
                 MakeAStepByTheCalculatedCosts();
 

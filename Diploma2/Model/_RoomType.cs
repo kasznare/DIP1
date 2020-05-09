@@ -21,7 +21,9 @@ namespace Diploma2.Model
         public static _RoomType CorridorRoom =
             new _RoomType(1, "CorridorRoom",
                 50, true, 1, 2, 200, true, Color.Wheat);
-
+        public static _RoomType StairCase =
+            new _RoomType(1, "StairCase",
+                50, true, 1, 8,8, true, Color.Wheat);
 
         public static _RoomType LivingRoom =
             new _RoomType(1, "LivingRoom",

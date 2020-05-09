@@ -65,6 +65,10 @@ namespace Diploma2.Services
         {
             double asd = 0.0;
             List<_Point> boundaries2 = localModel.OutlinePolygonPoints;
+            if (boundaries2==null || (boundaries2!=null && !boundaries2.Any()))
+            {
+                return asd;
+            }
             foreach (_Room room in localModel.rooms)
             {
                 List<_Point> boundaries = room.GetPoints();
@@ -168,7 +172,7 @@ namespace Diploma2.Services
                     {
                         if (seg.relatedrooms.Count < 1)            //i need to calculate exterior walls with different cost
                         {
-                            wallLength += Math.Sqrt((d / 100)) * 10;
+                            wallLength += Math.Sqrt((d / 100)) * 20;
                         }
                         else
                         {
