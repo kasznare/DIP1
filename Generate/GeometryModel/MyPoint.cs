@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
-using ONLAB2;
 
 namespace WindowsFormsApp1 {
     public class MyPoint : IGeometry {

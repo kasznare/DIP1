@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using WindowsFormsApp1.Utilities;
 using Newtonsoft.Json;
-using ONLAB2;
 
 namespace WindowsFormsApp1 {
     public class MyRoom : IGeometry {
