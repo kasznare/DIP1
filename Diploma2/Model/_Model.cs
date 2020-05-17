@@ -14,6 +14,7 @@ namespace Diploma2.Model
     {
         public List<Action> actionHistory { get; set; }
         public ObservableCollection<_Room> rooms { get; set; }
+        //public List<Level> Levels { get; set; }
         public object loadedModelType { get;  set; }
         public bool IsInInvalidState { get;  set; }
         [JsonIgnore]

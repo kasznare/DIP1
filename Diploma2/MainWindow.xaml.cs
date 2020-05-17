@@ -101,7 +101,7 @@ namespace Diploma2
         {
             DataContext = this;
             InitializeComponent();
-            model = ModelConfigurations.InitNormalModel();
+            model = ModelConfigurations.InitSimpleModel();
             CostCalculationService.InitializeASD();
             LoadDataFromModel();
             simulation.Model = model;
@@ -230,10 +230,13 @@ namespace Diploma2
             Points = new ObservableCollection<_Point>(model.AllPointsFlat());
             Lines = new ObservableCollection<_Line>(model.AllLinesFlat());
             Rooms = model.rooms;
+#if DEBUG
             LineGrid.ItemsSource = Lines;
             PointGrid.ItemsSource = Points;
             RoomGrid.ItemsSource = null;
             RoomGrid.ItemsSource = Rooms;
+
+#endif
         }
         #region UI eventhandlers
 

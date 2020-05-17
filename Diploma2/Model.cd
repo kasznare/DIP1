@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Diploma2.Model._GeometryBase" Collapsed="true">
-    <Position X="12.75" Y="2" Width="1.5" />
+    <Position X="13.25" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAEAEAAAAQAAAAABAAAAAAAAAAAAAA=</HashCode>
       <FileName>Model\_GeometryBase.cs</FileName>
@@ -9,19 +9,24 @@
   </Class>
   <Class Name="Diploma2.Model._Line">
     <Position X="12.25" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAYAAQAAE1FAAAAAABAEoAAAAAAAAAAAAAAg=</HashCode>
+      <HashCode>AAAAAAAAAYAAQAAE1FAAAAAABAEoAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Model\_Line.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="EndPoint" />
-      <Property Name="StartPoint" />
     </ShowAsAssociation>
   </Class>
   <Class Name="Diploma2.Model._Model">
-    <Position X="6.75" Y="3" Width="1.5" />
+    <Position X="7.75" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>AgAAQAACCAwBCAyEAxIIQCBEAAAIChECCUASAECACAE=</HashCode>
+      <HashCode>AgAAQACCCAwBCAyEAxIIQCBEAAAIChECCUASAECACAE=</HashCode>
       <FileName>Model\_Model.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -29,7 +34,10 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="Diploma2.Model._Point">
-    <Position X="14.25" Y="3.25" Width="1.5" />
+    <Position X="14.75" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAIAAAAAEoAAAAAAAgAAIAAAAAAAAAAAAYAA=</HashCode>
       <FileName>Model\_Point.cs</FileName>
@@ -37,8 +45,11 @@
   </Class>
   <Class Name="Diploma2.Model._Room">
     <Position X="10" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAIAAAAAAAgAQEIAUACAAAgAIJAEQCAAIAAAAAKBA=</HashCode>
+      <HashCode>AAAAIAAAAAAAgAQEIAUACBAAgAIJAEQDAAIAAQAAKBA=</HashCode>
       <FileName>Model\_Room.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -51,8 +62,11 @@
   </Class>
   <Class Name="Diploma2.Model._RoomType">
     <Position X="16.75" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAgCACAAgUqAAAAAgRgAEAAAAAiQAAEAAEAAA=</HashCode>
+      <HashCode>AAAAAAAAgCACAAgUqAAAAAgRgAEAQAAAiQEAEAAEAAA=</HashCode>
       <FileName>Model\_RoomType.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />

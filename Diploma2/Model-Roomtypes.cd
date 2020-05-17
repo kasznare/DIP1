@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Diploma2.Model._GeometryBase" Collapsed="true">
+    <Position X="10.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAEAAAAQAAAAABAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\_GeometryBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Diploma2.Model._Room">
+    <Position X="10" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAgAQEIAUACBAAgAIJAEQDAAIAAQAAKBA=</HashCode>
+      <FileName>Model\_Room.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="type" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Diploma2.Model._RoomType">
+    <Position X="12.5" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgCACAAgUqAAAAAgRgAEAQAAAiQEAEAAEAAA=</HashCode>
+      <FileName>Model\_RoomType.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Diploma2.Model._RoomTypeCost">
+    <Position X="15" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAIAAAAAAAAAAAAAAAAAABAAIAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\_RoomTypeCost.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="type1" />
+      <Property Name="type2" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Diploma2.Model.RoomTypeCostStorage">
+    <Position X="17.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAABAAAQAAAAAAAIAAAAgAAAAABAAAAAAAAAA=</HashCode>
+      <FileName>Model\RoomTypeCostStorage.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="allRoomTypes" />
+      <Property Name="typeCosts" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

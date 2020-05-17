@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Diploma2.Model._GeometryBase" Collapsed="true">
+    <Position X="12.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAEAAAAQAAAAABAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\_GeometryBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Diploma2.Model._Line">
+    <Position X="12.25" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAYAAQAAE1FAAAAAABAEoAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Model\_Line.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="StartPoint" />
+      <Property Name="EndPoint" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Diploma2.Model._Model">
+    <Position X="7.5" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AgAAQACCCAwBCAyEAxIIQCBEAAAIChECCUASAECACAE=</HashCode>
+      <FileName>Model\_Model.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="rooms" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Diploma2.Model._Point">
+    <Position X="14.75" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAEoAAAAAAAgAAIAAAAAAAAAAAAYAA=</HashCode>
+      <FileName>Model\_Point.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Diploma2.Model._Room">
+    <Position X="10" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAgAQEIAUACBAAgAIJAEQDAAIAAQAAKBA=</HashCode>
+      <FileName>Model\_Room.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="type" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Lines" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Diploma2.Model._RoomType">
+    <Position X="16.75" Y="3.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgCACAAgUqAAAAAgRgAEAQAAAiQEAEAAEAAA=</HashCode>
+      <FileName>Model\_RoomType.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Diploma2.Model.Cost">
+    <Position X="9.75" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAAAEAIAAIAAAAAAAAAAAAAFAAAAAAAA=</HashCode>
+      <FileName>Model\Cost.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Diploma2.Services.Action">
+    <Position X="23.25" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAABAAAAAQBAAEIAAAAgAAAAA=</HashCode>
+      <FileName>Services\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Diploma2.Services.Move">
+    <Position X="22" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAIAAIAAAAgAA=</HashCode>
+      <FileName>Services\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Diploma2.Services.Split">
+    <Position X="26.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAABAgAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Services\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Diploma2.Services.MakeDoor">
+    <Position X="19.75" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAEAAAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Services\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Diploma2.Services.Switch">
+    <Position X="24.25" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Services\Action.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

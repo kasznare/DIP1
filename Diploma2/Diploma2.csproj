@@ -79,7 +79,10 @@
     <Compile Include="ModelStorage.cs" />
     <Compile Include="Model\ExitCondition.cs" />
     <Compile Include="Model\Cost.cs" />
+    <Compile Include="Model\Level.cs" />
     <Compile Include="Model\LineAndCost.cs" />
+    <Compile Include="Model\RoomTypeCostStorage.cs" />
+    <Compile Include="Model\_RoomTypeCost.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\CFG.cs" />
@@ -128,6 +131,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Model - Copy %282%29.cd" />
+    <None Include="Model-Roomtypes.cd" />
     <None Include="Model.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

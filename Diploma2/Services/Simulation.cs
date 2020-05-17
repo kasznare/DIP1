@@ -23,9 +23,9 @@ namespace Diploma2.Services
         int ActualTreshold = 0;
         int MaxTreshold = 5;
         int CurrentIndex = 0;
-        int MaxIndex = 200;
+        int MaxIndex = 2;
         int baseMoveDistance = 10;
-        private int maxSeconds = 60;
+        private int maxSeconds = 1;
 
         ExitCondition exitCondition = ExitCondition.Running;
 
@@ -235,7 +235,7 @@ namespace Diploma2.Services
         {
             List<Action> sorted = Actions.OrderBy(i => i.Cost.SummaryCost).ToList(); //TODO: is it descending or ascending??? the simulation converges...
             //Action a = sorted.FirstOrDefault();
-            int j = r.Next(0, Math.Min(3, sorted.Count));
+            int j = r.Next(0, Math.Min(10, sorted.Count));
             ActualAction = sorted.ElementAt(j);
             //TODO: here maybe we should return
             if (actualCost.SummaryCost >= ActualAction.Cost.SummaryCost)

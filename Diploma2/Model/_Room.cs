@@ -34,6 +34,7 @@ namespace Diploma2.Model {
         public _RoomType type { get; set; }
         public bool isStartRoom { get; set; }
         
+        public int Level { get; set; }
 
         #endregion
         public _Room DeepCopy() {
@@ -136,12 +137,21 @@ namespace Diploma2.Model {
         /// </summary>
         /// <returns>If lines are sortable</returns>
         public bool CanGetBoundarySorted() {
-            try {
+            //TODO: sort only when nessesary
+            try
+            {
                 SortPoints();
                 return true;
             }
+            //we have plenty of these, but they are excepcted
+            catch (ArgumentOutOfRangeException a)
+            {
+                return false;
+            }
             catch (Exception e) {
+                
                 Logger.WriteLog(e);
+                  
                 return false;
             }
         }
@@ -234,6 +244,7 @@ namespace Diploma2.Model {
                 _Point max = new _Point(X.Max(), Y.Max());
                 _Point min = new _Point(X.Min(), Y.Min());
 
+
                 //TODO: avoid <80cm room sides
 
                 proportion = (max.X - min.X) / (max.Y - min.Y);
@@ -247,6 +258,35 @@ namespace Diploma2.Model {
 
             return proportion;
         }
+        public double CalculateMinSideSize()
+        {
+            double proportion = 0.0;
+            try
+            {
+                List<_Point> bp = GetPoints();
+
+                double[] X = bp.Select(i => i.X).ToArray();
+                double[] Y = bp.Select(i => i.Y).ToArray();
+
+                if (!X.Any() || !Y.Any())
+                {
+                    throw new Exception("bad proportion");
+                }
+
+                double xdiff = X.Max() - X.Min();
+                double ydiff = Y.Max() - Y.Min();
+
+                return xdiff>ydiff ? ydiff : xdiff;
+            }
+            catch (Exception exception)
+            {
+                Logger.WriteLog(exception);
+            }
+
+            return proportion;
+
+        }
+
 
         #region Basic operations and overrides
         public override string ToString() {
@@ -261,5 +301,7 @@ namespace Diploma2.Model {
 
 
         #endregion
+
+       
     }
 }

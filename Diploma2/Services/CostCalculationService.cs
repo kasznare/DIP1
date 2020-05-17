@@ -133,7 +133,13 @@ namespace Diploma2.Services
                 double actualprop = room.CalculateProportion();
                 if (actualprop > type.proportion)
                 {
-                    summary += Math.Pow(2, Math.Abs(-type.proportion + actualprop));
+                    summary += Math.Pow(2, Math.Abs(-type.proportion + actualprop)+5);
+                }
+
+                double minsidesize = room.CalculateMinSideSize();
+                if (minsidesize < type.minsidesize)
+                {
+                    //summary += Math.Pow(2, type.minsidesize - minsidesize);
                 }
             }
 
@@ -150,7 +156,7 @@ namespace Diploma2.Services
             return Math.Round(summary, 2);
         }
 
-        public static Dictionary<_RoomType, Dictionary<_RoomType, int>> asd = new Dictionary<_RoomType, Dictionary<_RoomType, int>>();
+        public static Dictionary<_RoomType, Dictionary<_RoomType, int>> asd { get; set; }= new Dictionary<_RoomType, Dictionary<_RoomType, int>>();
 
         public static void InitializeASD()
         {
@@ -159,7 +165,10 @@ namespace Diploma2.Services
             asd.Add(_RoomType.BedRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -20 }, { _RoomType.Kitchen, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.BedRoom, -100 }, { _RoomType.RestRoom, -100 } });
             asd.Add(_RoomType.RestRoom, new Dictionary<_RoomType, int>() { { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, 1000 }, { _RoomType.CorridorRoom, -100 }, { _RoomType.BedRoom, -100 }, { _RoomType.RestRoom, -100 } });
             asd.Add(_RoomType.CorridorRoom, new Dictionary<_RoomType, int>() { { _RoomType.CorridorRoom, -100 }, { _RoomType.LivingRoom, -100 }, { _RoomType.Kitchen, -100 }, { _RoomType.BedRoom, -100 }, { _RoomType.RestRoom, -100 } });
+            //List<_RoomType> rooms = new List<_RoomType>(){_RoomType.BedRoom, _RoomType.CorridorRoom, _RoomType.DiningRoom, _RoomType.Kitchen, _RoomType.LivingRoom , _RoomType.RestRoom , _RoomType.StairCase};
+            //int[,] costs = new int[rooms.Count,rooms.Count];
 
+            
         }
         private static double CalculateLayoutCost()
         {
@@ -172,7 +181,7 @@ namespace Diploma2.Services
                     {
                         if (seg.relatedrooms.Count < 1)            //i need to calculate exterior walls with different cost
                         {
-                            wallLength += Math.Sqrt((d / 100)) * 20;
+                            wallLength += Math.Sqrt((d / 100)) * 100;
                         }
                         else
                         {
@@ -182,7 +191,7 @@ namespace Diploma2.Services
 
                     if (d < 30) //WE dont like small walls
                     {
-                        wallLength += Math.Sqrt((d / 100)) * 100;
+                        wallLength += Math.Sqrt((d / 100)) * 10;
                     }
                 }
             }
@@ -207,7 +216,7 @@ namespace Diploma2.Services
                     _Room localModelRoom = localModel.rooms[j];
                     if (localModel.AdjacencyMatrix[i, j] == 1)
                     {
-                        layoutcost += asd[room.type][localModelRoom.type] * 10;
+                        layoutcost += RoomTypeCostStorage.FindCost(room.type,localModelRoom.type);
                     }
                 }
             }

@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 
 namespace Diploma2.Model {
     public class _Line : _GeometryBase {
-        public _Point StartPoint { get; set; }
         public _Point EndPoint { get; set; }
         public bool HasDoor { get; set; }
         public double length => GetLength();

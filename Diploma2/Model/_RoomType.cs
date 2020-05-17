@@ -15,31 +15,34 @@ namespace Diploma2.Model
         public double areamin { get; set; }
         public double areamax { get; set; }
         public double proportion { get; set; }
+        public double minsidesize { get; set; }
         public bool visualCommection;
         public Color fillColor { get; set; }
 
+        public static _RoomType BedRoom =
+            new _RoomType(1, "BedRoom",
+                2, true, 3, 15, 15, true, Color.CornflowerBlue, 300);
         public static _RoomType CorridorRoom =
-            new _RoomType(1, "CorridorRoom",
-                50, true, 1, 2, 200, true, Color.Wheat);
-        public static _RoomType StairCase =
-            new _RoomType(1, "StairCase",
-                50, true, 1, 8,8, true, Color.Wheat);
-
-        public static _RoomType LivingRoom =
-            new _RoomType(1, "LivingRoom",
-                1.5, true, 1, 20, 20, true, Color.DarkOliveGreen);
+            new _RoomType(2, "CorridorRoom",
+                50, true, 1, 2, 200, true, Color.Wheat, 80);
+        public static _RoomType DiningRoom =
+            new _RoomType(3, "DiningRoom",
+                1.5, true, 2, 10, 10, true, Color.Brown,200);
 
         public static _RoomType Kitchen =
-            new _RoomType(2, "Kitchen",
-                1.5, true, 2, 10, 10, true, Color.Chocolate);
+            new _RoomType(4, "Kitchen",
+                1.5, true, 2, 10, 10, true, Color.Chocolate, 180);
+        public static _RoomType LivingRoom =
+            new _RoomType(5, "LivingRoom",
+                1.5, true, 1, 20, 20, true, Color.DarkOliveGreen, 300);
 
         public static _RoomType RestRoom =
-            new _RoomType(3, "RestRoom",
-                2, true, 2, 5, 5, true, Color.LightBlue);
+            new _RoomType(6, "RestRoom",
+                2, true, 2, 5, 5, true, Color.LightBlue, 90);
+        public static _RoomType StairCase =
+            new _RoomType(7, "StairCase",
+                50, true, 1, 8,8, true, Color.White, 200);
 
-        public static _RoomType BedRoom =
-            new _RoomType(4, "BedRoom",
-                2, true, 3, 15, 15, true, Color.CornflowerBlue);
 
 
         public override bool Equals(object obj) {
@@ -88,7 +91,7 @@ namespace Diploma2.Model
         //            2, true, 3, 150, 150, true, Color.CornflowerBlue);
         //    }
         //}
-        public _RoomType(int TypeId, string RoomName, double prop, bool Entrance, int Privacy, double AreaMin, double AreaMax, bool VisualConnection, Color fill) {
+        public _RoomType(int TypeId, string RoomName, double prop, bool Entrance, int Privacy, double AreaMin, double AreaMax, bool VisualConnection, Color fill, double MinsideSize) {
             typeid = TypeId;
             proportion = prop;
             roomname = RoomName;
@@ -98,7 +101,7 @@ namespace Diploma2.Model
             areamax = AreaMax;
             visualCommection = VisualConnection;
             fillColor = fill;
-
+            minsidesize = MinsideSize;
         }
         public override string ToString() {
             return roomname;
