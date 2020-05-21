@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using Diploma2.Annotations;
 using Diploma2.Utilities;
+using GeoLib;
 
 namespace Diploma2.Model {
     public class _Room : _GeometryBase, INotifyPropertyChanged {
@@ -34,6 +35,7 @@ namespace Diploma2.Model {
         public _RoomType type { get; set; }
         public bool isStartRoom { get; set; }
         
+        public C2DPolygon Polygon { get; set; }
         public int Level { get; set; }
 
         #endregion
@@ -72,10 +74,14 @@ namespace Diploma2.Model {
             List<_Line> orderedLines = new List<_Line>();
             int actualIndex = 0;//the basis of sorting is to loop and keep this actualindex 
             int boundCount = Lines.Count;
-
+            int nullLinesCount = 0;
             for (int i = 0; i < boundCount; i++) {
                 _Line loopLine = Lines[actualIndex];
-                if (loopLine.StartPoint.Equals(loopLine.EndPoint)) continue; //we remove null lines this way
+                if (loopLine.StartPoint.Equals(loopLine.EndPoint))
+                {
+                    nullLinesCount++;
+                    continue; //we remove null lines this way
+                }
 
                 orderedLines.Add(loopLine);
                 actualIndex = 0;
@@ -98,19 +104,31 @@ namespace Diploma2.Model {
                 }
               
             }
-            _Point p1 = orderedLines.First().ConnectsPoint(orderedLines.Last());
-            _Point p2 = orderedLines.ElementAt(1).ConnectsPoint(orderedLines.ElementAt(0));
+            _Point p1 = orderedLines.First().ConnectsPoint(orderedLines.Last()); //this is where the first and last line joins
+            _Point p2 = orderedLines.ElementAt(1).ConnectsPoint(orderedLines.ElementAt(0)); //this is where the first and second line joins
+            _Point p3 = orderedLines.Last().ConnectsPoint(orderedLines.ElementAt(orderedLines.Count-2)); //this is where the last and the line before last joins
             //so this is the point where the first and second line connect
             //so p0 is where it all started. the last line should have p0
             _Point p0 = orderedLines.First().StartPoint.Equals(p2)
                 ? orderedLines.First().EndPoint
                 : orderedLines.First().StartPoint;
 
-            bool isGoodOrdering = p1 != null && p1.Equals(p0);
+            //to get full circle
+            _Point p4 = orderedLines.Last().StartPoint.Equals(p3)
+                ? orderedLines.Last().EndPoint
+                : orderedLines.Last().StartPoint;
 
+            bool isGoodOrdering = p1 != null && p1.Equals(p0) && p1.Equals(p4);
+
+            bool isGoodCount = (orderedLines.Count + nullLinesCount) == Lines.Count;
 
             if (!isGoodOrdering) {
                 throw new Exception("first and last line does not connect");
+            }
+
+            if (!isGoodCount)
+            {
+                throw new Exception("not enough lines");
             }
 
             Lines = orderedLines; 

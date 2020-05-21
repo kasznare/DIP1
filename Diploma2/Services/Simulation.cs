@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Documents;
 using Diploma2.Model;
 using Diploma2.Utilities;
@@ -21,11 +22,11 @@ namespace Diploma2.Services
         readonly object locker = new object();
 
         int ActualTreshold = 0;
-        int MaxTreshold = 5;
+        int MaxTreshold = 30;
         int CurrentIndex = 0;
-        int MaxIndex = 2;
+        int MaxIndex = 30;
         int baseMoveDistance = 10;
-        private int maxSeconds = 1;
+        private int maxSeconds = 10;
 
         ExitCondition exitCondition = ExitCondition.Running;
 
@@ -50,9 +51,11 @@ namespace Diploma2.Services
                 actualCost = CostCalculationService.CalculateCostNew(Model);
                 actualCost.Index = CurrentIndex;
                 CalculateCostsForState();
+                
+                bool m = Model.IsInInvalidState;
+               
                 MakeAStepByTheCalculatedCosts();
-
-
+               
                 //CalculateDoorCosts();
                 //MakeStepByDoorChanges();
 
@@ -71,6 +74,7 @@ namespace Diploma2.Services
                     exitCondition = ExitCondition.isTreshold;
                 }
                 CurrentIndex++;
+                Thread.Sleep(5);
             }
 
             Logger.WriteLog($"Run Ended.\nExitCondition : {exitCondition}");
@@ -235,10 +239,15 @@ namespace Diploma2.Services
         {
             List<Action> sorted = Actions.OrderBy(i => i.Cost.SummaryCost).ToList(); //TODO: is it descending or ascending??? the simulation converges...
             //Action a = sorted.FirstOrDefault();
+
+            if (!sorted.Any())
+            {
+                return null;
+            }
             int j = r.Next(0, Math.Min(10, sorted.Count));
             ActualAction = sorted.ElementAt(j);
             //TODO: here maybe we should return
-            if (actualCost.SummaryCost >= ActualAction.Cost.SummaryCost)
+            if (true || actualCost.SummaryCost >= ActualAction.Cost.SummaryCost)
             {
                 actualCost = ActualAction.Cost;
                 return ActualAction;

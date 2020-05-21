@@ -15,8 +15,8 @@ namespace Diploma2.Model
         public List<Action> actionHistory { get; set; }
         public ObservableCollection<_Room> rooms { get; set; }
         //public List<Level> Levels { get; set; }
-        public object loadedModelType { get;  set; }
-        public bool IsInInvalidState { get;  set; }
+        public object loadedModelType { get; set; }
+        public bool IsInInvalidState { get; set; }
         [JsonIgnore]
         [IgnoreDataMember]
         public Polygon AvailableOutlinePolygon { get; set; }
@@ -74,7 +74,7 @@ namespace Diploma2.Model
         public void FillDepthArray()
         {
             CFG c = new CFG();
-            DepthMatrix = c.dijkstra(TransparencyMatrix,0, rooms.Count);
+            DepthMatrix = c.dijkstra(TransparencyMatrix, 0, rooms.Count);
         }
         [JsonIgnore]
         [IgnoreDataMember]
@@ -286,10 +286,8 @@ namespace Diploma2.Model
 
         public void MoveLine(int distance, _Line lineToMove)
         {
-            if (lineToMove.length < 11)
-            {
-                //return;
-            }
+            //if (lineToMove.length < 11) //return;
+
             roomsContainingTheLineToMove.Clear();
             roomsTouchingStartPoint.Clear();
             roomsTouchingEndPoint.Clear();
@@ -315,7 +313,7 @@ namespace Diploma2.Model
                 bool shouldBeTrue = room.CanGetBoundarySorted();
                 int linetoMoveOriginal = room.Lines.FindIndex(a => a.Equals(lineToMove));
                 if (linetoMoveOriginal == -1) linetoMoveOriginal = 0;
-               
+
                 room.Lines.Remove(lineToMove);
                 int linesCount = room.Lines.Count;
                 for (var index = 0; index < linesCount; index++)
@@ -406,7 +404,6 @@ namespace Diploma2.Model
                     }
                 }
 
-
                 room.Lines.Insert(linetoMoveOriginal, movedLine);
                 foreach (var line in linesToRemove)
                 {
@@ -418,9 +415,9 @@ namespace Diploma2.Model
 
             foreach (_Room room in roomsContainingTheLineToMove)
             {
-
                 bool shouldBeTrue = room.CanGetBoundarySorted();
                 TryToDivideRoomLinesWithL1L2(room, l1, l2);
+                TryToCatchIfGlobalCase(room, movedLine);
                 shouldBeTrue = room.CanGetBoundarySorted();
                 if (!shouldBeTrue)
                 {
@@ -453,6 +450,26 @@ namespace Diploma2.Model
                 }
             }
 
+
+            foreach (_Room room in roomsTouchingStartPointOnlyAndHaveNoParallelLines)
+            {
+                TryToRemoveRemainderLines(room, l1, l2);
+                bool shouldBeTrue = room.CanGetBoundarySorted();
+                if (!shouldBeTrue)
+                {
+                    IsInInvalidState = true;
+                }
+            }
+            foreach (_Room room in roomsTouchingEndPointOnlyAndHaveNoParalellLines)
+            {
+                TryToRemoveRemainderLines(room, l1, l2);
+                bool shouldBeTrue = room.CanGetBoundarySorted();
+                if (!shouldBeTrue)
+                {
+                    IsInInvalidState = true;
+                }
+            }
+
             List<_Room> sumrooms = new List<_Room>();
             sumrooms.AddRange(roomsContainingTheLineToMove);
             sumrooms.AddRange(roomsTouchingStartPoint);
@@ -467,6 +484,7 @@ namespace Diploma2.Model
                     {
                         room.Lines.Remove(roomLine);
                     }
+
                 }
             }
             //GC.Collect();
@@ -474,6 +492,55 @@ namespace Diploma2.Model
             //but why after? we could handle upon creation
 
             moveStepsCount++;
+        }
+        //this is important only when the room contained the original line, only then is it possible
+        //TODO: here I only solve it for one line, if two lines are overlapped, we have a problem.
+        private void TryToCatchIfGlobalCase(_Room room, _Line movedLine)
+        {
+            List<_Line> overlappedlistinroom = new List<_Line>();
+            //overlappedlistinroom.Add(movedLine);
+            foreach (_Line roomLine in room.Lines)
+            {
+                if (roomLine.Overlaps(movedLine))
+                {
+                    overlappedlistinroom.Add(roomLine);
+                }
+            }
+
+            if (overlappedlistinroom.Count > 1)
+            {
+                DoSomething(ref room, overlappedlistinroom);
+                //until we know how to fix it, mark as invalid
+                //IsInInvalidState = true;
+            }
+
+        }
+
+        private void DoSomething(ref _Room room, List<_Line> overlappedlistinroom)
+        {
+            List<_Point> thesepointsexist = new List<_Point>();
+            foreach (_Line line in overlappedlistinroom)
+            {
+                if (!thesepointsexist.Contains(line.StartPoint)) thesepointsexist.Add(line.StartPoint);
+                if (!thesepointsexist.Contains(line.EndPoint)) thesepointsexist.Add(line.EndPoint);
+            }
+            thesepointsexist = thesepointsexist.OrderBy(i => i.X).OrderBy(i => i.Y).ToList();
+            List<_Line> newLines = new List<_Line>();
+            for (var index = 0; index < thesepointsexist.Count - 1; index += 1)
+            {
+                _Point p0 = thesepointsexist[index];
+                _Point p1 = thesepointsexist[index + 1];
+                newLines.Add(new _Line(p0, p1));
+            }
+
+            _Line l = overlappedlistinroom.Last();
+            foreach (_Line newLine in newLines)
+            {
+                newLine.relatedrooms = l.relatedrooms;
+            }
+
+            room.Lines.RemoveAll(i => overlappedlistinroom.Contains(i));
+            room.Lines.AddRange(newLines);
         }
 
         private bool AreNotParralel(_Point loopNormal, _Point moveNormal)
@@ -600,18 +667,18 @@ namespace Diploma2.Model
                     }
 
                     if (line.Equals(lineToMove)) continue;
-                    
+
                     if ((line.StartPoint.Equals(lineToMove.StartPoint) ||
                          line.EndPoint.Equals(lineToMove.StartPoint)) &&
                         !roomsTouchingStartPoint.Contains(room) &&
                         !roomsContainingTheLineToMove.Contains(room))
                     {
-                        if (!AreNotParralel(line, lineToMove))
+                        if (!AreNotParralel(line, lineToMove) && !roomsTouchingStartPointOnlyAndHaveNoParallelLines.Contains(room))
                         {
-                            roomsTouchingStartPoint.Add(room); //this might cause redundancy
+                            roomsTouchingStartPointOnlyAndHaveNoParallelLines.Add(room); //unused currently
 
                         }
-                        roomsTouchingStartPointOnlyAndHaveNoParallelLines.Add(room);
+                        roomsTouchingStartPoint.Add(room); //this might cause redundancy
                     }
 
                     if ((line.StartPoint.Equals(lineToMove.EndPoint) ||
@@ -619,12 +686,12 @@ namespace Diploma2.Model
                         !roomsTouchingEndPoint.Contains(room) &&
                         !roomsContainingTheLineToMove.Contains(room))
                     {
-                        if (!AreNotParralel(line, lineToMove))
+                        if (!AreNotParralel(line, lineToMove) && !roomsTouchingEndPointOnlyAndHaveNoParalellLines.Contains(room))
                         {
-                            roomsTouchingEndPoint.Add(room); //this might cause redundancy
 
+                            roomsTouchingEndPointOnlyAndHaveNoParalellLines.Add(room); //this might cause redundancy
                         }
-                        roomsTouchingEndPointOnlyAndHaveNoParalellLines.Add(room); //this might cause redundancy
+                        roomsTouchingEndPoint.Add(room); //this might cause redundancy
                     }
 
                 }
@@ -729,7 +796,7 @@ namespace Diploma2.Model
             {
                 foreach (var line in room.Lines)
                 {
-                    if (line.length>80 && makeDoor.Contains(line))
+                    if (line.length > 80 && makeDoor.Contains(line))
                     {
                         line.HasDoor = true;
                     }

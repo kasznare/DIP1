@@ -65,40 +65,64 @@ namespace Diploma2.Services
         {
             double asd = 0.0;
             List<_Point> boundaries2 = localModel.OutlinePolygonPoints;
-            if (boundaries2==null || (boundaries2!=null && !boundaries2.Any()))
+            if (boundaries2 == null || (boundaries2 != null && !boundaries2.Any()))
             {
                 return asd;
             }
+
+            List<C2DPoint> convertedPointsForPolygon3 = boundaries2.Select(i => new C2DPoint(i.X, i.Y)).ToList();
+            C2DPolygon BoundaryPolygon = new C2DPolygon();
+            BoundaryPolygon.Create(convertedPointsForPolygon3, true);
+
             foreach (_Room room in localModel.rooms)
             {
                 List<_Point> boundaries = room.GetPoints();
                 if (!boundaries.Any()) continue;
                 List<C2DPoint> convertedPointsForPolygon2 = boundaries.Select(i => new C2DPoint(i.X, i.Y)).ToList();
-                List<C2DPoint> convertedPointsForPolygon3 = boundaries2.Select(i => new C2DPoint(i.X, i.Y)).ToList();
-               
+
                 C2DPolygon roomPolygon = new C2DPolygon();
                 roomPolygon.Create(convertedPointsForPolygon2, true);
-
-                C2DPolygon roomPolygon2 = new C2DPolygon();
-                roomPolygon2.Create(convertedPointsForPolygon3, true);
-                
+                room.Polygon = roomPolygon;
                 CGrid grid = new CGrid();
                 List<C2DHoledPolygon> asdasd = new List<C2DHoledPolygon>();
-                roomPolygon.GetOverlaps(roomPolygon2, asdasd,grid);
+                roomPolygon.GetOverlaps(BoundaryPolygon, asdasd, grid);
                 List<double> a = asdasd.Select(i => i.GetArea()).ToList();
-                double sumoverlap = a.Sum()/10000;
+                double sumoverlap = a.Sum() / 10000;
                 double actualArea = room.Area;
-                if (actualArea-sumoverlap>0)
+                if (actualArea - sumoverlap > 0)
                 {
                     asd += +10000000;
                 }
 
                 asd += Math.Pow(2, actualArea - sumoverlap);
             }
+
+            for (var i = 0; i < localModel.rooms.Count; i++)
+            {
+                _Room modelRoom = localModel.rooms[i];
+                for (int j = i + 1; j < localModel.rooms.Count; j++)
+                {
+                    _Room modelRoom2 = localModel.rooms[j];
+                    CGrid grid = new CGrid();
+                    List<C2DHoledPolygon> asdasd = new List<C2DHoledPolygon>();
+                    modelRoom.Polygon.GetOverlaps(modelRoom2.Polygon, asdasd, grid);
+                    List<double> a = asdasd.Select(k => k.GetArea()).ToList();
+                    double sumoverlap = a.Sum() / 10000;
+                    double actualArea = modelRoom.Area;
+                    if (sumoverlap > 0)
+                    {
+                        asd += +10000000;
+                    }
+
+                }
+            }
+
+            //then avoid room overlaps
+
             return asd;
         }
 
-      
+
         private static double CalculateParameterCost()
         {
             double summary = 0.0;
@@ -133,7 +157,7 @@ namespace Diploma2.Services
                 double actualprop = room.CalculateProportion();
                 if (actualprop > type.proportion)
                 {
-                    summary += Math.Pow(2, Math.Abs(-type.proportion + actualprop)+5);
+                    summary += Math.Pow(2, Math.Abs(-type.proportion + actualprop) + 5);
                 }
 
                 double minsidesize = room.CalculateMinSideSize();
@@ -149,14 +173,14 @@ namespace Diploma2.Services
                 double countCost = room.GetPoints().Count;
                 if (countCost > 6)
                 {
-                    summary += Math.Pow(2, countCost - 6);
+                    summary += Math.Pow(2, countCost - 6 + 10);
                 }
             }
 
             return Math.Round(summary, 2);
         }
 
-        public static Dictionary<_RoomType, Dictionary<_RoomType, int>> asd { get; set; }= new Dictionary<_RoomType, Dictionary<_RoomType, int>>();
+        public static Dictionary<_RoomType, Dictionary<_RoomType, int>> asd { get; set; } = new Dictionary<_RoomType, Dictionary<_RoomType, int>>();
 
         public static void InitializeASD()
         {
@@ -168,7 +192,7 @@ namespace Diploma2.Services
             //List<_RoomType> rooms = new List<_RoomType>(){_RoomType.BedRoom, _RoomType.CorridorRoom, _RoomType.DiningRoom, _RoomType.Kitchen, _RoomType.LivingRoom , _RoomType.RestRoom , _RoomType.StairCase};
             //int[,] costs = new int[rooms.Count,rooms.Count];
 
-            
+
         }
         private static double CalculateLayoutCost()
         {
@@ -216,7 +240,7 @@ namespace Diploma2.Services
                     _Room localModelRoom = localModel.rooms[j];
                     if (localModel.AdjacencyMatrix[i, j] == 1)
                     {
-                        layoutcost += RoomTypeCostStorage.FindCost(room.type,localModelRoom.type);
+                        layoutcost += RoomTypeCostStorage.FindCost(room.type, localModelRoom.type);
                     }
                 }
             }

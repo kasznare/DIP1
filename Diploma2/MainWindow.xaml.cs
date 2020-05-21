@@ -101,7 +101,7 @@ namespace Diploma2
         {
             DataContext = this;
             InitializeComponent();
-            model = ModelConfigurations.InitSimpleModel();
+            model = ModelConfigurations.InitNormalModel();
             CostCalculationService.InitializeASD();
             LoadDataFromModel();
             simulation.Model = model;
@@ -230,11 +230,47 @@ namespace Diploma2
             Points = new ObservableCollection<_Point>(model.AllPointsFlat());
             Lines = new ObservableCollection<_Line>(model.AllLinesFlat());
             Rooms = model.rooms;
-#if DEBUG
             LineGrid.ItemsSource = Lines;
+#if DEBUG
             PointGrid.ItemsSource = Points;
             RoomGrid.ItemsSource = null;
             RoomGrid.ItemsSource = Rooms;
+
+
+            //List<_Point> common = Points.Intersect(model.AllPointsFlat()).ToList();
+            //List<_Point> diff = model.AllPointsFlat().Except(common).ToList();
+            //List<_Point> diffBAD = Points.Except(model.AllPointsFlat()).ToList();
+
+            //foreach (_Point point in diffBAD) {
+            //    Points.Remove(point);
+            //}
+            //foreach (_Point point in diff) {
+            //    Points.Add(point);
+            //}
+
+            //List<_Line> commonL = Lines.Intersect(model.AllLinesFlat()).ToList();
+            //List<_Line> diffL = model.AllLinesFlat().ToList().Except(commonL).ToList();
+            //List<_Line> diffLBAD = Lines.Except(model.AllLinesFlat()).ToList();
+
+            //foreach (_Line line in diffLBAD) {
+            //    Lines.Remove(line);
+
+            //}
+            //foreach (_Line line in diffL) {
+            //    Lines.Add(line);
+            //}
+
+            //List<_Room> commonR = Rooms.Intersect(model.rooms).ToList();
+            //List<_Room> diffR = model.rooms.ToList().Except(commonR).ToList();
+            //List<_Room> diffRBAD = Rooms.Except(model.rooms).ToList();
+
+            //foreach (_Room room in diffRBAD) {
+            //    Rooms.Remove(room);
+            //}
+
+            //foreach (_Room room in diffR) {
+            //    Rooms.Add(room);
+            //}
 
 #endif
         }
@@ -617,6 +653,21 @@ namespace Diploma2
         {
             Draw();
             Chart.Series = SeriesCollection;
+        }
+
+        private void MoveLineBack_OnClick(object sender, RoutedEventArgs e)
+        {
+
+            if (selectedLines.FirstOrDefault() == null)
+            {
+                model.MoveLine();
+            }
+            else
+            {
+                model.MoveLine(-10, selectedLines.FirstOrDefault());
+            }
+            LoadDataFromModel();
+            Paint(); 
         }
     }
 }

@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 
 namespace Diploma2.Model {
     public class _Line : _GeometryBase {
+        public _Point StartPoint { get; set; }
         public _Point EndPoint { get; set; }
         public bool HasDoor { get; set; }
         public double length => GetLength();
@@ -92,6 +93,10 @@ namespace Diploma2.Model {
             double y2 = EndPoint.Y;
             return Math.Sqrt(Math.Abs(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2)));
         }
+        public _Line GetInverse()
+        {
+            return new _Line(EndPoint, StartPoint);
+        }
 
         #region Overrides
         public override bool Equals(object obj) {
@@ -104,9 +109,35 @@ namespace Diploma2.Model {
                 return (StartPoint.Equals(l.StartPoint) && (EndPoint.Equals(l.EndPoint))) || (StartPoint.Equals(l.EndPoint) && (EndPoint.Equals(l.StartPoint)));
             }
         }
+        
         public override string ToString() {
             return $"Start({StartPoint.X},{StartPoint.Y}) - End({EndPoint.X},{EndPoint.Y})";
         }
         #endregion
+
+        public bool Overlaps(_Line movedLine)
+        {
+            bool areweparralel = Equals(Normalize(this),Normalize(movedLine)) || Equals(Normalize(this), Normalize(movedLine).GetInverse());
+            if (!areweparralel) return false;
+
+            bool isStartOn = _Model.IsOnLine(movedLine.StartPoint, this);
+            bool isEndOn = _Model.IsOnLine(movedLine.EndPoint, this);
+
+            bool isthisStartOn = _Model.IsOnLine(this.StartPoint, movedLine);
+            bool isthisEndOn = _Model.IsOnLine(this.EndPoint, movedLine);
+
+            int count = 0;
+            count = isStartOn ? count + 1 : count;
+            count = isEndOn ? count + 1 : count;
+            count = isthisStartOn ? count + 1 : count;
+            count = isthisEndOn ? count + 1 : count;
+
+            if (count >= 2) return true;
+
+            return false;
+
+            
+
+        }
     }
 }
